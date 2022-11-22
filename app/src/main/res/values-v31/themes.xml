@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Tuesplace.Starting" parent="Theme.SplashScreen">
+        <item name="android:statusBarColor">@color/dark_blue</item>
+        <item name="android:windowSplashScreenBackground">@color/dark_blue</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/app_icon_3</item>
+        <item name="windowSplashScreenAnimationDuration">5000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Tuesplace</item>
+    </style>
+</resources>
