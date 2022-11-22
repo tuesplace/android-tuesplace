@@ -3,4 +3,10 @@
     <style name="Theme.Tuesplace" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/dark_blue</item>
     </style>
+
+    <style name="Theme.Tuesplace.Starting" parent="Theme.SplashScreen">
+       <item name="windowSplashScreenBackground">@color/dark_blue</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/app_icon_3</item>
+        <item name="windowSplashScreenAnimationDuration">5000</item>
+    </style>
 </resources>
