@@ -1,13 +1,20 @@
 package com.mobile.tuesplace.ui.navigation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.mobile.tuesplace.ui.classes.ClassesScreen
+import com.mobile.tuesplace.ui.classroom.ClassroomScreen
 import com.mobile.tuesplace.ui.forgottenpassword.ForgottenPasswordScreen
 import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
+import com.mobile.tuesplace.ui.messages.MessagesScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
 import org.koin.androidx.compose.getViewModel
 
@@ -32,10 +39,25 @@ fun NavHost(navController: NavHostController){
             )
         }
         composable(WELCOME_SCREEN) {
-            WelcomeScreen()
+            val context = LocalContext.current
+            WelcomeScreen(
+                onMessageClick = { navController.navigate(MESSAGES_SCREEN) },
+                onEnterClassClick = { navController.navigate(CLASSES_SCREEN) },
+                onEnterClassroomClick = { navController.navigate(CLASSROOM_SCREEN) },
+                onLinkClick = { ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")), null)}
+            )
         }
-        composable(FORGOTTEN_PASSWORD){
+        composable(FORGOTTEN_PASSWORD_SCREEN){
             ForgottenPasswordScreen()
+        }
+        composable(MESSAGES_SCREEN){
+            MessagesScreen()
+        }
+        composable(CLASSES_SCREEN){
+            ClassesScreen()
+        }
+        composable(CLASSROOM_SCREEN){
+            ClassroomScreen()
         }
     }
 }

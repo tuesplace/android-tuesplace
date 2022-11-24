@@ -5,4 +5,8 @@
     <string name="login">Влез</string>
     <string name="forgotten_password">Забравена парола?</string>
     <string name="selected_language">БГ</string>
+    <string name="messages">Съобщения</string>
+    <string name="enter_class">Влез в час</string>
+    <string name="enter_classroom">Към\nкласната\nстая</string>
+    <string name="link_to_website">Влез в сайта</string>
 </resources>
