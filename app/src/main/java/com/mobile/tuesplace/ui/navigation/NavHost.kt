@@ -1,5 +1,7 @@
 package com.mobile.tuesplace.ui.navigation
 
+import android.accounts.Account
+import android.accounts.AccountManager
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
@@ -26,9 +28,12 @@ fun NavHost(navController: NavHostController){
             val email by viewModel.email.collectAsState()
             val password by viewModel.password.collectAsState()
             val passwordVisibility by viewModel.passwordVisibility.collectAsState()
-
+            val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
-                onLoginClick = { navController.navigate(WELCOME_SCREEN) },
+                onLoginClick = {
+                    viewModel.signIn("kalina.valevaa@gmail.com", "12345678Ll2022\$\$&&")
+                    navController.navigate(WELCOME_SCREEN)
+                               },
                 onForgottenPasswordClick = {  },
                 email = email,
                 setEmail = { viewModel.email(it) },
