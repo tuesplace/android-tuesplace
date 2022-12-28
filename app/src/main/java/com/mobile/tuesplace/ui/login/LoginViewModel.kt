@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.ui.login
 
-import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.SignInResponse
@@ -9,7 +8,6 @@ import com.mobile.tuesplace.ui.states.SignInUiState
 import com.mobile.tuesplace.usecase.SignInUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 

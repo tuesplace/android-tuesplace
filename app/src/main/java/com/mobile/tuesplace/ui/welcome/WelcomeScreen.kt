@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.services.ApiServices
+import com.mobile.tuesplace.services.RetrofitHelper
 import com.mobile.tuesplace.ui.theme.BabyBlue
 import com.mobile.tuesplace.ui.theme.Blue
 
@@ -39,6 +41,8 @@ fun WelcomeScreen(
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
+
+        val quotesApi = RetrofitHelper.getInstance().create(ApiServices::class.java)
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()

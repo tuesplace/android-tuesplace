@@ -1,8 +1,6 @@
 package com.mobile.tuesplace.services
 
-import android.accounts.AccountManager
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.platform.LocalContext
+import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.AuthData
 import com.mobile.tuesplace.data.SignInResponse
 import retrofit2.Call
@@ -12,7 +10,6 @@ import retrofit2.Response
 class AuthServiceImpl: AuthService {
 
     private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
-
 
     override suspend fun signIn(
         authData: AuthData,
@@ -33,13 +30,10 @@ class AuthServiceImpl: AuthService {
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            print("HELLO $it")
                             authCallback.onSuccess(it)
+                            ACCESS_TOKEN = it.response?.accessToken.toString()
                         }
                     } else{
-                        print("HELLO ${response.message()}")
-                        print(response.raw())
-                        print(response.errorBody().toString())
                         authCallback.onError(response.message())
                     }
                 }
