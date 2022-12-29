@@ -6,11 +6,13 @@ import com.mobile.tuesplace.data.CreateGroupResponse
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.services.GroupService
 import com.mobile.tuesplace.ui.states.CreateGroupUiState
+import com.mobile.tuesplace.ui.states.GetGroupsUiState
 import com.mobile.tuesplace.usecase.CreateGroupUseCase
+import com.mobile.tuesplace.usecase.GetGroupsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase): ViewModel() {
+class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase, private val getGroupsUseCase: GetGroupsUseCase): ViewModel() {
 
     private val _uiStateFlow = MutableStateFlow<CreateGroupUiState>(CreateGroupUiState.Empty)
 
@@ -31,6 +33,27 @@ class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase): View
                         _uiStateFlow.emit(CreateGroupUiState.Success)
                     }
                 }
+            })
+        }
+    }
+
+    private val _getGroupsstateFlow = MutableStateFlow<GetGroupsUiState>(GetGroupsUiState.Empty)
+
+    fun getGroups(){
+        viewModelScope.launch {
+            getGroupsUseCase.invoke(object : GroupService.GetGroupsCallback{
+                override fun onSuccess(groupsList: List<GroupData>) {
+                    viewModelScope.launch {
+                        _getGroupsstateFlow.emit(GetGroupsUiState.Success)
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _getGroupsstateFlow.emit(GetGroupsUiState.Error(error))
+                    }
+                }
+
             })
         }
     }

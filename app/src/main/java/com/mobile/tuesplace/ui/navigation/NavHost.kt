@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.ui.navigation
 
-import android.accounts.AccountManager
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
@@ -29,7 +28,7 @@ fun NavHost(navController: NavHostController){
             val email by viewModel.email.collectAsState()
             val password by viewModel.password.collectAsState()
             val passwordVisibility by viewModel.passwordVisibility.collectAsState()
-            val accountManager = AccountManager.get(LocalContext.current)
+            //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
                     viewModel.signIn("kalina.valevaa@gmail.com", "12345678Ll2022\$\$&&")
@@ -57,7 +56,10 @@ fun NavHost(navController: NavHostController){
                         classes = arrayListOf("12Б")
                     ))
                     },
-                onEnterClassClick = { navController.navigate(CLASSES_SCREEN) },
+                onEnterClassClick = {
+                   // navController.navigate(CLASSES_SCREEN)
+                                    viewModel.getGroups()
+                                    },
                 onEnterClassroomClick = { navController.navigate(CLASSROOM_SCREEN) },
                 onLinkClick = { ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")), null)}
             )

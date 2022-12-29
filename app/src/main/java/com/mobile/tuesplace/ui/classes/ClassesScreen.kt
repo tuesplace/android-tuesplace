@@ -22,11 +22,9 @@ fun ClassesScreen() {
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-        val list = listOf<SubjectData>(SubjectData("Math", startTime = "12", duration = "13"), SubjectData("BEL", startTime = "12", duration = "13"), SubjectData("History", startTime = "12", duration = "13"))
-        LazyColumn(
-
-        ){
-            itemsIndexed(list) { index, data ->
+        val list = listOf(SubjectData("Math", startTime = "12", duration = "13"), SubjectData("BEL", startTime = "12", duration = "13"), SubjectData("History", startTime = "12", duration = "13"))
+        LazyColumn{
+            itemsIndexed(list) { _, data ->
                 classItem(subjectData = data)
             }
         }
