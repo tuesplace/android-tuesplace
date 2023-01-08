@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.mobile.tuesplace.USER_ID
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.classes.ClassesScreen
 import com.mobile.tuesplace.ui.classroom.ClassroomScreen
@@ -21,26 +22,34 @@ import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun NavHost(navController: NavHostController){
-    androidx.navigation.compose.NavHost(navController = navController, startDestination = LOGIN_SCREEN) {
+fun NavHost(navController: NavHostController) {
+    androidx.navigation.compose.NavHost(navController = navController,
+        startDestination = LOGIN_SCREEN) {
         composable(LOGIN_SCREEN) {
             val viewModel = getViewModel<LoginViewModel>()
             val email by viewModel.email.collectAsState()
             val password by viewModel.password.collectAsState()
             val passwordVisibility by viewModel.passwordVisibility.collectAsState()
+            val uiState by viewModel.uiStateFlow.collectAsState()
+            val getProfileStateFlow by viewModel.getProfileStateFlow.collectAsState()
             //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
                     viewModel.signIn("kalina.valevaa@gmail.com", "12345678Ll2022\$\$&&")
-                    navController.navigate(WELCOME_SCREEN)
-                               },
-                onForgottenPasswordClick = {  },
+                },
+                onForgottenPasswordClick = { },
                 email = email,
                 setEmail = { viewModel.email(it) },
                 password = password,
                 setPassword = { viewModel.password(it) },
                 passwordVisibility = passwordVisibility,
-                setPasswordVisibility = {viewModel.passwordVisibility(it) },
+                setPasswordVisibility = { viewModel.passwordVisibility(it) },
+                uiState = uiState,
+                onSuccess = { viewModel.getProfile() },
+                getProfileStateFlow = getProfileStateFlow,
+                onGetProfileSuccess = {
+                    navController.navigate(WELCOME_SCREEN)
+                }
             )
         }
         composable(WELCOME_SCREEN) {
@@ -55,25 +64,29 @@ fun NavHost(navController: NavHostController){
                         type = "chat",
                         classes = arrayListOf("12Б")
                     ))
-                    },
+                },
                 onEnterClassClick = {
-                   // navController.navigate(CLASSES_SCREEN)
-                                    viewModel.getGroups()
-                                    },
+                    // navController.navigate(CLASSES_SCREEN)
+                    viewModel.getGroups()
+                },
                 onEnterClassroomClick = { navController.navigate(CLASSROOM_SCREEN) },
-                onLinkClick = { ContextCompat.startActivity(context, Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")), null)}
+                onLinkClick = {
+                    ContextCompat.startActivity(context,
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
+                        null)
+                }
             )
         }
-        composable(FORGOTTEN_PASSWORD_SCREEN){
+        composable(FORGOTTEN_PASSWORD_SCREEN) {
             ForgottenPasswordScreen()
         }
-        composable(MESSAGES_SCREEN){
+        composable(MESSAGES_SCREEN) {
             MessagesScreen()
         }
-        composable(CLASSES_SCREEN){
+        composable(CLASSES_SCREEN) {
             ClassesScreen()
         }
-        composable(CLASSROOM_SCREEN){
+        composable(CLASSROOM_SCREEN) {
             ClassroomScreen()
         }
     }

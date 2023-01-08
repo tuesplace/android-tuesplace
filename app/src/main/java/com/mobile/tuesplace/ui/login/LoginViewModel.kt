@@ -2,16 +2,24 @@ package com.mobile.tuesplace.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.data.SignInResponse
 import com.mobile.tuesplace.services.AuthService
+import com.mobile.tuesplace.services.ProfileService
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.states.SignInUiState
+import com.mobile.tuesplace.usecase.GetProfileUseCase
 import com.mobile.tuesplace.usecase.SignInUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 
 
-class LoginViewModel(private val signInUseCase: SignInUseCase) : ViewModel() {
+class LoginViewModel(
+    private val signInUseCase: SignInUseCase,
+    private val profileUseCase: GetProfileUseCase,
+) : ViewModel() {
 
     private val _email =
         MutableStateFlow("")
@@ -39,7 +47,7 @@ class LoginViewModel(private val signInUseCase: SignInUseCase) : ViewModel() {
     private val _uiStateFlow = MutableStateFlow<SignInUiState>(SignInUiState.Empty)
     val uiStateFlow: StateFlow<SignInUiState> = _uiStateFlow
 
-    fun signIn(email: String, password: String){
+    fun signIn(email: String, password: String) {
         viewModelScope.launch {
             signInUseCase.invoke(email, password, object : AuthService.AuthCallback {
                 override fun onSuccess(signInResponse: SignInResponse) {
@@ -53,6 +61,28 @@ class LoginViewModel(private val signInUseCase: SignInUseCase) : ViewModel() {
                         _uiStateFlow.emit(SignInUiState.Error(error))
                     }
                 }
+            })
+        }
+    }
+
+    private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
+    val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
+
+    fun getProfile() {
+        viewModelScope.launch {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback {
+                override fun onSuccess(profileData: ProfileData) {
+                    viewModelScope.launch {
+                        _getProfileStateFlow.emit(GetProfileUiState.Success)
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _getProfileStateFlow.emit(GetProfileUiState.Error(error))
+                    }
+                }
+
             })
         }
     }

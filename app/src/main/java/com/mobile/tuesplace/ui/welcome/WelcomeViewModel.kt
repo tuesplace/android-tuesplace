@@ -37,20 +37,20 @@ class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase, priva
         }
     }
 
-    private val _getGroupsstateFlow = MutableStateFlow<GetGroupsUiState>(GetGroupsUiState.Empty)
+    private val _getGroupstateFlow = MutableStateFlow<GetGroupsUiState>(GetGroupsUiState.Empty)
 
     fun getGroups(){
         viewModelScope.launch {
             getGroupsUseCase.invoke(object : GroupService.GetGroupsCallback{
                 override fun onSuccess(groupsList: List<GroupData>) {
                     viewModelScope.launch {
-                        _getGroupsstateFlow.emit(GetGroupsUiState.Success)
+                        _getGroupstateFlow.emit(GetGroupsUiState.Success)
                     }
                 }
 
                 override fun onError(error: String) {
                     viewModelScope.launch {
-                        _getGroupsstateFlow.emit(GetGroupsUiState.Error(error))
+                        _getGroupstateFlow.emit(GetGroupsUiState.Error(error))
                     }
                 }
 

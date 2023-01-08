@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
+import com.mobile.tuesplace.USER_ID
 import com.mobile.tuesplace.data.AuthData
 import com.mobile.tuesplace.data.SignInResponse
 import retrofit2.Call
@@ -19,7 +20,6 @@ class AuthServiceImpl: AuthService {
             object : Callback<SignInResponse> {
                 override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
                     t.localizedMessage?.let {
-                            print("HELLO $it")
                             authCallback.onError(it)
                     }
                 }
@@ -32,6 +32,7 @@ class AuthServiceImpl: AuthService {
                         response.body()?.let {
                             authCallback.onSuccess(it)
                             ACCESS_TOKEN = it.response?.accessToken.toString()
+                            USER_ID = it.response?.userId.toString()
                         }
                     } else{
                         authCallback.onError(response.message())

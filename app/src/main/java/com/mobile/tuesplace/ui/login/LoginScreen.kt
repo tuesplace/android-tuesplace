@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.states.GetProfileUiState
+import com.mobile.tuesplace.ui.states.SignInUiState
 
 @Composable
 fun LoginScreen(
@@ -33,7 +35,37 @@ fun LoginScreen(
     setPassword: (String) -> Unit,
     passwordVisibility: Boolean,
     setPasswordVisibility: (Boolean) -> Unit,
+    uiState: SignInUiState,
+    onSuccess: () -> Unit,
+    getProfileStateFlow: GetProfileUiState,
+    onGetProfileSuccess: () -> Unit
 ) {
+    when (uiState) {
+        SignInUiState.Empty -> {
+        }
+        is SignInUiState.Error -> {
+        }
+        SignInUiState.Loading -> {
+        }
+        SignInUiState.Success -> {
+            onSuccess()
+        }
+    }
+    when (getProfileStateFlow) {
+        GetProfileUiState.Empty -> {
+
+        }
+        is GetProfileUiState.Error -> {
+
+        }
+        GetProfileUiState.Loading -> {
+
+        }
+        GetProfileUiState.Success -> {
+            onGetProfileSuccess()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -119,5 +151,5 @@ fun LoginScreen(
 @Preview
 @Composable
 fun ComposablePreview() {
-    LoginScreen({}, {}, "", {}, "", {}, true, {})
+    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {}, GetProfileUiState.Empty, {})
 }
