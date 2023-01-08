@@ -2,7 +2,7 @@ package com.mobile.tuesplace.data
 
 import com.google.gson.annotations.SerializedName
 
-data class EdItProfileData(
+data class EditProfileData(
     @SerializedName("fullName")
     var fullName: String,
     @SerializedName("email")
