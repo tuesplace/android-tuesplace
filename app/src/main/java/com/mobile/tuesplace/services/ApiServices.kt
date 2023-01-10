@@ -58,4 +58,19 @@ interface ApiServices {
 
     @DELETE(EDIT_POST)
     fun deletePost(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<String>>
+
+    @GET(GET_MARKS)
+    fun getGroupMarks(@Header("Authorization") token: String, @Path("groupId") groupId: String): Call<BaseResponse<List<MarkData>>>
+
+    @GET(STUDENT_MARKS)
+    fun getStudentMarks(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<List<MarkData>>>
+
+    @POST(STUDENT_MARKS)
+    fun addStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<MarkData>>
+
+    @PUT(STUDENT_MARK)
+    fun editStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<BaseResponse<MarkData>>
+
+    @DELETE(STUDENT_MARK)
+    fun deleteStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<DeleteMarkResponse>
 }

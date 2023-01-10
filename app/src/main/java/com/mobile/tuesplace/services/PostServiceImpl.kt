@@ -12,6 +12,7 @@ import retrofit2.Response
 class PostServiceImpl : PostService {
 
     private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
+
     override fun getPosts(postCallback: PostService.PostCallback<PostsResponse>, groupId: String) {
         retrofit.getPosts("Bearer $ACCESS_TOKEN", groupId = groupId).enqueue(
             object : Callback<PostsResponse> {
