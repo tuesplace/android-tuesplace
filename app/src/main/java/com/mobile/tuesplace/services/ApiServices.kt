@@ -46,4 +46,16 @@ interface ApiServices {
 
     @DELETE(PROFILE)
     fun deleteProfile(@Header("Authorization") token: String, @Path("profileId") profileId: String): Call<DeleteProfileResponse>
+
+    @GET(GET_POSTS)
+    fun getPosts(@Header("Authorization") token: String, @Path("groupId") groupId: String): Call<PostsResponse>
+
+    @POST(GET_POSTS)
+    fun createPost(@Header("Authorization") token: String, @Path("groupId") groupId: String): Call<PostResponse>
+
+    @PUT(EDIT_POST)
+    fun editPost(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("postId") postId: String): Call<PostResponse>
+
+    @DELETE(EDIT_POST)
+    fun deletePost(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<String>>
 }

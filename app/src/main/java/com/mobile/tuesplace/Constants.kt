@@ -7,6 +7,8 @@ const val CREATE_GROUP = "group/"
 const val PROFILE_ME = "profile/me"
 const val PROFILE = "profile/{profileId}"
 const val GET_GROUP = "group/{groupId}"
+const val GET_POSTS = "group/{groupId}/post"
+const val EDIT_POST = "group/{groupId}/post/{postId}"
 
 
 var ACCESS_TOKEN = ""
