@@ -68,8 +68,9 @@ class MarkServiceImpl : MarkService {
         markCallback: MarkService.MarkCallback<MarkData>,
         groupId: String,
         studentId: String,
+        mark: Int
     ) {
-        retrofit.addStudentMark("Bearer $ACCESS_TOKEN", groupId = groupId, studentId = studentId)
+        retrofit.addStudentMark("Bearer $ACCESS_TOKEN", groupId = groupId, studentId = studentId, mark = mark)
             .enqueue(
                 object : Callback<BaseResponse<MarkData>> {
                     override fun onResponse(
@@ -96,12 +97,14 @@ class MarkServiceImpl : MarkService {
         groupId: String,
         studentId: String,
         markId: String,
+        mark: Int
     ) {
         retrofit.editStudentMark(
             token = "Bearer $ACCESS_TOKEN",
             groupId = groupId,
             studentId = studentId,
-            markId = markId).enqueue(
+            markId = markId,
+            mark = mark).enqueue(
             object : Callback<BaseResponse<MarkData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<MarkData>>,

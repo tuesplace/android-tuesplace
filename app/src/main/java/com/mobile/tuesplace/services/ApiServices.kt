@@ -67,10 +67,10 @@ interface ApiServices {
     fun getStudentMarks(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<List<MarkData>>>
 
     @POST(STUDENT_MARKS)
-    fun addStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<MarkData>>
+    fun addStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Body mark: Int): Call<BaseResponse<MarkData>>
 
     @PUT(STUDENT_MARK)
-    fun editStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<BaseResponse<MarkData>>
+    fun editStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String, @Body mark: Int): Call<BaseResponse<MarkData>>
 
     @DELETE(STUDENT_MARK)
     fun deleteStudentMark(@Header("Authorization") token: String, @Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<DeleteMarkResponse>
