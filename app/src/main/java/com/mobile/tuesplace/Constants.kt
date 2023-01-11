@@ -12,6 +12,8 @@ const val EDIT_POST = "group/{groupId}/post/{postId}"
 const val GET_MARKS = "group/{groupId}/mark"
 const val STUDENT_MARKS = "group/{groupId}/mark/student/{studentId}"
 const val STUDENT_MARK = "group/{groupId}/mark/student/{studentId}/{markId}"
+const val POST_COMMENTS = "group/{groupId}/post/{postId}/comment"
+const val POST_COMMENT = "group/{groupId}/post/{postId}/comment/{commentId}"
 
 var ACCESS_TOKEN = ""
 var USER_ID = ""
