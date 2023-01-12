@@ -2,7 +2,6 @@ package com.mobile.tuesplace.ui.welcome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobile.tuesplace.data.CreateGroupResponse
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.services.GroupService
 import com.mobile.tuesplace.ui.states.CreateGroupUiState

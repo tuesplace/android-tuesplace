@@ -2,7 +2,6 @@ package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
-import com.mobile.tuesplace.data.DeleteMarkResponse
 import com.mobile.tuesplace.data.MarkData
 import retrofit2.Call
 import retrofit2.Callback
@@ -68,7 +67,7 @@ class MarkServiceImpl : MarkService {
         markCallback: MarkService.MarkCallback<MarkData>,
         groupId: String,
         studentId: String,
-        mark: Int
+        mark: Double
     ) {
         retrofit.addStudentMark("Bearer $ACCESS_TOKEN", groupId = groupId, studentId = studentId, mark = mark)
             .enqueue(
@@ -97,7 +96,7 @@ class MarkServiceImpl : MarkService {
         groupId: String,
         studentId: String,
         markId: String,
-        mark: Int
+        mark: Double
     ) {
         retrofit.editStudentMark(
             token = "Bearer $ACCESS_TOKEN",
@@ -124,7 +123,7 @@ class MarkServiceImpl : MarkService {
     }
 
     override fun deleteStudentMark(
-        markCallback: MarkService.MarkCallback<DeleteMarkResponse>,
+        markCallback: MarkService.MarkCallback<Unit>,
         groupId: String,
         studentId: String,
         markId: String,
@@ -135,10 +134,10 @@ class MarkServiceImpl : MarkService {
             studentId = studentId,
             markId = markId
         ).enqueue(
-            object : Callback<DeleteMarkResponse> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<DeleteMarkResponse>,
-                    response: Response<DeleteMarkResponse>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { markCallback.onSuccess(it) }
@@ -147,7 +146,7 @@ class MarkServiceImpl : MarkService {
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteMarkResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { markCallback.onError(it) }
                 }
 

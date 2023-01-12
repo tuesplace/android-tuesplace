@@ -1,10 +1,7 @@
 package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
-import com.mobile.tuesplace.data.CreateGroupResponse
-import com.mobile.tuesplace.data.DeleteGroupResponse
-import com.mobile.tuesplace.data.EditGroupData
-import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,20 +12,22 @@ class GroupServiceImpl : GroupService {
 
     override suspend fun createGroup(
         createGroupData: GroupData,
-        createGroupCallback: GroupService.CreateGroupCallback,
+        createGroupCallback: GroupService.GroupCallback<GroupData>,
     ) {
         retrofit.createGroup("Bearer $ACCESS_TOKEN", createGroupData).enqueue(
-            object : Callback<CreateGroupResponse> {
-                override fun onFailure(call: Call<CreateGroupResponse>, t: Throwable) {
+            object : Callback<BaseResponse<GroupData>> {
+                override fun onFailure(call: Call<BaseResponse<GroupData>>, t: Throwable) {
                     t.localizedMessage?.let { createGroupCallback.onError(it) }
                 }
 
                 override fun onResponse(
-                    call: Call<CreateGroupResponse>,
-                    response: Response<CreateGroupResponse>,
+                    call: Call<BaseResponse<GroupData>>,
+                    response: Response<BaseResponse<GroupData>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { createGroupCallback.onSuccess(it, createGroupData) }
+                        response.body()?.response?.let { createGroupCallback.onSuccess(it) }
+                    } else {
+                        createGroupCallback.onError(response.message())
                     }
                 }
             }
@@ -37,19 +36,19 @@ class GroupServiceImpl : GroupService {
 
     override suspend fun getGroups(groupCallback: GroupService.GroupCallback<List<GroupData>>) {
         retrofit.getGroups("Bearer $ACCESS_TOKEN").enqueue(
-            object : Callback<List<GroupData>> {
+            object : Callback<BaseResponse<List<GroupData>>> {
                 override fun onResponse(
-                    call: Call<List<GroupData>>,
-                    response: Response<List<GroupData>>,
+                    call: Call<BaseResponse<List<GroupData>>>,
+                    response: Response<BaseResponse<List<GroupData>>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { groupCallback.onSuccess(it) }
+                        response.body()?.response?.let { groupCallback.onSuccess(it) }
                     } else {
                         groupCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<List<GroupData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<List<GroupData>>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
 
@@ -62,16 +61,16 @@ class GroupServiceImpl : GroupService {
         groupId: String,
     ) {
         retrofit.getGroup("Bearer $ACCESS_TOKEN", groupId).enqueue(
-            object : Callback<GroupData> {
-                override fun onResponse(call: Call<GroupData>, response: Response<GroupData>) {
+            object : Callback<BaseResponse<GroupData>> {
+                override fun onResponse(call: Call<BaseResponse<GroupData>>, response: Response<BaseResponse<GroupData>>) {
                     if (response.isSuccessful) {
-                        response.body()?.let { groupCallback.onSuccess(it) }
+                        response.body()?.response?.let { groupCallback.onSuccess(it) }
                     } else {
                         groupCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<GroupData>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<GroupData>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
 
@@ -85,19 +84,19 @@ class GroupServiceImpl : GroupService {
         editGroupData: EditGroupData,
     ) {
         retrofit.editGroup("Bearer $ACCESS_TOKEN", groupId, editGroupData).enqueue(
-            object : Callback<EditGroupData> {
+            object : Callback<BaseResponse<EditGroupData>> {
                 override fun onResponse(
-                    call: Call<EditGroupData>,
-                    response: Response<EditGroupData>,
+                    call: Call<BaseResponse<EditGroupData>>,
+                    response: Response<BaseResponse<EditGroupData>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { groupCallback.onSuccess(it) }
+                        response.body()?.response?.let { groupCallback.onSuccess(it) }
                     } else {
                         groupCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<EditGroupData>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<EditGroupData>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
             }
@@ -105,21 +104,23 @@ class GroupServiceImpl : GroupService {
     }
 
     override suspend fun deleteGroup(
-        groupCallback: GroupService.GroupCallback<DeleteGroupResponse>,
+        groupCallback: GroupService.GroupCallback<Unit>,
         groupId: String,
     ) {
         retrofit.deleteGroup("Bearer $ACCESS_TOKEN", groupId).enqueue(
-            object : Callback<DeleteGroupResponse> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<DeleteGroupResponse>,
-                    response: Response<DeleteGroupResponse>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { groupCallback.onSuccess(it) }
+                        response.body()?.response?.let { groupCallback.onSuccess(it) }
+                    } else {
+                        groupCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteGroupResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
 

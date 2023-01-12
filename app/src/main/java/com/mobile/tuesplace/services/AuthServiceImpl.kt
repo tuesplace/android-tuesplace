@@ -3,7 +3,8 @@ package com.mobile.tuesplace.services
 import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.USER_ID
 import com.mobile.tuesplace.data.AuthData
-import com.mobile.tuesplace.data.SignInResponse
+import com.mobile.tuesplace.data.BaseResponse
+import com.mobile.tuesplace.data.SignInData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,20 +18,20 @@ class AuthServiceImpl: AuthService {
         authCallback: AuthService.AuthCallback
     ) {
         retrofit.signIn(authData).enqueue(
-            object : Callback<SignInResponse> {
-                override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+            object : Callback<BaseResponse<SignInData>> {
+                override fun onFailure(call: Call<BaseResponse<SignInData>>, t: Throwable) {
                     t.localizedMessage?.let {
                             authCallback.onError(it)
                     }
                 }
 
                 override fun onResponse(
-                    call: Call<SignInResponse>,
-                    response: Response<SignInResponse>
+                    call: Call<BaseResponse<SignInData>>,
+                    response: Response<BaseResponse<SignInData>>
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            authCallback.onSuccess(it)
+                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
                             ACCESS_TOKEN = it.response?.accessToken.toString()
                             USER_ID = it.response?.userId.toString()
                         }
@@ -47,20 +48,20 @@ class AuthServiceImpl: AuthService {
         authCallback: AuthService.AuthCallback
     ) {
         retrofit.generateTokenPair(refreshToken).enqueue(
-            object : Callback<SignInResponse> {
-                override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+            object : Callback<BaseResponse<SignInData>> {
+                override fun onFailure(call: Call<BaseResponse<SignInData>>, t: Throwable) {
                     t.localizedMessage?.let {
                         authCallback.onError(it)
                     }
                 }
 
                 override fun onResponse(
-                    call: Call<SignInResponse>,
-                    response: Response<SignInResponse>
+                    call: Call<BaseResponse<SignInData>>,
+                    response: Response<BaseResponse<SignInData>>
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            authCallback.onSuccess(it)
+                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
                         }
                     } else{
                         authCallback.onError(response.message())

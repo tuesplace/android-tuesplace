@@ -3,7 +3,6 @@ package com.mobile.tuesplace.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
-import com.mobile.tuesplace.data.SignInResponse
 import com.mobile.tuesplace.services.AuthService
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.GetProfileUiState
@@ -13,7 +12,6 @@ import com.mobile.tuesplace.usecase.SignInUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.get
 
 
 class LoginViewModel(

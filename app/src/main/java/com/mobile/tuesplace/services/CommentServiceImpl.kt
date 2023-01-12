@@ -3,7 +3,6 @@ package com.mobile.tuesplace.services
 import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.CommentData
-import com.mobile.tuesplace.data.DeleteCommentResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -105,7 +104,7 @@ class CommentServiceImpl : CommentService {
     }
 
     override fun addCommentReaction(
-        commentCallback: CommentService.CommentCallback<DeleteCommentResponse>,
+        commentCallback: CommentService.CommentCallback<Unit>,
         groupId: String,
         postId: String,
         commentId: String,
@@ -116,10 +115,10 @@ class CommentServiceImpl : CommentService {
             postId = postId,
             commentId = commentId,
             emoji = emoji).enqueue(
-            object : Callback<DeleteCommentResponse> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<DeleteCommentResponse>,
-                    response: Response<DeleteCommentResponse>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { commentCallback.onSuccess(it) }
@@ -128,7 +127,7 @@ class CommentServiceImpl : CommentService {
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteCommentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { commentCallback.onError(it) }
                 }
             }
@@ -136,7 +135,7 @@ class CommentServiceImpl : CommentService {
     }
 
     override fun deletePostComment(
-        commentCallback: CommentService.CommentCallback<DeleteCommentResponse>,
+        commentCallback: CommentService.CommentCallback<Unit>,
         groupId: String,
         postId: String,
         commentId: String,
@@ -145,10 +144,10 @@ class CommentServiceImpl : CommentService {
             groupId = groupId,
             postId = postId,
             commentId = commentId).enqueue(
-            object : Callback<DeleteCommentResponse> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<DeleteCommentResponse>,
-                    response: Response<DeleteCommentResponse>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { commentCallback.onSuccess(it) }
@@ -157,7 +156,7 @@ class CommentServiceImpl : CommentService {
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteCommentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { commentCallback.onError(it) }
                 }
 

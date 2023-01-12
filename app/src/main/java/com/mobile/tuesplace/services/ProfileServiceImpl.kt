@@ -1,7 +1,7 @@
 package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
-import com.mobile.tuesplace.data.DeleteProfileResponse
+import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.ProfileData
 import retrofit2.Call
@@ -14,18 +14,16 @@ class ProfileServiceImpl : ProfileService {
 
     override fun getProfile(getProfileCallback: ProfileService.GetProfileCallback<ProfileData>) {
         retrofit.getProfile("Bearer $ACCESS_TOKEN").enqueue(
-            object : Callback<ProfileData> {
-                override fun onResponse(call: Call<ProfileData>, response: Response<ProfileData>) {
+            object : Callback<BaseResponse<ProfileData>> {
+                override fun onResponse(call: Call<BaseResponse<ProfileData>>, response: Response<BaseResponse<ProfileData>>) {
                     if (response.isSuccessful) {
-                        response.body()?.let {
-                            getProfileCallback.onSuccess(it)
-                        }
+                        response.body()?.response?.let { getProfileCallback.onSuccess(it) }
                     } else {
                         getProfileCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<ProfileData>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<ProfileData>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 
@@ -35,19 +33,19 @@ class ProfileServiceImpl : ProfileService {
 
     override fun getProfiles(getProfileCallback: ProfileService.GetProfileCallback<List<ProfileData>>) {
         retrofit.getProfiles("Bearer $ACCESS_TOKEN").enqueue(
-            object : Callback<List<ProfileData>> {
+            object : Callback<BaseResponse<List<ProfileData>>> {
                 override fun onResponse(
-                    call: Call<List<ProfileData>>,
-                    response: Response<List<ProfileData>>,
+                    call: Call<BaseResponse<List<ProfileData>>>,
+                    response: Response<BaseResponse<List<ProfileData>>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { getProfileCallback.onSuccess(it) }
+                        response.body()?.response?.let { getProfileCallback.onSuccess(it) }
                     } else {
                         getProfileCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<List<ProfileData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<List<ProfileData>>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
             }
@@ -61,19 +59,19 @@ class ProfileServiceImpl : ProfileService {
     ) {
         retrofit.editProfile("Bearer $ACCESS_TOKEN", profileId, editProfileData = editProfileData)
             .enqueue(
-                object : Callback<EditProfileData> {
+                object : Callback<BaseResponse<EditProfileData>> {
                     override fun onResponse(
-                        call: Call<EditProfileData>,
-                        response: Response<EditProfileData>,
+                        call: Call<BaseResponse<EditProfileData>>,
+                        response: Response<BaseResponse<EditProfileData>>,
                     ) {
                         if (response.isSuccessful) {
-                            response.body()?.let { getProfileCallback.onSuccess(it) }
+                            response.body()?.response?.let { getProfileCallback.onSuccess(it) }
                         } else {
                             getProfileCallback.onError(response.message())
                         }
                     }
 
-                    override fun onFailure(call: Call<EditProfileData>, t: Throwable) {
+                    override fun onFailure(call: Call<BaseResponse<EditProfileData>>, t: Throwable) {
                         t.localizedMessage?.let { getProfileCallback.onError(it) }
                     }
                 }
@@ -81,23 +79,23 @@ class ProfileServiceImpl : ProfileService {
     }
 
     override fun deleteProfile(
-        getProfileCallback: ProfileService.GetProfileCallback<DeleteProfileResponse>,
+        getProfileCallback: ProfileService.GetProfileCallback<Unit>,
         profileId: String,
     ) {
         retrofit.deleteProfile("Bearer $ACCESS_TOKEN", profileId).enqueue(
-            object : Callback<DeleteProfileResponse> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<DeleteProfileResponse>,
-                    response: Response<DeleteProfileResponse>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.let { getProfileCallback.onSuccess(it) }
+                        response.body()?.response?.let { getProfileCallback.onSuccess(it) }
                     } else {
                         getProfileCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteProfileResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 
