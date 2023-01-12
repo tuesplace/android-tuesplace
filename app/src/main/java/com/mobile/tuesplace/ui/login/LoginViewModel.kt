@@ -3,6 +3,7 @@ package com.mobile.tuesplace.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.SignInData
 import com.mobile.tuesplace.services.AuthService
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.GetProfileUiState
@@ -48,7 +49,7 @@ class LoginViewModel(
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             signInUseCase.invoke(email, password, object : AuthService.AuthCallback {
-                override fun onSuccess(signInResponse: SignInResponse) {
+                override fun onSuccess(signInResponse: SignInData) {
                     viewModelScope.launch {
                         _uiStateFlow.emit(SignInUiState.Success)
                     }
@@ -68,8 +69,8 @@ class LoginViewModel(
 
     fun getProfile() {
         viewModelScope.launch {
-            profileUseCase.invoke(object : ProfileService.GetProfileCallback {
-                override fun onSuccess(profileData: ProfileData) {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
+                override fun onSuccess(profileGeneric: ProfileData) {
                     viewModelScope.launch {
                         _getProfileStateFlow.emit(GetProfileUiState.Success)
                     }

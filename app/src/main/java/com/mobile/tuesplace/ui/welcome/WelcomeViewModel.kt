@@ -11,23 +11,23 @@ import com.mobile.tuesplace.usecase.GetGroupsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase, private val getGroupsUseCase: GetGroupsUseCase): ViewModel() {
+class WelcomeViewModel(
+    private val createGroupUseCase: CreateGroupUseCase,
+    private val getGroupsUseCase: GetGroupsUseCase,
+) : ViewModel() {
 
     private val _uiStateFlow = MutableStateFlow<CreateGroupUiState>(CreateGroupUiState.Empty)
 
-    fun createGroup(groupData: GroupData){
+    fun createGroup(groupData: GroupData) {
         viewModelScope.launch {
-            createGroupUseCase.invoke(groupData, object : GroupService.CreateGroupCallback {
+            createGroupUseCase.invoke(groupData, object : GroupService.GroupCallback<GroupData> {
                 override fun onError(error: String) {
                     viewModelScope.launch {
                         _uiStateFlow.emit(CreateGroupUiState.Error(error))
                     }
                 }
 
-                override fun onSuccess(
-                    createGroupResponse: CreateGroupResponse,
-                    createGroupData: GroupData
-                ) {
+                override fun onSuccess(groupGeneric: GroupData) {
                     viewModelScope.launch {
                         _uiStateFlow.emit(CreateGroupUiState.Success)
                     }
@@ -38,10 +38,10 @@ class WelcomeViewModel(private val createGroupUseCase: CreateGroupUseCase, priva
 
     private val _getGroupstateFlow = MutableStateFlow<GetGroupsUiState>(GetGroupsUiState.Empty)
 
-    fun getGroups(){
+    fun getGroups() {
         viewModelScope.launch {
-            getGroupsUseCase.invoke(object : GroupService.GetGroupsCallback{
-                override fun onSuccess(groupsList: List<GroupData>) {
+            getGroupsUseCase.invoke(object : GroupService.GroupCallback<List<GroupData>> {
+                override fun onSuccess(groupGeneric: List<GroupData>) {
                     viewModelScope.launch {
                         _getGroupstateFlow.emit(GetGroupsUiState.Success)
                     }
