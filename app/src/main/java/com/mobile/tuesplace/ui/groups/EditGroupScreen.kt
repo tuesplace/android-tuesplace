@@ -15,6 +15,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.states.DeleteGroupUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 
 @Composable
@@ -27,14 +28,23 @@ fun EditGroupScreen(
     classes: String,
     setClasses: (String) -> Unit,
     onEditClick: () -> Unit,
-    onDeleteClick: (String) -> Unit
+    onDeleteClick: (String) -> Unit,
+    deleteUiState: DeleteGroupUiState,
+    onBackPressed: () -> Unit
 ) {
 
     when(groupUiStateFlow){
         GetGroupUiState.Empty -> { }
-        is GetGroupUiState.Error -> { }
+        is GetGroupUiState.Error -> { onBackPressed() }
         GetGroupUiState.Loading -> {  }
         is GetGroupUiState.Success -> { }
+    }
+
+    when(deleteUiState){
+        DeleteGroupUiState.Empty -> {}
+        is DeleteGroupUiState.Error -> { }
+        DeleteGroupUiState.Loading -> {}
+        DeleteGroupUiState.Success -> { onBackPressed() }
     }
 
     ConstraintLayout(modifier = Modifier
@@ -88,7 +98,7 @@ fun EditGroupScreen(
                 colorResource(id = R.color.bright_red)),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.delete_group),
-            onLoginClick = { onDeleteClick("63c658f78bd8e60aefbc5361") },
+            onLoginClick = { onDeleteClick("63c1eb05b4bf15e4d6ed9023") },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(deleteBtn){
                 bottom.linkTo(parent.bottom)
@@ -102,5 +112,5 @@ fun EditGroupScreen(
 @Composable
 @Preview
 fun EditGroupItemPreview() {
-    EditGroupScreen(GetGroupUiState.Empty, "", {}, "", {}, "", {}, {}, {})
+    EditGroupScreen(GetGroupUiState.Empty, "", {}, "", {}, "", {}, {}, {}, DeleteGroupUiState.Empty, {})
 }

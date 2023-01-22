@@ -143,7 +143,7 @@ fun NavHost(navController: NavHostController) {
                     GroupData("12V class", "messenger", arrayListOf("12V"))
                 ),
                 onGroupClick = {
-                               navController.navigate("edit_group_screen/63c658f78bd8e60aefbc5361")
+                               navController.navigate("edit_group_screen/63c1eb05b4bf15e4d6ed9023") //63c1eb05b4bf15e4d6ed9023
 
                 },
                 onAddClick = {
@@ -157,6 +157,8 @@ fun NavHost(navController: NavHostController) {
             val groupType by viewModel.groupType.collectAsState()
             val classes by viewModel.classes.collectAsState()
             val groupUiStateFlow by viewModel.groupStateFlow.collectAsState()
+            val deleteGroupUiStateFlow by viewModel.deleteGroupUiStateFlow.collectAsState()
+
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let { groupId ->
                     viewModel.getGroup(groupId)
@@ -171,7 +173,9 @@ fun NavHost(navController: NavHostController) {
                 classes = classes,
                 setClasses = { viewModel.classes(it) },
                 onEditClick = {  },
-                onDeleteClick = { })
+                onDeleteClick = { viewModel.deleteGroup(it) },
+                deleteUiState = deleteGroupUiStateFlow,
+                onBackPressed = { navController.popBackStack() })
         }
     }
 }

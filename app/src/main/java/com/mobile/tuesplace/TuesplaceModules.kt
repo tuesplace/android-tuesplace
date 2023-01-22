@@ -16,7 +16,7 @@ val TuesplaceModules = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { CreateGroupViewModel(get()) }
     viewModel { WelcomeAdminViewModel(get()) }
-    viewModel { EditGroupViewModel(get()) }
+    viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
 
     factory { SignInUseCase(get()) }
@@ -24,6 +24,7 @@ val TuesplaceModules = module {
     factory { GetGroupsUseCase(get()) }
     factory { GetProfileUseCase(get()) }
     factory { GetGroupUseCase(get()) }
+    factory { DeleteGroupUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl() }
     factory<AuthService> { AuthServiceImpl() }

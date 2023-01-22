@@ -103,7 +103,7 @@ class GroupServiceImpl : GroupService {
         )
     }
 
-    override suspend fun deleteGroup(
+    override fun deleteGroup(
         groupCallback: GroupService.GroupCallback<Unit>,
         groupId: String,
     ) {
