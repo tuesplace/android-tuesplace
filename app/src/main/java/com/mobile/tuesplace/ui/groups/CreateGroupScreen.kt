@@ -12,7 +12,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFields
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 fun CreateGroupScreen(
@@ -29,27 +28,32 @@ fun CreateGroupScreen(
         .background(colorResource(id = R.color.gray))
     ) {
         val (btn, fields) = createRefs()
-        Column(modifier = Modifier.fillMaxWidth().constrainAs(fields){
-            top.linkTo(parent.top)
-            bottom.linkTo(btn.top)
-        }) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(fields) {
+                top.linkTo(parent.top)
+                bottom.linkTo(btn.top)
+            }) {
             TextFields(
                 value = groupName,
                 onValueChange = setGroupName,
-                stringId = R.string.group_name,
-                modifier = null
+                placeholder = stringResource(id = R.string.group_name),
+                modifier = null,
+                enabled = true
             )
             TextFields(
                 value = groupType,
                 onValueChange = setGroupType,
-                stringId = R.string.group_type,
-                modifier = null
+                placeholder = stringResource(id =R.string.group_type),
+                modifier = null,
+                enabled = true
             )
             TextFields(
                 value = classes,
                 onValueChange = setClasses,
-                stringId = R.string.choose_classes,
-                modifier = null
+                placeholder = stringResource(id = R.string.choose_classes),
+                modifier = null,
+                enabled = true
             )
         }
 

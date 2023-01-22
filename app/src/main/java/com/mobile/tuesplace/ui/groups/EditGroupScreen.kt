@@ -61,20 +61,23 @@ fun EditGroupScreen(
             TextFields(
                 value = groupName,
                 onValueChange = setGroupName,
-                stringId = R.string.group_name,
-                modifier = null
+                placeholder = stringResource(id = R.string.group_name),
+                modifier = null,
+                enabled = true
             )
             TextFields(
                 value = groupType,
                 onValueChange = setGroupType,
-                stringId = R.string.group_type,
-                modifier = null
+                placeholder = stringResource(id = R.string.group_type),
+                modifier = null,
+                enabled = true
             )
             TextFields(
                 value = classes,
                 onValueChange = setClasses,
-                stringId = R.string.choose_classes,
-                modifier = null
+                placeholder = stringResource(id = R.string.choose_classes),
+                modifier = null,
+                enabled = true
             )
         }
 

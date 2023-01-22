@@ -76,7 +76,7 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFields(email, setEmail, R.string.email, null)
+                    TextFields(email, setEmail, stringResource(id = R.string.email), null, true)
                     TextField(
                         value = password,
                         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -90,7 +90,7 @@ fun LoginScreen(
                         },
                         maxLines = 1,
                         placeholder = { Text(stringResource(id = R.string.password))},
-                        modifier =  Modifier
+                        modifier = Modifier
                             .padding(top = 22.dp, start = 12.dp, end = 12.dp)
                             .fillMaxWidth()
                             .border(BorderStroke(2.dp, Color.White), RoundedCornerShape(16.dp))
@@ -113,7 +113,7 @@ fun LoginScreen(
                         style = TextStyle(textDecoration = TextDecoration.Underline),
                         modifier = Modifier
                             .padding(PaddingValues(16.dp))
-                            .clickable{onForgottenPasswordClick()}
+                            .clickable { onForgottenPasswordClick() }
                     )
                     GradientBorderButtonRound(
                         paddingValues = PaddingValues(1.dp),
@@ -122,9 +122,9 @@ fun LoginScreen(
                             .width(200.dp)
                             .height(100.dp),
                         onLoginClick = {
-                            if (email.isEmpty()) {
-
-                            }
+//                            if (email.isEmpty()) {
+//
+//                            }
                             onLoginClick()
                                        },
                             buttonPadding = PaddingValues(16.dp),

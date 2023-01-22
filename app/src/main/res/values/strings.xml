@@ -19,4 +19,6 @@
     <string name="all_groups">Всички групи</string>
     <string name="save_changes">Запази промените</string>
     <string name="delete_group">Изтрий групата</string>
+    <string name="edit">Редактирай</string>
+    <string name="name">Име</string>
 </resources>

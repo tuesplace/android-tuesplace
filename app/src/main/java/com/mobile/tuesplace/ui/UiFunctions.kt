@@ -26,12 +26,15 @@ import com.mobile.tuesplace.R
 fun TextFields(
     value: String,
     onValueChange: (String) -> Unit,
-    stringId: Int,
-    modifier: Modifier?
+    placeholder: String,
+    modifier: Modifier?,
+    enabled: Boolean?
 ) {
     val modifierM: Modifier = modifier ?: Modifier
+    val enabledM: Boolean = enabled ?: true
     TextField(
         value = value,
+        enabled = enabledM,
         maxLines = 1,
         onValueChange = { onValueChange(it) },
         modifier = modifierM
@@ -39,7 +42,7 @@ fun TextFields(
             .fillMaxWidth()
             .border(BorderStroke(2.dp, Color.White), RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
-        placeholder = { Text(stringResource(id = stringId)) },
+        placeholder = { Text(placeholder) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = Color.White,
             focusedBorderColor = Color.Transparent,
