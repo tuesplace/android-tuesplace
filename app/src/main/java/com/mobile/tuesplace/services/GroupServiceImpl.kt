@@ -34,12 +34,12 @@ class GroupServiceImpl : GroupService {
         )
     }
 
-    override suspend fun getGroups(groupCallback: GroupService.GroupCallback<List<GroupData>>) {
+    override suspend fun getGroups(groupCallback: GroupService.GroupCallback<List<GroupResponseData>>) {
         retrofit.getGroups("Bearer $ACCESS_TOKEN").enqueue(
-            object : Callback<BaseResponse<List<GroupData>>> {
+            object : Callback<BaseResponse<List<GroupResponseData>>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<List<GroupData>>>,
-                    response: Response<BaseResponse<List<GroupData>>>,
+                    call: Call<BaseResponse<List<GroupResponseData>>>,
+                    response: Response<BaseResponse<List<GroupResponseData>>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { groupCallback.onSuccess(it) }
@@ -48,7 +48,7 @@ class GroupServiceImpl : GroupService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<List<GroupData>>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<List<GroupResponseData>>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
 
@@ -56,7 +56,7 @@ class GroupServiceImpl : GroupService {
         )
     }
 
-    override suspend fun getGroup(
+    override fun getGroup(
         groupCallback: GroupService.GroupCallback<GroupData>,
         groupId: String,
     ) {

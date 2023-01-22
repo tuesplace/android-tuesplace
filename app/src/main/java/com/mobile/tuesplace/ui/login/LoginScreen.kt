@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFields
-import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.states.SignInUiState
 
 @Composable
@@ -36,9 +35,7 @@ fun LoginScreen(
     passwordVisibility: Boolean,
     setPasswordVisibility: (Boolean) -> Unit,
     uiState: SignInUiState,
-    onSuccess: () -> Unit,
-    getProfileStateFlow: GetProfileUiState,
-    onGetProfileSuccess: () -> Unit
+    onSuccess: () -> Unit
 ) {
     when (uiState) {
         SignInUiState.Empty -> {
@@ -49,20 +46,6 @@ fun LoginScreen(
         }
         SignInUiState.Success -> {
             onSuccess()
-        }
-    }
-    when (getProfileStateFlow) {
-        GetProfileUiState.Empty -> {
-
-        }
-        is GetProfileUiState.Error -> {
-
-        }
-        GetProfileUiState.Loading -> {
-
-        }
-        GetProfileUiState.Success -> {
-            onGetProfileSuccess()
         }
     }
 
@@ -93,7 +76,7 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFields(email, setEmail, R.string.email)
+                    TextFields(email, setEmail, R.string.email, null)
                     TextField(
                         value = password,
                         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -138,18 +121,24 @@ fun LoginScreen(
                         modifier = Modifier
                             .width(200.dp)
                             .height(100.dp),
-                        onLoginClick = onLoginClick, buttonPadding = PaddingValues(16.dp),
-                        colors = null
-                    )
+                        onLoginClick = {
+                            if (email.isEmpty()) {
+
+                            }
+                            onLoginClick()
+                                       },
+                            buttonPadding = PaddingValues(16.dp),
+                            colors = null
+                            )
+                        }
                 }
             }
         }
-    }
 }
 
 
 @Preview
 @Composable
 fun ComposablePreview() {
-    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {}, GetProfileUiState.Empty, {})
+    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {})
 }

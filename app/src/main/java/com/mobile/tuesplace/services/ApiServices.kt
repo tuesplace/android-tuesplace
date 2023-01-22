@@ -25,7 +25,7 @@ interface ApiServices {
     fun createGroup(@Header("Authorization") token: String, @Body createGroupData: GroupData): Call<BaseResponse<GroupData>>
 
     @GET(CREATE_GROUP)
-    fun getGroups(@Header("Authorization") token: String): Call<BaseResponse<List<GroupData>>>
+    fun getGroups(@Header("Authorization") token: String): Call<BaseResponse<List<GroupResponseData>>>
 
     @GET(GET_GROUP)
     fun getGroup(@Header("Authorization") token: String, @Path("groupId") groupId: String): Call<BaseResponse<GroupData>>

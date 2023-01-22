@@ -15,4 +15,8 @@
     <string name="group_name">Име на групата</string>
     <string name="group_type">Избери тип</string>
     <string name="choose_classes">Добави класове</string>
+    <string name="add">Добави</string>
+    <string name="all_groups">Всички групи</string>
+    <string name="save_changes">Запази промените</string>
+    <string name="delete_group">Изтрий групата</string>
 </resources>

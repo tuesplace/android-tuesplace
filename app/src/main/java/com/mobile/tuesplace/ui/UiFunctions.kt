@@ -26,13 +26,15 @@ import com.mobile.tuesplace.R
 fun TextFields(
     value: String,
     onValueChange: (String) -> Unit,
-    stringId: Int
+    stringId: Int,
+    modifier: Modifier?
 ) {
+    val modifierM: Modifier = modifier ?: Modifier
     TextField(
         value = value,
         maxLines = 1,
         onValueChange = { onValueChange(it) },
-        modifier = Modifier
+        modifier = modifierM
             .padding(top = 22.dp, start = 12.dp, end = 12.dp)
             .fillMaxWidth()
             .border(BorderStroke(2.dp, Color.White), RoundedCornerShape(16.dp)),
