@@ -26,7 +26,7 @@ class WelcomeViewModel(
             profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
                 override fun onSuccess(profileGeneric: ProfileData) {
                     viewModelScope.launch {
-                        _getProfileStateFlow.emit(GetProfileUiState.Success)
+                        _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
                     }
                 }
 

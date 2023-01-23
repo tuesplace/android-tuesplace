@@ -2,9 +2,13 @@ package com.mobile.tuesplace.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.data.SignInData
 import com.mobile.tuesplace.services.AuthService
+import com.mobile.tuesplace.services.ProfileService
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.states.SignInUiState
+import com.mobile.tuesplace.usecase.GetProfileUseCase
 import com.mobile.tuesplace.usecase.SignInUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val signInUseCase: SignInUseCase,
+    private val profileUseCase: GetProfileUseCase
 ) : ViewModel() {
 
     private val _email =
@@ -65,4 +70,31 @@ class LoginViewModel(
         }
     }
 
+    private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
+    val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
+
+    fun getProfile() {
+        viewModelScope.launch {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
+                override fun onSuccess(profileGeneric: ProfileData) {
+                    viewModelScope.launch {
+                        _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _getProfileStateFlow.emit(GetProfileUiState.Error(error))
+                    }
+                }
+
+            })
+        }
+    }
+
+    fun resetProfileState(){
+        viewModelScope.launch {
+            _getProfileStateFlow.emit(GetProfileUiState.Empty)
+        }
+    }
 }

@@ -10,26 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WelcomeAdminViewModel( private val profileUseCase: GetProfileUseCase): ViewModel() {
-    private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
-    val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
+class WelcomeAdminViewModel(): ViewModel() {
 
-    fun getProfile() {
-        viewModelScope.launch {
-            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
-                override fun onSuccess(profileGeneric: ProfileData) {
-                    viewModelScope.launch {
-                        _getProfileStateFlow.emit(GetProfileUiState.Success)
-                    }
-                }
-
-                override fun onError(error: String) {
-                    viewModelScope.launch {
-                        _getProfileStateFlow.emit(GetProfileUiState.Error(error))
-                    }
-                }
-
-            })
-        }
-    }
 }

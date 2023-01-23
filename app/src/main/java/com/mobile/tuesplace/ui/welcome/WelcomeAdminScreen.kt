@@ -23,6 +23,7 @@ import com.mobile.tuesplace.R
 
 @Composable
 fun WelcomeAdminScreen(onClick: (String) -> Unit) {
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +79,5 @@ fun MenuItem(text: String, onClick: (String) -> Unit) {
 @Preview
 fun MenuItemPreview() {
     //MenuItem(text = "Create Group") { }
-    WelcomeAdminScreen {
-
-    }
+    WelcomeAdminScreen {}
 }

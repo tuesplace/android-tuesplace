@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.classes.ClassesScreen
 import com.mobile.tuesplace.ui.classroom.ClassroomScreen
@@ -22,6 +23,7 @@ import com.mobile.tuesplace.ui.groups.*
 import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.messages.MessagesScreen
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
@@ -38,10 +40,11 @@ fun NavHost(navController: NavHostController) {
             val password by viewModel.password.collectAsState()
             val passwordVisibility by viewModel.passwordVisibility.collectAsState()
             val uiState by viewModel.uiStateFlow.collectAsState()
+            val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
-                    viewModel.signIn("kalina.valevaa@gmail.com", "12345678Ll2022\$\$&&")
+                    viewModel.signIn("student1@gmail.com", "Student1!")
                 },
                 onForgottenPasswordClick = { },
                 email = email,
@@ -53,9 +56,23 @@ fun NavHost(navController: NavHostController) {
                 uiState = uiState,
                 onSuccess = {
                     viewModel.resetState()
-                    navController.navigate(WELCOME_ADMIN_SCREEN)
+                    viewModel.getProfile()
                 },
             )
+            when(profileUiState) {
+                GetProfileUiState.Empty -> {}
+                is GetProfileUiState.Error -> {}
+                GetProfileUiState.Loading -> {}
+                is GetProfileUiState.Success -> {
+                    ROLE = (profileUiState as GetProfileUiState.Success).profile.role
+                    when(ROLE) {
+                        "admin" -> navController.navigate(WELCOME_ADMIN_SCREEN)
+                        "student" -> navController.navigate(WELCOME_SCREEN)
+                        "teacher" -> navController.navigate(WELCOME_SCREEN)
+                    }
+                    viewModel.resetProfileState()
+                }
+            }
         }
         composable(WELCOME_SCREEN) {
             val context = LocalContext.current
@@ -92,12 +109,13 @@ fun NavHost(navController: NavHostController) {
         }
         composable(WELCOME_ADMIN_SCREEN) {
             val viewModel = getViewModel<WelcomeAdminViewModel>()
-            LaunchedEffect(null) {
-                viewModel.getProfile()
-            }
+//            LaunchedEffect(null) {
+//                viewModel.getProfile()
+//            }
             val allGroups = stringResource(id = R.string.all_groups)
             val createStudent = stringResource(id = R.string.add_student)
             val removeStudent = stringResource(id = R.string.remove_student)
+
             WelcomeAdminScreen(onClick = { string ->
                 when (string) {
                     allGroups -> {
@@ -174,7 +192,7 @@ fun NavHost(navController: NavHostController) {
                 onEditClick = { },
                 onDeleteClick = { viewModel.deleteGroup(it) },
                 deleteUiState = deleteGroupUiStateFlow,
-                onBackPressed = { navController.popBackStack() })
+                onBackPressed = { navController.navigateUp() })
         }
     }
 }
