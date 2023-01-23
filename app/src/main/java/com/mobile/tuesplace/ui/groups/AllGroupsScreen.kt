@@ -20,16 +20,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.data.GroupResponseData
+import com.mobile.tuesplace.ui.states.GetGroupsUiState
 
 @Composable
-fun AllGroupsScreen(list: List<GroupData>, onGroupClick: (GroupData) -> Unit, onAddClick: () -> Unit) {
+fun AllGroupsScreen(allGroupsUiState: GetGroupsUiState,
+                    onGroupClick: (GroupResponseData) -> Unit,
+                    onAddClick: () -> Unit) {
+    when (allGroupsUiState) {
+        GetGroupsUiState.Empty -> { }
+        is GetGroupsUiState.Error -> { }
+        GetGroupsUiState.Loading -> { }
+        is GetGroupsUiState.Success -> {
+            AllGroupsUi(
+                groups = allGroupsUiState.groups,
+                onGroupClick = onGroupClick,
+                onAddClick = onAddClick
+            )
+        }
+    }
+}
+
+@Composable
+fun AllGroupsUi(
+    groups: List<GroupResponseData>,
+    onGroupClick: (GroupResponseData) -> Unit,
+    onAddClick: () -> Unit
+){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.gray))
     ) {
-        val (addGroup, groups) = createRefs()
+        val (addGroup, group) = createRefs()
 
         Box(modifier = Modifier
             .padding(6.dp)
@@ -48,11 +71,11 @@ fun AllGroupsScreen(list: List<GroupData>, onGroupClick: (GroupData) -> Unit, on
 
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
-            .constrainAs(groups) {
+            .constrainAs(group) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
             }) {
-            itemsIndexed(list) { _, group ->
+            itemsIndexed(groups) { _, group ->
                 GroupItem(groupData = group, onGroupClick = onGroupClick)
             }
         }
@@ -60,7 +83,7 @@ fun AllGroupsScreen(list: List<GroupData>, onGroupClick: (GroupData) -> Unit, on
 }
 
 @Composable
-fun GroupItem(groupData: GroupData, onGroupClick: (GroupData) -> Unit) {
+fun GroupItem(groupData: GroupResponseData, onGroupClick: (GroupResponseData) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,8 +108,6 @@ fun GroupItem(groupData: GroupData, onGroupClick: (GroupData) -> Unit) {
 @Composable
 @Preview
 fun GroupItemPreview() {
-    AllGroupsScreen(listOf(GroupData("12B class", "messanger", arrayListOf("12B")),
-        GroupData("12A class", "messanger", arrayListOf("12A")),
-        GroupData("12V class", "messanger", arrayListOf("12V"))),{}) {}
+    AllGroupsScreen(GetGroupsUiState.Empty, {}) {}
 }
 

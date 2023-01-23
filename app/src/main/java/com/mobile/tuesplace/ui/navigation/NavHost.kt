@@ -135,23 +135,22 @@ fun NavHost(navController: NavHostController) {
         }
         composable(ALL_GROUPS_SCREEN) {
             val viewModel = getViewModel<AllGroupsViewModel>()
+            val allGroupsUiStateFlow by viewModel.getGroupStateFlow.collectAsState()
             viewModel.getGroups()
             AllGroupsScreen(
-                list = listOf(
-                    GroupData("12B class", "messenger", arrayListOf("12B")),
-                    GroupData("12A class", "messenger", arrayListOf("12A")),
-                    GroupData("12V class", "messenger", arrayListOf("12V"))
-                ),
+                allGroupsUiStateFlow,
                 onGroupClick = {
-                               navController.navigate("edit_group_screen/63c1eb05b4bf15e4d6ed9023") //63c1eb05b4bf15e4d6ed9023
-
+                    navController.navigate("edit_group_screen/63ce4efd8bd8e60aefbc5839")
                 },
                 onAddClick = {
-                navController.navigate(
-                    CREATE_GROUP_SCREEN)
-            })
+                    navController.navigate(
+                        CREATE_GROUP_SCREEN)
+                })
         }
-        composable("edit_group_screen/{groupId}", arguments = listOf(navArgument("groupId") { type = NavType.StringType })){ backStackEntry ->
+        composable("edit_group_screen/{groupId}",
+            arguments = listOf(navArgument("groupId") {
+                type = NavType.StringType
+            })) { backStackEntry ->
             val viewModel = getViewModel<EditGroupViewModel>()
             val groupName by viewModel.groupName.collectAsState()
             val groupType by viewModel.groupType.collectAsState()
@@ -169,10 +168,10 @@ fun NavHost(navController: NavHostController) {
                 groupName = groupName,
                 setGroupName = { viewModel.groupName(it) },
                 groupType = groupType,
-                setGroupType = { viewModel.groupType(it)  },
+                setGroupType = { viewModel.groupType(it) },
                 classes = classes,
                 setClasses = { viewModel.classes(it) },
-                onEditClick = {  },
+                onEditClick = { },
                 onDeleteClick = { viewModel.deleteGroup(it) },
                 deleteUiState = deleteGroupUiStateFlow,
                 onBackPressed = { navController.popBackStack() })
