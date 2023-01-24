@@ -18,9 +18,22 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
-fun EditProfileScreen(profileData: ProfileData, enabled: Boolean, onSaveChanges: () -> Unit) {
+fun EditProfileScreen(profileUiState: GetProfileUiState, enabled: Boolean, onSaveChanges: () -> Unit) {
+    when(profileUiState){
+        GetProfileUiState.Empty -> { }
+        is GetProfileUiState.Error -> { }
+        GetProfileUiState.Loading -> { }
+        is GetProfileUiState.Success -> {
+            EditProfileUi(profileData = profileUiState.profile, enabled = enabled, onSaveChanges = onSaveChanges)
+        }
+    }
+}
+
+@Composable
+fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () -> Unit){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -94,5 +107,5 @@ fun EditProfileScreen(profileData: ProfileData, enabled: Boolean, onSaveChanges:
 @Composable
 @Preview
 fun EditProfilePreview() {
-    EditProfileScreen(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"), false) {}
+    EditProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"), false) {}
 }

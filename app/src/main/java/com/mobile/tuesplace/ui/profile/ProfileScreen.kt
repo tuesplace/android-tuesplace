@@ -25,11 +25,24 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
-fun ProfileScreen(profileData: ProfileData) {
+fun ProfileScreen(profileUiState: GetProfileUiState) {
+    when(profileUiState){
+        GetProfileUiState.Empty -> {}
+        is GetProfileUiState.Error -> {}
+        GetProfileUiState.Loading -> {}
+        is GetProfileUiState.Success -> {
+            ProfileUi(profileData = profileUiState.profile)
+        }
+    }
+}
+
+@Composable
+fun ProfileUi(profileData: ProfileData){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -99,11 +112,11 @@ fun ProfileScreen(profileData: ProfileData) {
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .constrainAs(editBtn){
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+                .constrainAs(editBtn) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
         )
     }
 }
@@ -111,5 +124,5 @@ fun ProfileScreen(profileData: ProfileData) {
 @Composable
 @Preview
 fun ProfilePreview() {
-    ProfileScreen(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"))
+    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"))
 }

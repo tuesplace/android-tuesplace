@@ -5,6 +5,8 @@ import com.mobile.tuesplace.ui.groups.AllGroupsViewModel
 import com.mobile.tuesplace.ui.groups.CreateGroupViewModel
 import com.mobile.tuesplace.ui.groups.EditGroupViewModel
 import com.mobile.tuesplace.ui.login.LoginViewModel
+import com.mobile.tuesplace.ui.profile.EditProfileViewModel
+import com.mobile.tuesplace.ui.profile.ProfileViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import com.mobile.tuesplace.usecase.*
@@ -18,6 +20,8 @@ val TuesplaceModules = module {
     viewModel { WelcomeAdminViewModel() }
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
+    viewModel { ProfileViewModel(get()) }
+    viewModel { EditProfileViewModel(get()) }
 
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }

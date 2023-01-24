@@ -23,6 +23,9 @@ import com.mobile.tuesplace.ui.groups.*
 import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.messages.MessagesScreen
+import com.mobile.tuesplace.ui.profile.EditProfileScreen
+import com.mobile.tuesplace.ui.profile.EditProfileViewModel
+import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
@@ -108,10 +111,6 @@ fun NavHost(navController: NavHostController) {
             ClassroomScreen()
         }
         composable(WELCOME_ADMIN_SCREEN) {
-            val viewModel = getViewModel<WelcomeAdminViewModel>()
-//            LaunchedEffect(null) {
-//                viewModel.getProfile()
-//            }
             val allGroups = stringResource(id = R.string.all_groups)
             val createStudent = stringResource(id = R.string.add_student)
             val removeStudent = stringResource(id = R.string.remove_student)
@@ -193,6 +192,23 @@ fun NavHost(navController: NavHostController) {
                 onDeleteClick = { viewModel.deleteGroup(it) },
                 deleteUiState = deleteGroupUiStateFlow,
                 onBackPressed = { navController.navigateUp() })
+        }
+        composable(PROFILE_SCREEN){
+            val viewModel = getViewModel<EditProfileViewModel>()
+            val profileUiState by viewModel.getProfileStateFlow.collectAsState()
+            LaunchedEffect(null) {
+                viewModel.getProfile()
+            }
+            ProfileScreen(profileUiState = profileUiState)
+        }
+        composable(EDIT_PROFILE_SCREEN) {
+            val viewModel = getViewModel<EditProfileViewModel>()
+            val profileUiState by viewModel.getProfileStateFlow.collectAsState()
+            val enabled: Boolean = ROLE == "admin"
+            LaunchedEffect(null) {
+                viewModel.getProfile()
+            }
+            EditProfileScreen(profileUiState = profileUiState, enabled = enabled, onSaveChanges = {})
         }
     }
 }
