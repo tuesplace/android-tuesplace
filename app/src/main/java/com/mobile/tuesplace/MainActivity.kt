@@ -25,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mobile.tuesplace.ui.navigation.LOGIN_SCREEN
 import com.mobile.tuesplace.ui.navigation.NavHost
+import com.mobile.tuesplace.ui.navigation.SETTINGS_SCREEN
 import com.mobile.tuesplace.ui.theme.TuesplaceTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 var visibility: Boolean
                 (currentDestination != navController.findDestination(LOGIN_SCREEN)).also { visibility = it }
                 Scaffold(
-                    topBar = { if (visibility) { topBar() } },
+                    topBar = { if (visibility) { topBar(onMenuClick = { navController.navigate(SETTINGS_SCREEN) })} },
                     content = { padding ->
 
                         Box(modifier = Modifier.padding(padding)) {
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun topBar() {
+fun topBar(onMenuClick: () -> Unit) {
     TopAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,7 +94,9 @@ fun topBar() {
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .size(20.dp)
-                    .clickable {}
+                    .clickable {
+                        onMenuClick()
+                    }
                     .constrainAs(menu) {
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)

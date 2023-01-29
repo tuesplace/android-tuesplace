@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,14 +29,22 @@ fun TextFields(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier?,
-    enabled: Boolean?
+    enabled: Boolean?,
+    isError: Boolean?
 ) {
     val modifierM: Modifier = modifier ?: Modifier
+    val isErrorM: Boolean
     val enabledM: Boolean = enabled ?: true
+    if (isError == null){
+        isErrorM = false
+    } else {
+        isErrorM = isError
+    }
     TextField(
         value = value,
         enabled = enabledM,
         maxLines = 1,
+        isError = isErrorM,
         onValueChange = { onValueChange(it) },
         modifier = modifierM
             .padding(top = 22.dp, start = 12.dp, end = 12.dp)

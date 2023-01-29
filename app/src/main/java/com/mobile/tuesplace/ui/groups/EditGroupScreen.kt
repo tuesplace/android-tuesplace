@@ -93,21 +93,24 @@ fun EditGroupUi(
                 onValueChange = setGroupName,
                 placeholder = group.name,
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
             TextFields(
                 value = groupType,
                 onValueChange = setGroupType,
                 placeholder = group.type,
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
             TextFields(
                 value = classes,
                 onValueChange = setClasses,
                 placeholder = group.classes?.get(0)?: "",
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
         }
 

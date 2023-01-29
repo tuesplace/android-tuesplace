@@ -53,16 +53,16 @@ class ProfileServiceImpl : ProfileService {
     }
 
     override fun editProfile(
-        getProfileCallback: ProfileService.GetProfileCallback<EditProfileData>,
+        getProfileCallback: ProfileService.GetProfileCallback<Unit>,
         profileId: String,
         editProfileData: EditProfileData,
     ) {
         retrofit.editProfile("Bearer $ACCESS_TOKEN", profileId, editProfileData = editProfileData)
             .enqueue(
-                object : Callback<BaseResponse<EditProfileData>> {
+                object : Callback<BaseResponse<Unit>> {
                     override fun onResponse(
-                        call: Call<BaseResponse<EditProfileData>>,
-                        response: Response<BaseResponse<EditProfileData>>,
+                        call: Call<BaseResponse<Unit>>,
+                        response: Response<BaseResponse<Unit>>,
                     ) {
                         if (response.isSuccessful) {
                             response.body()?.response?.let { getProfileCallback.onSuccess(it) }
@@ -71,7 +71,7 @@ class ProfileServiceImpl : ProfileService {
                         }
                     }
 
-                    override fun onFailure(call: Call<BaseResponse<EditProfileData>>, t: Throwable) {
+                    override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                         t.localizedMessage?.let { getProfileCallback.onError(it) }
                     }
                 }

@@ -35,7 +35,9 @@ fun LoginScreen(
     passwordVisibility: Boolean,
     setPasswordVisibility: (Boolean) -> Unit,
     uiState: SignInUiState,
-    onSuccess: () -> Unit
+    onSuccess: () -> Unit,
+    isCorrectPassword: Boolean,
+    isCorrectEmail: Boolean
 ) {
     when (uiState) {
         SignInUiState.Empty -> {
@@ -76,20 +78,23 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFields(email, setEmail, stringResource(id = R.string.email), null, true)
+                    TextFields(email, setEmail, stringResource(id = R.string.email), null, true, isError = isCorrectEmail)
                     TextField(
                         value = password,
+                        isError = isCorrectPassword,
                         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                         onValueChange = { setPassword(it) },
                         trailingIcon = {
                             IconButton(onClick = {
                                 setPasswordVisibility(passwordVisibility)
                             }) {
-                                Icon(painter = painterResource(id = R.drawable.ic_view), contentDescription = "", tint = Color.Black)
+                                Icon(painter = painterResource(id = R.drawable.ic_view),
+                                    contentDescription = "",
+                                    tint = Color.Black)
                             }
                         },
                         maxLines = 1,
-                        placeholder = { Text(stringResource(id = R.string.password))},
+                        placeholder = { Text(stringResource(id = R.string.password)) },
                         modifier = Modifier
                             .padding(top = 22.dp, start = 12.dp, end = 12.dp)
                             .fillMaxWidth()
@@ -122,23 +127,22 @@ fun LoginScreen(
                             .width(200.dp)
                             .height(100.dp),
                         onLoginClick = {
-//                            if (email.isEmpty()) {
-//
-//                            }
                             onLoginClick()
-                                       },
-                            buttonPadding = PaddingValues(16.dp),
-                            colors = null
-                            )
-                        }
+                        },
+                        buttonPadding = PaddingValues(16.dp),
+                        colors = null
+                    )
                 }
             }
         }
+    }
 }
 
 
 @Preview
 @Composable
 fun ComposablePreview() {
-    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {})
+    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {},
+        isCorrectPassword = false,
+        isCorrectEmail = false)
 }

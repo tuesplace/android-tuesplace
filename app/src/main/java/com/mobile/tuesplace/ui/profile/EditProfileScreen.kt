@@ -67,7 +67,8 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 onValueChange = {},
                 placeholder = profileData.role,
                 modifier = null,
-                enabled = enabled
+                enabled = enabled,
+                isError = null
             )
 
             TextFields(
@@ -75,7 +76,8 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 onValueChange = {},
                 placeholder = profileData.fullName,
                 modifier = null,
-                enabled = enabled
+                enabled = enabled,
+                isError = null
             )
 
             TextFields(
@@ -83,7 +85,8 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 onValueChange = {},
                 placeholder = profileData.email,
                 modifier = null,
-                enabled = enabled
+                enabled = enabled,
+                isError = null
             )
         }
 

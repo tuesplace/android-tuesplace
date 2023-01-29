@@ -1,5 +1,6 @@
 package com.mobile.tuesplace
 
+import android.content.Intent
 import com.mobile.tuesplace.services.*
 import com.mobile.tuesplace.ui.groups.AllGroupsViewModel
 import com.mobile.tuesplace.ui.groups.CreateGroupViewModel
@@ -10,6 +11,7 @@ import com.mobile.tuesplace.ui.profile.ProfileViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import com.mobile.tuesplace.usecase.*
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -21,7 +23,7 @@ val TuesplaceModules = module {
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { EditProfileViewModel(get()) }
+    viewModel { EditProfileViewModel(get(), get()) }
 
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }
@@ -29,8 +31,13 @@ val TuesplaceModules = module {
     factory { GetProfileUseCase(get()) }
     factory { GetGroupUseCase(get()) }
     factory { DeleteGroupUseCase(get()) }
+    factory { EditProfileUseCase(get()) }
+
+    factory { AuthenticationManager(androidContext(), Intent()) }
 
     factory<GroupService> { GroupServiceImpl() }
-    factory<AuthService> { AuthServiceImpl() }
+    factory<AuthService> { AuthServiceImpl(get()) }
     factory<ProfileService> { ProfileServiceImpl() }
+
+//    single<>
 }

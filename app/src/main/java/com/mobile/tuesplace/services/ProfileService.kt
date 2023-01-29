@@ -7,7 +7,7 @@ interface ProfileService {
 
     fun getProfile(getProfileCallback: GetProfileCallback<ProfileData>)
     fun getProfiles(getProfileCallback: GetProfileCallback<List<ProfileData>>)
-    fun editProfile(getProfileCallback: GetProfileCallback<EditProfileData>, profileId: String, editProfileData: EditProfileData)
+    fun editProfile(getProfileCallback: GetProfileCallback<Unit>, profileId: String, editProfileData: EditProfileData)
     fun deleteProfile(getProfileCallback: GetProfileCallback<Unit>, profileId: String)
 
     interface GetProfileCallback<ProfileGeneric>{

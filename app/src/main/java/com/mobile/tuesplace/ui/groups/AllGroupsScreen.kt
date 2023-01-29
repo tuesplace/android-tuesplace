@@ -22,10 +22,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.states.GetGroupsUiState
+import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 fun AllGroupsScreen(allGroupsUiState: GetGroupsUiState,
-                    onGroupClick: (GroupResponseData) -> Unit,
+                    onGroupClick: (String) -> Unit,
                     onAddClick: () -> Unit) {
     when (allGroupsUiState) {
         GetGroupsUiState.Empty -> { }
@@ -44,7 +45,7 @@ fun AllGroupsScreen(allGroupsUiState: GetGroupsUiState,
 @Composable
 fun AllGroupsUi(
     groups: List<GroupResponseData>,
-    onGroupClick: (GroupResponseData) -> Unit,
+    onGroupClick: (String) -> Unit,
     onAddClick: () -> Unit
 ){
     ConstraintLayout(
@@ -72,7 +73,7 @@ fun AllGroupsUi(
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
             .constrainAs(group) {
-                top.linkTo(parent.top)
+                top.linkTo(addGroup.bottom)
                 bottom.linkTo(parent.bottom)
             }) {
             itemsIndexed(groups) { _, group ->
@@ -83,7 +84,7 @@ fun AllGroupsUi(
 }
 
 @Composable
-fun GroupItem(groupData: GroupResponseData, onGroupClick: (GroupResponseData) -> Unit) {
+fun GroupItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,7 +93,7 @@ fun GroupItem(groupData: GroupResponseData, onGroupClick: (GroupResponseData) ->
             .border(1.dp, Color.White, RoundedCornerShape(8.dp))
             .background(colorResource(id = R.color.logo_blue), RoundedCornerShape(8.dp))
             .clickable {
-                onGroupClick(groupData)
+                onGroupClick(groupData._id)
             },
         contentAlignment = Alignment.Center
     ) {

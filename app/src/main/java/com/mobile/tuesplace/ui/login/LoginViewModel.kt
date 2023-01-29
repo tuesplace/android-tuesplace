@@ -46,21 +46,37 @@ class LoginViewModel(
     private val _uiStateFlow = MutableStateFlow<SignInUiState>(SignInUiState.Empty)
     val uiStateFlow: StateFlow<SignInUiState> = _uiStateFlow
 
-    fun signIn(email: String, password: String) {
-        viewModelScope.launch {
-            signInUseCase.invoke(email, password, object : AuthService.AuthCallback {
-                override fun onSuccess(signInResponse: SignInData) {
-                    viewModelScope.launch {
-                        _uiStateFlow.emit(SignInUiState.Success)
-                    }
-                }
+    private val _isCorrectPassword = MutableStateFlow(false)
+    val isCorrectPassword: StateFlow<Boolean> = _isCorrectPassword
 
-                override fun onError(error: String) {
-                    viewModelScope.launch {
-                        _uiStateFlow.emit(SignInUiState.Error(error))
-                    }
+    private val _isCorrectEmail = MutableStateFlow(false)
+    val isCorrectEmail: StateFlow<Boolean> = _isCorrectEmail
+
+    fun signIn(email: String, password: String) {
+        if (ValidateFields.isValidEmail(email)) {
+            if (ValidateFields.validatePassword(password)) {
+                viewModelScope.launch {
+                    signInUseCase.invoke(email, password, object : AuthService.AuthCallback {
+                        override fun onSuccess(signInResponse: SignInData) {
+                            viewModelScope.launch {
+                                _uiStateFlow.emit(SignInUiState.Success)
+                                _isCorrectPassword.value = false
+                            }
+                        }
+
+                        override fun onError(error: String) {
+                            viewModelScope.launch {
+                                _uiStateFlow.emit(SignInUiState.Error(error))
+                                _isCorrectPassword.value = true
+                            }
+                        }
+                    })
                 }
-            })
+            } else {
+                _isCorrectPassword.value = true
+            }
+        } else {
+            _isCorrectEmail.value = true
         }
     }
 

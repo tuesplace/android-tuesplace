@@ -13,25 +13,15 @@ import java.io.IOException
 class AuthenticationManager(context: Context?, val loginIntent: Intent) :
     AbstractAccountAuthenticator(context) {
 
-    //private var accountManager: AccountManager = AccountManager.get(TuesplaceApplication.conte)
+    private var accountManager: AccountManager = AccountManager.get(TuesplaceApplication.instance)
 
-    /**
-     * Adds a new account with access and refresh token information to the [AccountManager]
-     */
     fun createAccount(userName: String, token: String, refreshToken: String) {
         val account = Account(userName, ACCOUNT_TYPE)
-//        accountManager.addAccountExplicitly(account, "", null)
-//        accountManager.setAuthToken(account, TOKEN_TYPE, token)
-//        accountManager.setUserData(account, KEY_REFRESH_TOKEN, refreshToken)
+        accountManager.addAccountExplicitly(account, "", null)
+        accountManager.setAuthToken(account, TOKEN_TYPE, token)
+        accountManager.setUserData(account, KEY_REFRESH_TOKEN, refreshToken)
     }
 
-    /**
-     * Tries to retrieve the access token for an account. Very ***LIGHT*** operation
-     * @param context [Context]
-     * @param username the user name to check token information for
-     * @param tokenType authentication token type. Default is [AuthenticationConstants.TOKEN_TYPE]
-     * @param accountType authentication account type. Default is [AuthenticationConstants.ACCOUNT_TYPE]
-     */
     fun peekTokenForUserWithName(
         context: Context,
         username: String?,
@@ -44,13 +34,6 @@ class AuthenticationManager(context: Context?, val loginIntent: Intent) :
         return AccountManager.get(context).peekAuthToken(account, tokenType)
     }
 
-    /**
-     * Tries to retrieve the refresh token for an account. Very ***LIGHT*** operation
-     * @param context [Context]
-     * @param username the user name to check token information for
-     * @param tokenType authentication token type. Default is [AuthenticationConstants.TOKEN_TYPE]
-     * @param accountType authentication account type. Default is [AuthenticationConstants.ACCOUNT_TYPE]
-     */
     fun peekRefreshTokenUserWithName(
         context: Context,
         username: String?,
@@ -62,13 +45,6 @@ class AuthenticationManager(context: Context?, val loginIntent: Intent) :
         return AccountManager.get(context).getUserData(account, KEY_REFRESH_TOKEN)
     }
 
-    /**
-     * Tries to retrieve the access token for an account. Very ***LIGHT*** operation
-     * @param context [Context]
-     * @param username the user name to check token information for
-     * @param accountType authentication account type. Default is [AuthenticationConstants.ACCOUNT_TYPE]
-     * @param token the new authentication token
-     */
     fun updateTokenForUserWithName(
         context: Context,
         username: String,

@@ -43,7 +43,7 @@ interface ApiServices {
     fun getProfiles(@Header("Authorization") token: String): Call<BaseResponse<List<ProfileData>>>
 
     @PUT(PROFILE)
-    fun editProfile(@Header("Authorization") token: String, @Path("profileId") profileId: String, editProfileData: EditProfileData): Call<BaseResponse<EditProfileData>>
+    fun editProfile(@Header("Authorization") token: String, @Path("profileId") profileId: String, editProfileData: EditProfileData): Call<BaseResponse<Unit>>
 
     @DELETE(PROFILE)
     fun deleteProfile(@Header("Authorization") token: String, @Path("profileId") profileId: String): Call<BaseResponse<Unit>>

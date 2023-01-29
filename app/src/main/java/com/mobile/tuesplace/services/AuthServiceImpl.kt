@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
+import com.mobile.tuesplace.AuthenticationManager
 import com.mobile.tuesplace.USER_ID
 import com.mobile.tuesplace.data.AuthData
 import com.mobile.tuesplace.data.BaseResponse
@@ -9,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AuthServiceImpl: AuthService {
+class AuthServiceImpl(private val authenticationManager: AuthenticationManager): AuthService {
 
     private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
 
@@ -31,9 +32,17 @@ class AuthServiceImpl: AuthService {
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
                             ACCESS_TOKEN = it.response?.accessToken.toString()
                             USER_ID = it.response?.userId.toString()
+                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
+//                            it.response?.userId?.let { userId ->
+//                                it.response?.accessToken?.let { accessToken ->
+//                                    it.response?.refreshToken?.let { refreshToken ->
+//                                        authenticationManager.createAccount(userId, accessToken, refreshToken)
+//                                        it.response?.let { it1 -> authCallback.onSuccess(it1) }
+//                                    }
+//                                }
+//                            }
                         }
                     } else{
                         authCallback.onError(response.message())

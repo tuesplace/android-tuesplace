@@ -26,9 +26,10 @@ import com.mobile.tuesplace.ui.messages.MessagesScreen
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
+import com.mobile.tuesplace.ui.settings.SettingsScreen
+import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
-import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import org.koin.androidx.compose.getViewModel
@@ -44,10 +45,12 @@ fun NavHost(navController: NavHostController) {
             val passwordVisibility by viewModel.passwordVisibility.collectAsState()
             val uiState by viewModel.uiStateFlow.collectAsState()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
+            val isCorrectPasswordState by viewModel.isCorrectPassword.collectAsState()
+            val isCorrectEmailState by viewModel.isCorrectEmail.collectAsState()
             //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
-                    viewModel.signIn("student1@gmail.com", "Student1!")
+                        viewModel.signIn(email, password)
                 },
                 onForgottenPasswordClick = { },
                 email = email,
@@ -61,6 +64,8 @@ fun NavHost(navController: NavHostController) {
                     viewModel.resetState()
                     viewModel.getProfile()
                 },
+                isCorrectPassword = isCorrectPasswordState,
+                isCorrectEmail = isCorrectEmailState
             )
             when(profileUiState) {
                 GetProfileUiState.Empty -> {}
@@ -156,8 +161,8 @@ fun NavHost(navController: NavHostController) {
             viewModel.getGroups()
             AllGroupsScreen(
                 allGroupsUiStateFlow,
-                onGroupClick = {
-                    navController.navigate("edit_group_screen/63ce4efd8bd8e60aefbc5839")
+                onGroupClick = { id ->
+                    navController.navigate("edit_group_screen/$id")
                 },
                 onAddClick = {
                     navController.navigate(
@@ -209,6 +214,12 @@ fun NavHost(navController: NavHostController) {
                 viewModel.getProfile()
             }
             EditProfileScreen(profileUiState = profileUiState, enabled = enabled, onSaveChanges = {})
+        }
+        composable(SETTINGS_SCREEN){
+            SettingsScreen(
+                onEditClick = { navController.navigate(PROFILE_SCREEN) },
+                onSignOutClick = { navController.navigate(LOGIN_SCREEN)}
+            )
         }
     }
 }

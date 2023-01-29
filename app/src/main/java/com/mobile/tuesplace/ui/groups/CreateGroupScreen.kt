@@ -39,21 +39,24 @@ fun CreateGroupScreen(
                 onValueChange = setGroupName,
                 placeholder = stringResource(id = R.string.group_name),
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
             TextFields(
                 value = groupType,
                 onValueChange = setGroupType,
                 placeholder = stringResource(id =R.string.group_type),
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
             TextFields(
                 value = classes,
                 onValueChange = setClasses,
                 placeholder = stringResource(id = R.string.choose_classes),
                 modifier = null,
-                enabled = true
+                enabled = true,
+                isError = null
             )
         }
 
