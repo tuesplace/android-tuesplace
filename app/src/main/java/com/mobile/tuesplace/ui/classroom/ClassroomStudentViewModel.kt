@@ -14,6 +14,10 @@ import okhttp3.Interceptor.Companion.invoke
 
 class ClassroomStudentViewModel(private val profileByIdUseCase: GetProfileByIdUseCase): ViewModel() {
 
+    private val _profileId =
+        MutableStateFlow("")
+    val profileId: StateFlow<String> = _profileId
+
     private val _getProfileByIdStateFlow = MutableStateFlow<GetProfileByIdUiState>(GetProfileByIdUiState.Empty)
     val getProfileByIdStateFlow: StateFlow<GetProfileByIdUiState> = _getProfileByIdStateFlow
 
