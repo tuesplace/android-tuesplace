@@ -31,12 +31,12 @@ class ProfileServiceImpl : ProfileService {
         )
     }
 
-    override fun getProfiles(getProfileCallback: ProfileService.GetProfileCallback<List<ProfileData>>) {
-        retrofit.getProfiles("Bearer $ACCESS_TOKEN").enqueue(
-            object : Callback<BaseResponse<List<ProfileData>>> {
+    override fun getProfiles(getProfileCallback: ProfileService.GetProfileCallback<ProfileData>, profileId: String) {
+        retrofit.getProfiles("Bearer $ACCESS_TOKEN", profileId).enqueue(
+            object : Callback<BaseResponse<ProfileData>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<List<ProfileData>>>,
-                    response: Response<BaseResponse<List<ProfileData>>>,
+                    call: Call<BaseResponse<ProfileData>>,
+                    response: Response<BaseResponse<ProfileData>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { getProfileCallback.onSuccess(it) }
@@ -45,7 +45,7 @@ class ProfileServiceImpl : ProfileService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<List<ProfileData>>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<ProfileData>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
             }

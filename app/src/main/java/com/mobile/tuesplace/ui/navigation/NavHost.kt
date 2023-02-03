@@ -17,7 +17,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.classes.ClassesScreen
-import com.mobile.tuesplace.ui.classroom.ClassroomScreen
+import com.mobile.tuesplace.ui.videoroom.VideoroomViewModel
 import com.mobile.tuesplace.ui.forgottenpassword.ForgottenPasswordScreen
 import com.mobile.tuesplace.ui.groups.*
 import com.mobile.tuesplace.ui.login.LoginScreen
@@ -27,8 +27,8 @@ import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
-import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
+import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
@@ -95,7 +95,7 @@ fun NavHost(navController: NavHostController) {
                 onEnterClassClick = {
                     navController.navigate(CLASSES_SCREEN)
                 },
-                onEnterClassroomClick = { navController.navigate(CLASSROOM_SCREEN) },
+                onEnterVideoroomClick = { navController.navigate(VIDEOROOM_SCREEN) },
                 onLinkClick = {
                     ContextCompat.startActivity(context,
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
@@ -112,8 +112,14 @@ fun NavHost(navController: NavHostController) {
         composable(CLASSES_SCREEN) {
             ClassesScreen()
         }
-        composable(CLASSROOM_SCREEN) {
-            ClassroomScreen()
+        composable(VIDEOROOM_SCREEN) {
+            val viewModel = getViewModel<VideoroomViewModel>()
+            val groupsUiState by viewModel.getGroupStateFlow.collectAsState()
+            viewModel.getGroups()
+            VideoroomScreen(
+                groupsUiState = groupsUiState,
+                onBackPressed = { navController.navigateUp() }
+            )
         }
         composable(WELCOME_ADMIN_SCREEN) {
             val allGroups = stringResource(id = R.string.all_groups)

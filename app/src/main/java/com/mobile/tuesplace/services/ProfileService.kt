@@ -6,7 +6,7 @@ import com.mobile.tuesplace.data.ProfileData
 interface ProfileService {
 
     fun getProfile(getProfileCallback: GetProfileCallback<ProfileData>)
-    fun getProfiles(getProfileCallback: GetProfileCallback<List<ProfileData>>)
+    fun getProfiles(getProfileCallback: GetProfileCallback<ProfileData>, profileId: String)
     fun editProfile(getProfileCallback: GetProfileCallback<Unit>, profileId: String, editProfileData: EditProfileData)
     fun deleteProfile(getProfileCallback: GetProfileCallback<Unit>, profileId: String)
 

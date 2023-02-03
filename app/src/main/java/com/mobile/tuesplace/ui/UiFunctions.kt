@@ -7,21 +7,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.data.PostData
 
 @Composable
 fun TextFields(
@@ -96,6 +93,41 @@ fun GradientBorderButtonRound(
             fontSize = 25.sp,
             modifier = Modifier.padding(paddingValues),
             fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+
+
+@Composable
+fun PostItem(post: PostData){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(300.dp, 9999.dp)
+            .padding(16.dp)
+            .background(Color.White, RoundedCornerShape(8.dp))
+    ){
+        Text(
+            text = "Dora",
+            color = Color.Black,
+            modifier = Modifier
+                .padding(6.dp)
+                .align(Alignment.TopStart)
+        )
+        Text(
+            text = post.createdAt,
+            modifier = Modifier
+                .padding(6.dp)
+                .align(Alignment.TopEnd)
+        )
+        Text(
+            text = post.body,
+            color = Color.Black,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp)
+                .align(Alignment.Center)
         )
     }
 }

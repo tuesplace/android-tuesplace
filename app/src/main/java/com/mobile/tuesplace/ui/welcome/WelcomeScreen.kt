@@ -33,7 +33,7 @@ import com.mobile.tuesplace.ui.theme.Blue
 fun WelcomeScreen(
     onMessageClick: () -> Unit,
     onEnterClassClick: () -> Unit,
-    onEnterClassroomClick: () -> Unit,
+    onEnterVideoroomClick: () -> Unit,
     onLinkClick: () -> Unit
 ) {
     Box(
@@ -93,7 +93,7 @@ fun WelcomeScreen(
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)
                     },
-                onClick = { onEnterClassroomClick() },
+                onClick = { onEnterVideoroomClick() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Blue

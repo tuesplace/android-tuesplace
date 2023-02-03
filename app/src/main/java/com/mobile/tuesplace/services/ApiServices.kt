@@ -30,6 +30,9 @@ interface ApiServices {
     @GET(GET_GROUP)
     fun getGroup(@Header("Authorization") token: String, @Path("groupId") groupId: String): Call<BaseResponse<GroupData>>
 
+    @GET(GET_MY_GROUPS)
+    fun getMyGroups(@Header("Authorization") token: String): Call<BaseResponse<List<GroupResponseData>>>
+
     @PUT(GET_GROUP)
     fun editGroup(@Header("Authorization") token: String, @Path("groupId") groupId: String, groupData: EditGroupData): Call<BaseResponse<EditGroupData>>
 
@@ -40,7 +43,7 @@ interface ApiServices {
     fun getProfile(@Header("Authorization") token: String): Call<BaseResponse<ProfileData>>
 
     @GET(PROFILE)
-    fun getProfiles(@Header("Authorization") token: String): Call<BaseResponse<List<ProfileData>>>
+    fun getProfiles(@Header("Authorization") token: String, @Path("profileId") profileId: String): Call<BaseResponse<ProfileData>>
 
     @PUT(PROFILE)
     fun editProfile(@Header("Authorization") token: String, @Path("profileId") profileId: String, editProfileData: EditProfileData): Call<BaseResponse<Unit>>
