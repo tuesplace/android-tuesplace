@@ -4,13 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.services.ProfileService
-import com.mobile.tuesplace.ui.states.GetGroupsUiState
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 import com.mobile.tuesplace.usecase.GetProfileByIdUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.Interceptor.Companion.invoke
 
 class ClassroomStudentViewModel(private val profileByIdUseCase: GetProfileByIdUseCase): ViewModel() {
 

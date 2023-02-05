@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.services.ApiServices
-import com.mobile.tuesplace.services.RetrofitHelper
 import com.mobile.tuesplace.ui.theme.BabyBlue
 import com.mobile.tuesplace.ui.theme.Blue
 
@@ -41,8 +39,6 @@ fun WelcomeScreen(
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-
-        val quotesApi = RetrofitHelper.getInstance().create(ApiServices::class.java)
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
@@ -73,7 +69,7 @@ fun WelcomeScreen(
                         start.linkTo(parent.start)
                         top.linkTo(messages.top)
                     },
-                onClick = { onEnterClassClick() },
+                onClick = { onEnterVideoroomClick() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = BabyBlue
@@ -93,7 +89,7 @@ fun WelcomeScreen(
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)
                     },
-                onClick = { onEnterVideoroomClick() },
+                onClick = { onEnterClassClick() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Blue

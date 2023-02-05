@@ -100,12 +100,13 @@ fun GradientBorderButtonRound(
 
 
 @Composable
-fun PostItem(post: PostData){
+fun PostItem(post: PostData, onPostClick: () -> Unit){
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(300.dp, 9999.dp)
             .padding(16.dp)
+            .clickable { onPostClick() }
             .background(Color.White, RoundedCornerShape(8.dp))
     ){
         Text(

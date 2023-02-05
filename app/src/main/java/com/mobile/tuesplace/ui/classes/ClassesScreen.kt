@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.ui.classes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,7 +17,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.SubjectData
 
 @Composable
-fun ClassesScreen() {
+fun ClassesScreen(onClassClick: (String) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -25,7 +26,7 @@ fun ClassesScreen() {
         val list = listOf(SubjectData("Math", startTime = "12", duration = "13"), SubjectData("BEL", startTime = "12", duration = "13"), SubjectData("History", startTime = "12", duration = "13"))
         LazyColumn{
             itemsIndexed(list) { _, data ->
-                classItem(subjectData = data)
+                classItem(subjectData = data, onClassClick = onClassClick)
             }
         }
     }
@@ -33,12 +34,14 @@ fun ClassesScreen() {
 
 @Composable
 fun classItem(
-    subjectData: SubjectData
+    subjectData: SubjectData,
+    onClassClick: (String) -> Unit
 ){
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClassClick(subjectData.subjectName) },
         elevation = 2.dp,
         backgroundColor = colorResource(id = R.color.logo_blue),
         shape = RoundedCornerShape(corner = CornerSize(16.dp))

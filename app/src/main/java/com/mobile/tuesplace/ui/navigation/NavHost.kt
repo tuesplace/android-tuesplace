@@ -17,16 +17,22 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.classes.ClassesScreen
+import com.mobile.tuesplace.ui.classroom.ClassroomScreen
+import com.mobile.tuesplace.ui.classroom.ClassroomStudentViewModel
+import com.mobile.tuesplace.ui.classroom.ClassroomTeacherScreen
 import com.mobile.tuesplace.ui.videoroom.VideoroomViewModel
 import com.mobile.tuesplace.ui.forgottenpassword.ForgottenPasswordScreen
 import com.mobile.tuesplace.ui.groups.*
 import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.messages.MessagesScreen
+import com.mobile.tuesplace.ui.post.CreatePostScreen
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
+import com.mobile.tuesplace.ui.states.EditProfileUiState
+import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
@@ -80,6 +86,7 @@ fun NavHost(navController: NavHostController) {
                     }
                     viewModel.resetProfileState()
                 }
+                EditProfileUiState.Loading -> {}
             }
         }
         composable(WELCOME_SCREEN) {
@@ -110,7 +117,9 @@ fun NavHost(navController: NavHostController) {
             MessagesScreen()
         }
         composable(CLASSES_SCREEN) {
-            ClassesScreen()
+            ClassesScreen(
+                onClassClick = { navController.navigate(CLASSROOM_SCREEN)}
+            )
         }
         composable(VIDEOROOM_SCREEN) {
             val viewModel = getViewModel<VideoroomViewModel>()
@@ -226,6 +235,31 @@ fun NavHost(navController: NavHostController) {
                 onEditClick = { navController.navigate(PROFILE_SCREEN) },
                 onSignOutClick = { navController.navigate(LOGIN_SCREEN)}
             )
+        }
+        composable(CLASSROOM_SCREEN){
+            val viewModel = getViewModel<ClassroomStudentViewModel>()
+            val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
+
+          ClassroomScreen(
+              setProfile = {},
+              getGroupUiState = GetGroupUiState.Empty,
+              getProfileByIdUiState = getProfileByIdUiState,
+              onPostClick = { })
+        }
+        composable(CLASSROOM_TEACHER_SCREEN){
+            val viewModel = getViewModel<ClassroomStudentViewModel>()
+            val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
+
+            ClassroomTeacherScreen(
+                setProfile = {},
+                getGroupUiState = GetGroupUiState.Empty,
+                getProfileByIdUiState = getProfileByIdUiState,
+                onCreatePostClick = { navController.navigate(CREATE_POST)  },
+                onEditPostClick = { }
+            )
+        }
+        composable(CREATE_POST){
+            CreatePostScreen()
         }
     }
 }

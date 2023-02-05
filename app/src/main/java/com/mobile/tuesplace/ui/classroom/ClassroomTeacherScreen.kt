@@ -1,14 +1,19 @@
 package com.mobile.tuesplace.ui.classroom
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,11 +26,12 @@ import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 
 @Composable
-fun ClassroomScreen(
+fun ClassroomTeacherScreen(
     setProfile: (String) -> Unit,
     getGroupUiState: GetGroupUiState,
     getProfileByIdUiState: GetProfileByIdUiState,
-    onPostClick: () -> Unit
+    onCreatePostClick: () -> Unit,
+    onEditPostClick: () -> Unit
 ) {
     val group: GroupData
     when (getGroupUiState) {
@@ -34,29 +40,28 @@ fun ClassroomScreen(
         GetGroupUiState.Loading -> { }
         is GetGroupUiState.Success -> {
             group = getGroupUiState.groupData
-            setProfile(group.name)
+            getGroupUiState.groupData.teachers?.get(0)?.let { setProfile(it) }
             when (getProfileByIdUiState) {
                 GetProfileByIdUiState.Empty -> { }
                 is GetProfileByIdUiState.Error -> { }
                 GetProfileByIdUiState.Loading -> { }
                 is GetProfileByIdUiState.Success -> {
-                    ClassroomUi(group = group, posts = listOf(), teacher = getProfileByIdUiState.profile, onPostClick)
+                    ClassroomTeacherUi(group = group, posts = arrayListOf(), teacher = getProfileByIdUiState.profile, onCreatePostClick, onEditPostClick)
                 }
             }
         }
     }
 
-
 }
 
 @Composable
-fun  ClassroomUi(group: GroupData, posts: List<PostData>, teacher: ProfileData, onPostClick: () -> Unit){
+fun ClassroomTeacherUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileData, onAddClick: () -> Unit, onPostClick: () -> Unit){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.baby_blue))
-    ){
-        val (title, post) = createRefs()
+    ) {
+        val (title, post, add) = createRefs()
         Text(
             text = group.name,
             modifier = Modifier
@@ -67,6 +72,20 @@ fun  ClassroomUi(group: GroupData, posts: List<PostData>, teacher: ProfileData, 
                     end.linkTo(parent.end)
                 },
             fontSize = 25.sp
+        )
+
+        Text(
+            text = stringResource(id = R.string.add),
+            modifier = Modifier
+                .padding(16.dp)
+                .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
+                .padding(2.dp)
+                .clickable { onAddClick() }
+                .constrainAs(add){
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                },
+            color = Color.White
         )
 
         LazyColumn(
@@ -84,13 +103,4 @@ fun  ClassroomUi(group: GroupData, posts: List<PostData>, teacher: ProfileData, 
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-fun Preview(){
-    //PostItem(post = PostData("", listOf(), "", "", "This is a test. I want to see how exactly the post will look like. I don't know what to write."))
-    ClassroomUi(group = GroupData("12B", arrayListOf(), "", arrayListOf()),
-        posts = listOf(PostData("", listOf(), "2023-01-31T18:27:34.464Z", "", "This is a test. I want to see how exactly the post will look like. I don't know what to write."), PostData("", listOf(), "", "", "This is a test. I want to see how exactly the post will look like. I don't know what to write.")), ProfileData("Dora Tsvetanova", "d", "", "")) {}
 }
