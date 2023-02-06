@@ -2,7 +2,8 @@ package com.mobile.tuesplace
 
 import android.content.Intent
 import com.mobile.tuesplace.services.*
-import com.mobile.tuesplace.ui.classroom.ClassroomStudentViewModel
+import com.mobile.tuesplace.ui.classes.ClassesViewModel
+import com.mobile.tuesplace.ui.classroom.ClassroomUserViewModel
 import com.mobile.tuesplace.ui.videoroom.VideoroomViewModel
 import com.mobile.tuesplace.ui.groups.AllGroupsViewModel
 import com.mobile.tuesplace.ui.groups.CreateGroupViewModel
@@ -27,7 +28,8 @@ val TuesplaceModules = module {
     viewModel { ProfileViewModel(get()) }
     viewModel { EditProfileViewModel(get(), get()) }
     viewModel { VideoroomViewModel(get()) }
-    viewModel { ClassroomStudentViewModel(get()) }
+    viewModel { ClassroomUserViewModel(get()) }
+    viewModel { ClassesViewModel(get()) }
 
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }

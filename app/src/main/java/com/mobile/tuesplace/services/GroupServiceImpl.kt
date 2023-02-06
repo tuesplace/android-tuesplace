@@ -128,7 +128,7 @@ class GroupServiceImpl : GroupService {
         )
     }
 
-    override fun getMyGroups(groupCallback: GroupService.GroupCallback<List<GroupResponseData>>) {
+    override suspend fun getMyGroups(groupCallback: GroupService.GroupCallback<List<GroupResponseData>>) {
         retrofit.getMyGroups("Bearer $ACCESS_TOKEN").enqueue(
            object : Callback<BaseResponse<List<GroupResponseData>>> {
                override fun onResponse(

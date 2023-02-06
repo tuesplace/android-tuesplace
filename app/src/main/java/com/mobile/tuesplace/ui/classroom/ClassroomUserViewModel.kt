@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ClassroomStudentViewModel(private val profileByIdUseCase: GetProfileByIdUseCase): ViewModel() {
+class ClassroomUserViewModel(private val profileByIdUseCase: GetProfileByIdUseCase): ViewModel() {
 
     private val _profileId =
         MutableStateFlow("")

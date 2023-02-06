@@ -14,19 +14,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.SubjectData
+import com.mobile.tuesplace.data.GroupResponseData
+import com.mobile.tuesplace.ui.states.GetMyGroupsUiState
 
 @Composable
-fun ClassesScreen(onClassClick: (String) -> Unit) {
+fun ClassesScreen(
+    onClassClick: (String) -> Unit,
+    getMyGroupsUiState: GetMyGroupsUiState
+) {
+    when (getMyGroupsUiState) {
+        GetMyGroupsUiState.Empty -> {}
+        is GetMyGroupsUiState.Error -> {}
+        GetMyGroupsUiState.Loading -> {}
+        is GetMyGroupsUiState.Success -> {
+            ClassesUi(onClassClick = onClassClick, groups = getMyGroupsUiState.groups)
+        }
+    }
+}
+
+@Composable
+fun ClassesUi(onClassClick: (String) -> Unit, groups: List<GroupResponseData>){
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-        val list = listOf(SubjectData("Math", startTime = "12", duration = "13"), SubjectData("BEL", startTime = "12", duration = "13"), SubjectData("History", startTime = "12", duration = "13"))
         LazyColumn{
-            itemsIndexed(list) { _, data ->
-                classItem(subjectData = data, onClassClick = onClassClick)
+            itemsIndexed(groups) { _, data ->
+                classItem(groupData = data, onClassClick = onClassClick)
             }
         }
     }
@@ -34,14 +49,14 @@ fun ClassesScreen(onClassClick: (String) -> Unit) {
 
 @Composable
 fun classItem(
-    subjectData: SubjectData,
+    groupData: GroupResponseData,
     onClassClick: (String) -> Unit
 ){
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable { onClassClick(subjectData.subjectName) },
+            .clickable { onClassClick(groupData._id) },
         elevation = 2.dp,
         backgroundColor = colorResource(id = R.color.logo_blue),
         shape = RoundedCornerShape(corner = CornerSize(16.dp))
@@ -51,8 +66,8 @@ fun classItem(
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = subjectData.startTime + " - " + subjectData.duration)
-            Text(text = subjectData.subjectName)
+            //Text(text = groupData. + " - " + subjectData.duration)
+            Text(text = groupData.name)
         }
     }
 }

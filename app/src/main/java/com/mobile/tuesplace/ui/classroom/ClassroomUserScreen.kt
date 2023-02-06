@@ -26,7 +26,7 @@ import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 
 @Composable
-fun ClassroomTeacherScreen(
+fun ClassroomUserScreen(
     setProfile: (String) -> Unit,
     getGroupUiState: GetGroupUiState,
     getProfileByIdUiState: GetProfileByIdUiState,
@@ -46,7 +46,7 @@ fun ClassroomTeacherScreen(
                 is GetProfileByIdUiState.Error -> { }
                 GetProfileByIdUiState.Loading -> { }
                 is GetProfileByIdUiState.Success -> {
-                    ClassroomTeacherUi(group = group, posts = arrayListOf(), teacher = getProfileByIdUiState.profile, onCreatePostClick, onEditPostClick)
+                    ClassroomUserUi(group = group, posts = arrayListOf(), teacher = getProfileByIdUiState.profile, onCreatePostClick, onEditPostClick)
                 }
             }
         }
@@ -55,7 +55,7 @@ fun ClassroomTeacherScreen(
 }
 
 @Composable
-fun ClassroomTeacherUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileData, onAddClick: () -> Unit, onPostClick: () -> Unit){
+fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileData, onAddClick: () -> Unit, onPostClick: () -> Unit){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()

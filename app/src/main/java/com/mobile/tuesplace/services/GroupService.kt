@@ -8,7 +8,7 @@ interface GroupService {
     fun getGroup(groupCallback: GroupCallback<GroupData>, groupId: String)
     suspend fun editGroup(groupCallback: GroupCallback<EditGroupData>, groupId: String, editGroupData: EditGroupData)
     fun deleteGroup(groupCallback: GroupCallback<Unit>, groupId: String)
-    fun getMyGroups(groupCallback: GroupCallback<List<GroupResponseData>>)
+    suspend fun getMyGroups(groupCallback: GroupCallback<List<GroupResponseData>>)
 
     interface GroupCallback<GroupGeneric>{
         fun onSuccess(groupGeneric: GroupGeneric)

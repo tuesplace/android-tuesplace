@@ -17,9 +17,9 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.classes.ClassesScreen
-import com.mobile.tuesplace.ui.classroom.ClassroomScreen
-import com.mobile.tuesplace.ui.classroom.ClassroomStudentViewModel
-import com.mobile.tuesplace.ui.classroom.ClassroomTeacherScreen
+import com.mobile.tuesplace.ui.classes.ClassesViewModel
+import com.mobile.tuesplace.ui.classroom.ClassroomUserViewModel
+import com.mobile.tuesplace.ui.classroom.ClassroomUserScreen
 import com.mobile.tuesplace.ui.videoroom.VideoroomViewModel
 import com.mobile.tuesplace.ui.forgottenpassword.ForgottenPasswordScreen
 import com.mobile.tuesplace.ui.groups.*
@@ -33,6 +33,7 @@ import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
+import com.mobile.tuesplace.ui.states.GetMyGroupsUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
@@ -117,8 +118,12 @@ fun NavHost(navController: NavHostController) {
             MessagesScreen()
         }
         composable(CLASSES_SCREEN) {
+            val viewModel = getViewModel<ClassesViewModel>()
+            val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
+            viewModel.getMyGroups()
             ClassesScreen(
-                onClassClick = { navController.navigate(CLASSROOM_SCREEN)}
+                onClassClick = { navController.navigate(CLASSROOM_USER_SCREEN)},
+                getMyGroupsUiState = getMyGroupsUiState
             )
         }
         composable(VIDEOROOM_SCREEN) {
@@ -236,21 +241,11 @@ fun NavHost(navController: NavHostController) {
                 onSignOutClick = { navController.navigate(LOGIN_SCREEN)}
             )
         }
-        composable(CLASSROOM_SCREEN){
-            val viewModel = getViewModel<ClassroomStudentViewModel>()
+        composable(CLASSROOM_USER_SCREEN){
+            val viewModel = getViewModel<ClassroomUserViewModel>()
             val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
 
-          ClassroomScreen(
-              setProfile = {},
-              getGroupUiState = GetGroupUiState.Empty,
-              getProfileByIdUiState = getProfileByIdUiState,
-              onPostClick = { })
-        }
-        composable(CLASSROOM_TEACHER_SCREEN){
-            val viewModel = getViewModel<ClassroomStudentViewModel>()
-            val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
-
-            ClassroomTeacherScreen(
+            ClassroomUserScreen(
                 setProfile = {},
                 getGroupUiState = GetGroupUiState.Empty,
                 getProfileByIdUiState = getProfileByIdUiState,
