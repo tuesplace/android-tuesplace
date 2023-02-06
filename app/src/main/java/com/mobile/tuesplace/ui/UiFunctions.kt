@@ -14,11 +14,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.PostData
+import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
 fun TextFields(
@@ -130,6 +133,15 @@ fun PostItem(post: PostData, onPostClick: () -> Unit){
                 .padding(6.dp)
                 .align(Alignment.Center)
         )
+    }
+}
+
+@Composable
+fun EmptyScreen(){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(BabyBlue)){
+        Text(text = stringResource(id = R.string.screen_not_found), color = Color.White, textAlign = TextAlign.Center)
     }
 }
 

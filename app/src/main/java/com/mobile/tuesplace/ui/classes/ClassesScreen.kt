@@ -15,31 +15,36 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
+import com.mobile.tuesplace.ui.EmptyScreen
 import com.mobile.tuesplace.ui.states.GetMyGroupsUiState
 
 @Composable
 fun ClassesScreen(
     onClassClick: (String) -> Unit,
-    getMyGroupsUiState: GetMyGroupsUiState
+    getMyGroupsUiState: GetMyGroupsUiState,
 ) {
     when (getMyGroupsUiState) {
         GetMyGroupsUiState.Empty -> {}
         is GetMyGroupsUiState.Error -> {}
         GetMyGroupsUiState.Loading -> {}
         is GetMyGroupsUiState.Success -> {
-            ClassesUi(onClassClick = onClassClick, groups = getMyGroupsUiState.groups)
+            if (getMyGroupsUiState.groups.isEmpty()) {
+                EmptyScreen()
+            } else {
+                ClassesUi(onClassClick = onClassClick, groups = getMyGroupsUiState.groups)
+            }
         }
     }
 }
 
 @Composable
-fun ClassesUi(onClassClick: (String) -> Unit, groups: List<GroupResponseData>){
+fun ClassesUi(onClassClick: (String) -> Unit, groups: List<GroupResponseData>) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-        LazyColumn{
+        LazyColumn {
             itemsIndexed(groups) { _, data ->
                 classItem(groupData = data, onClassClick = onClassClick)
             }
@@ -50,8 +55,8 @@ fun ClassesUi(onClassClick: (String) -> Unit, groups: List<GroupResponseData>){
 @Composable
 fun classItem(
     groupData: GroupResponseData,
-    onClassClick: (String) -> Unit
-){
+    onClassClick: (String) -> Unit,
+) {
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)

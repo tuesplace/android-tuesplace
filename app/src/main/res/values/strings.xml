@@ -22,4 +22,5 @@
     <string name="edit">Редактирай</string>
     <string name="name">Име</string>
     <string name="sign_out">Излез от профила си</string>
+    <string name="screen_not_found">Not found. Contact admin</string>
 </resources>

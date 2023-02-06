@@ -16,6 +16,8 @@ import androidx.navigation.navArgument
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.ui.chats.ChatroomScreen
+import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.classes.ClassesScreen
 import com.mobile.tuesplace.ui.classes.ClassesViewModel
 import com.mobile.tuesplace.ui.classroom.ClassroomUserViewModel
@@ -25,7 +27,8 @@ import com.mobile.tuesplace.ui.forgottenpassword.ForgottenPasswordScreen
 import com.mobile.tuesplace.ui.groups.*
 import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
-import com.mobile.tuesplace.ui.messages.MessagesScreen
+import com.mobile.tuesplace.ui.chats.ChatsScreen
+import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.post.CreatePostScreen
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
@@ -33,7 +36,6 @@ import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
-import com.mobile.tuesplace.ui.states.GetMyGroupsUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
@@ -98,7 +100,7 @@ fun NavHost(navController: NavHostController) {
             }
             WelcomeScreen(
                 onMessageClick = {
-                    navController.navigate(MESSAGES_SCREEN)
+                    navController.navigate(CHATS_SCREEN)
                 },
                 onEnterClassClick = {
                     navController.navigate(CLASSES_SCREEN)
@@ -114,8 +116,14 @@ fun NavHost(navController: NavHostController) {
         composable(FORGOTTEN_PASSWORD_SCREEN) {
             ForgottenPasswordScreen()
         }
-        composable(MESSAGES_SCREEN) {
-            MessagesScreen()
+        composable(CHATS_SCREEN) {
+            val viewModel = getViewModel<ChatsViewModel>()
+            val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
+            viewModel.getMyGroups()
+            ChatsScreen(
+                getMyGroupsUiState = getMyGroupsUiState,
+                onChatClick = { navController.navigate("$CHATROOM_SCREEN/$it") }
+            )
         }
         composable(CLASSES_SCREEN) {
             val viewModel = getViewModel<ClassesViewModel>()
@@ -255,6 +263,16 @@ fun NavHost(navController: NavHostController) {
         }
         composable(CREATE_POST){
             CreatePostScreen()
+        }
+        composable("$CHATROOM_SCREEN/{groupId}", arguments = listOf(navArgument("groupId"){type = NavType.StringType})){ backStackEntry ->
+            val viewModel = getViewModel<ChatroomViewModel>()
+            val getGroupUiState by viewModel.groupStateFlow.collectAsState()
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("groupId")?.let { groupId ->
+                    viewModel.getGroup(groupId)
+                }
+            }
+            ChatroomScreen(getGroupUiState = getGroupUiState)
         }
     }
 }
