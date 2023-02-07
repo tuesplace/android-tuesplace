@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
-import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.TextField
 
 @Composable
 fun CreateGroupScreen(
@@ -34,7 +34,7 @@ fun CreateGroupScreen(
                 top.linkTo(parent.top)
                 bottom.linkTo(btn.top)
             }) {
-            TextFields(
+            TextField(
                 value = groupName,
                 onValueChange = setGroupName,
                 placeholder = stringResource(id = R.string.group_name),
@@ -42,7 +42,7 @@ fun CreateGroupScreen(
                 enabled = true,
                 isError = null
             )
-            TextFields(
+            TextField(
                 value = groupType,
                 onValueChange = setGroupType,
                 placeholder = stringResource(id =R.string.group_type),
@@ -50,7 +50,7 @@ fun CreateGroupScreen(
                 enabled = true,
                 isError = null
             )
-            TextFields(
+            TextField(
                 value = classes,
                 onValueChange = setClasses,
                 placeholder = stringResource(id = R.string.choose_classes),

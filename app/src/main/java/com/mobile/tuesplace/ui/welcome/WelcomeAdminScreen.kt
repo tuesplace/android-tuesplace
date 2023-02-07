@@ -31,7 +31,9 @@ fun WelcomeAdminScreen(onClick: (String) -> Unit) {
     ) {
         val allGroups = stringResource(id = R.string.all_groups)
         val addStudent = stringResource(id = R.string.add_student)
-        val removeStudent = stringResource(id = R.string.remove_student)
+        val removeStudent = stringResource(id = R.string.all_students)
+        val agenda = stringResource(id = R.string.agenda)
+        
         val (menu) = createRefs()
 
         LazyColumn(
@@ -42,7 +44,7 @@ fun WelcomeAdminScreen(onClick: (String) -> Unit) {
                     bottom.linkTo(parent.bottom)
                 }
         ) {
-            itemsIndexed(listOf(allGroups, addStudent, removeStudent)) { _, data ->
+            itemsIndexed(listOf(allGroups, addStudent, removeStudent, agenda)) { _, data ->
                 MenuItem(text = data, onClick)
             }
         }

@@ -3,7 +3,6 @@ package com.mobile.tuesplace
 import android.content.Intent
 import com.mobile.tuesplace.services.*
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
-import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.classes.ClassesViewModel
 import com.mobile.tuesplace.ui.classroom.ClassroomUserViewModel
@@ -14,6 +13,7 @@ import com.mobile.tuesplace.ui.groups.EditGroupViewModel
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileViewModel
+import com.mobile.tuesplace.ui.students.AllStudentsViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import com.mobile.tuesplace.usecase.*
@@ -35,6 +35,7 @@ val TuesplaceModules = module {
     viewModel { ClassesViewModel(get()) }
     viewModel { ChatsViewModel(get()) }
     viewModel { ChatroomViewModel(get()) }
+    viewModel { AllStudentsViewModel(get()) }
 
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }
@@ -45,6 +46,7 @@ val TuesplaceModules = module {
     factory { EditProfileUseCase(get()) }
     factory { GetMyGroupsUseCase(get()) }
     factory { GetProfileByIdUseCase(get()) }
+    factory { GetAllProfilesUseCase(get()) }
 
     factory { AuthenticationManager(androidContext(), Intent()) }
 

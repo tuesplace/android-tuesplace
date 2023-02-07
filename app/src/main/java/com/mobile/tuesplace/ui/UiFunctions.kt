@@ -24,29 +24,21 @@ import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
-fun TextFields(
+fun TextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier?,
     enabled: Boolean?,
-    isError: Boolean?
+    isError: Boolean?,
 ) {
-    val modifierM: Modifier = modifier ?: Modifier
-    val isErrorM: Boolean
-    val enabledM: Boolean = enabled ?: true
-    if (isError == null){
-        isErrorM = false
-    } else {
-        isErrorM = isError
-    }
     TextField(
         value = value,
-        enabled = enabledM,
+        enabled = enabled ?: true,
         maxLines = 1,
-        isError = isErrorM,
+        isError = isError ?: false,
         onValueChange = { onValueChange(it) },
-        modifier = modifierM
+        modifier = modifier ?: Modifier
             .padding(top = 22.dp, start = 12.dp, end = 12.dp)
             .fillMaxWidth()
             .border(BorderStroke(2.dp, Color.White), RoundedCornerShape(16.dp)),
@@ -71,17 +63,15 @@ fun GradientBorderButtonRound(
     onLoginClick: () -> Unit,
     buttonPadding: PaddingValues?,
 ) {
-    val defaultColors = colors ?: listOf(
-        colorResource(id = R.color.logo_blue),
-        colorResource(id = R.color.blue)
-    )
-    val defaultButtonPadding = buttonPadding ?: PaddingValues(start = 12.dp, end = 12.dp)
-    val modifierInfo = modifier ?: Modifier.fillMaxWidth()
     Box(
-        modifier = modifierInfo
-            .padding(defaultButtonPadding)
+        modifier = modifier ?: Modifier
+            .fillMaxWidth()
+            .padding(buttonPadding ?: PaddingValues(start = 12.dp, end = 12.dp))
             .background(
-                brush = Brush.horizontalGradient(colors = defaultColors),
+                brush = Brush.horizontalGradient(colors = colors ?: listOf(
+                    colorResource(id = R.color.logo_blue),
+                    colorResource(id = R.color.blue)
+                )),
                 shape = RoundedCornerShape(percent = 10)
             )
             .clip(shape = RoundedCornerShape(percent = 10))
@@ -101,9 +91,8 @@ fun GradientBorderButtonRound(
 }
 
 
-
 @Composable
-fun PostItem(post: PostData, onPostClick: () -> Unit){
+fun PostItem(post: PostData, onPostClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,7 +100,7 @@ fun PostItem(post: PostData, onPostClick: () -> Unit){
             .padding(16.dp)
             .clickable { onPostClick() }
             .background(Color.White, RoundedCornerShape(8.dp))
-    ){
+    ) {
         Text(
             text = "Dora",
             color = Color.Black,
@@ -137,11 +126,14 @@ fun PostItem(post: PostData, onPostClick: () -> Unit){
 }
 
 @Composable
-fun EmptyScreen(){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(BabyBlue)){
-        Text(text = stringResource(id = R.string.screen_not_found), color = Color.White, textAlign = TextAlign.Center)
+fun EmptyScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BabyBlue)) {
+        Text(text = stringResource(id = R.string.screen_not_found),
+            color = Color.White,
+            textAlign = TextAlign.Center)
     }
 }
 

@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
-import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.TextField
 import com.mobile.tuesplace.ui.states.SignInUiState
 
 @Composable
@@ -78,7 +78,7 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFields(email, setEmail, stringResource(id = R.string.email), null, true, isError = isCorrectEmail)
+                    TextField(email, setEmail, stringResource(id = R.string.email), null, true, isError = isCorrectEmail)
                     TextField(
                         value = password,
                         isError = isCorrectPassword,

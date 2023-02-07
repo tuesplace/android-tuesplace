@@ -42,6 +42,9 @@ interface ApiServices {
     @GET(PROFILE_ME)
     fun getProfile(@Header("Authorization") token: String): Call<BaseResponse<ProfileData>>
 
+    @GET(ALL_PROFILES)
+    fun getAllProfiles(@Header("Authorization") token: String): Call<BaseResponse<List<ProfileResponseData>>>
+
     @GET(PROFILE)
     fun getProfiles(@Header("Authorization") token: String, @Path("profileId") profileId: String): Call<BaseResponse<ProfileData>>
 

@@ -37,6 +37,8 @@ import com.mobile.tuesplace.ui.settings.SettingsScreen
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
+import com.mobile.tuesplace.ui.students.AllStudentsScreen
+import com.mobile.tuesplace.ui.students.AllStudentsViewModel
 import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
@@ -146,8 +148,8 @@ fun NavHost(navController: NavHostController) {
         composable(WELCOME_ADMIN_SCREEN) {
             val allGroups = stringResource(id = R.string.all_groups)
             val createStudent = stringResource(id = R.string.add_student)
-            val removeStudent = stringResource(id = R.string.remove_student)
-
+            val allStudents = stringResource(id = R.string.all_students)
+            val agenda = stringResource(id = R.string.agenda)
             WelcomeAdminScreen(onClick = { string ->
                 when (string) {
                     allGroups -> {
@@ -156,7 +158,10 @@ fun NavHost(navController: NavHostController) {
                     createStudent -> {
 
                     }
-                    removeStudent -> {
+                    allStudents -> {
+                        navController.navigate(ALL_STUDENTS_SCREEN)
+                    }
+                    agenda -> {
 
                     }
                 }
@@ -273,6 +278,12 @@ fun NavHost(navController: NavHostController) {
                 }
             }
             ChatroomScreen(getGroupUiState = getGroupUiState)
+        }
+        composable(ALL_STUDENTS_SCREEN){
+            val viewModel = getViewModel<AllStudentsViewModel>()
+            val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
+            viewModel.getAllProfiles()
+            AllStudentsScreen(getAllProfilesUiState = getAllProfilesStateFlow, onStudentClick = {})
         }
     }
 }

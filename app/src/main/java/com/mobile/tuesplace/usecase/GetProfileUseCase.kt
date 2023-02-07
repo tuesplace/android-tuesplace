@@ -4,7 +4,7 @@ import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.services.ProfileService
 
 class GetProfileUseCase(private val profileService: ProfileService) {
-    fun invoke(getProfileCallback: ProfileService.GetProfileCallback<ProfileData>){
+    suspend operator fun invoke(getProfileCallback: ProfileService.GetProfileCallback<ProfileData>){
         profileService.getProfile(getProfileCallback)
     }
 }
