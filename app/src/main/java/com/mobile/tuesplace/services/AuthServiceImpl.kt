@@ -1,7 +1,6 @@
 package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.ACCESS_TOKEN
-import com.mobile.tuesplace.AuthenticationManager
 import com.mobile.tuesplace.USER_ID
 import com.mobile.tuesplace.data.AuthData
 import com.mobile.tuesplace.data.BaseResponse
@@ -10,9 +9,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AuthServiceImpl(private val authenticationManager: AuthenticationManager): AuthService {
+class AuthServiceImpl(private val retrofit: ApiServices): AuthService {
 
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
 
     override suspend fun signIn(
         authData: AuthData,
@@ -52,7 +50,7 @@ class AuthServiceImpl(private val authenticationManager: AuthenticationManager):
         )
     }
 
-    override suspend fun generateTokenPair(
+    override fun generateTokenPair(
         refreshToken: String,
         authCallback: AuthService.AuthCallback
     ) {

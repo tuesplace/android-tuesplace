@@ -1,21 +1,18 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.PostData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PostServiceImpl : PostService {
-
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
+class PostServiceImpl(private val retrofit: ApiServices) : PostService {
 
     override fun getPosts(
         postCallback: PostService.PostCallback<List<PostData>>,
         groupId: String,
     ) {
-        retrofit.getPosts("Bearer $ACCESS_TOKEN", groupId = groupId).enqueue(
+        retrofit.getPosts(groupId = groupId).enqueue(
             object : Callback<BaseResponse<List<PostData>>> {
                 override fun onResponse(
                     call: Call<BaseResponse<List<PostData>>>,
@@ -41,7 +38,7 @@ class PostServiceImpl : PostService {
         groupId: String,
         post: String,
     ) {
-        retrofit.createPost("Bearer $ACCESS_TOKEN", groupId = groupId, post = post).enqueue(
+        retrofit.createPost(groupId = groupId, post = post).enqueue(
             object : Callback<BaseResponse<PostData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<PostData>>,
@@ -68,7 +65,7 @@ class PostServiceImpl : PostService {
         groupId: String,
         post: String,
     ) {
-        retrofit.editPost("Bearer $ACCESS_TOKEN", groupId = groupId, postId = postId, post = post).enqueue(
+        retrofit.editPost(groupId = groupId, postId = postId, post = post).enqueue(
             object : Callback<BaseResponse<PostData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<PostData>>,
@@ -94,7 +91,7 @@ class PostServiceImpl : PostService {
         postId: String,
         groupId: String,
     ) {
-        retrofit.deletePost("Bearer $ACCESS_TOKEN", groupId = groupId, postId = postId).enqueue(
+        retrofit.deletePost(groupId = groupId, postId = postId).enqueue(
             object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(call: Call<BaseResponse<Unit>>, response: Response<BaseResponse<Unit>>) {
                     if (response.isSuccessful) {

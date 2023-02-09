@@ -63,8 +63,9 @@ fun GradientBorderButtonRound(
     onLoginClick: () -> Unit,
     buttonPadding: PaddingValues?,
 ) {
+    val currentModifier = modifier ?: Modifier
     Box(
-        modifier = modifier ?: Modifier
+        modifier = currentModifier
             .fillMaxWidth()
             .padding(buttonPadding ?: PaddingValues(start = 12.dp, end = 12.dp))
             .background(

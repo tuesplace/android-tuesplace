@@ -1,21 +1,18 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.MarkData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MarkServiceImpl : MarkService {
-
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
+class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
 
     override fun getGroupMarks(
         markCallback: MarkService.MarkCallback<List<MarkData>>,
         groupId: String,
     ) {
-        retrofit.getGroupMarks("Bearer $ACCESS_TOKEN", groupId = groupId).enqueue(
+        retrofit.getGroupMarks(groupId = groupId).enqueue(
             object : Callback<BaseResponse<List<MarkData>>> {
                 override fun onResponse(
                     call: Call<BaseResponse<List<MarkData>>>,
@@ -41,7 +38,7 @@ class MarkServiceImpl : MarkService {
         groupId: String,
         studentId: String,
     ) {
-        retrofit.getStudentMarks("Bearer $ACCESS_TOKEN", groupId = groupId, studentId = studentId)
+        retrofit.getStudentMarks(groupId = groupId, studentId = studentId)
             .enqueue(
                 object : Callback<BaseResponse<List<MarkData>>> {
                     override fun onResponse(
@@ -69,7 +66,7 @@ class MarkServiceImpl : MarkService {
         studentId: String,
         mark: Double
     ) {
-        retrofit.addStudentMark("Bearer $ACCESS_TOKEN", groupId = groupId, studentId = studentId, mark = mark)
+        retrofit.addStudentMark(groupId = groupId, studentId = studentId, mark = mark)
             .enqueue(
                 object : Callback<BaseResponse<MarkData>> {
                     override fun onResponse(
@@ -99,7 +96,6 @@ class MarkServiceImpl : MarkService {
         mark: Double
     ) {
         retrofit.editStudentMark(
-            token = "Bearer $ACCESS_TOKEN",
             groupId = groupId,
             studentId = studentId,
             markId = markId,
@@ -129,7 +125,6 @@ class MarkServiceImpl : MarkService {
         markId: String,
     ) {
         retrofit.deleteStudentMark(
-            token = "Bearer $ACCESS_TOKEN",
             groupId = groupId,
             studentId = studentId,
             markId = markId

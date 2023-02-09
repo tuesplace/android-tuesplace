@@ -1,22 +1,19 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.CommentData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CommentServiceImpl : CommentService {
-
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
+class CommentServiceImpl(private val retrofit: ApiServices) : CommentService {
 
     override fun getPostComments(
         commentCallback: CommentService.CommentCallback<List<CommentData>>,
         groupId: String,
         postId: String,
     ) {
-        retrofit.getPostComments("Bearer $ACCESS_TOKEN", groupId = groupId, postId = postId)
+        retrofit.getPostComments(groupId = groupId, postId = postId)
             .enqueue(
                 object : Callback<BaseResponse<List<CommentData>>> {
                     override fun onResponse(
@@ -47,7 +44,7 @@ class CommentServiceImpl : CommentService {
         postId: String,
         comment: String,
     ) {
-        retrofit.addPostComment("Bearer $ACCESS_TOKEN",
+        retrofit.addPostComment(
             groupId = groupId,
             postId = postId,
             commentBody = comment).enqueue(
@@ -78,7 +75,7 @@ class CommentServiceImpl : CommentService {
         commentId: String,
         comment: String,
     ) {
-        retrofit.editPostComment("Bearer $ACCESS_TOKEN",
+        retrofit.editPostComment(
             groupId = groupId,
             postId = postId,
             commentId = commentId,
@@ -110,7 +107,7 @@ class CommentServiceImpl : CommentService {
         commentId: String,
         emoji: String,
     ) {
-        retrofit.addCommentReaction("Bearer $ACCESS_TOKEN",
+        retrofit.addCommentReaction(
             groupId = groupId,
             postId = postId,
             commentId = commentId,
@@ -140,7 +137,7 @@ class CommentServiceImpl : CommentService {
         postId: String,
         commentId: String,
     ) {
-        retrofit.deletePostComment("Bearer $ACCESS_TOKEN",
+        retrofit.deletePostComment(
             groupId = groupId,
             postId = postId,
             commentId = commentId).enqueue(

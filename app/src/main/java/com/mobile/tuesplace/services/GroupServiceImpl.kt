@@ -1,20 +1,20 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 
-class GroupServiceImpl : GroupService {
+class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
 
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
+//    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
 
     override suspend fun createGroup(
         createGroupData: GroupData,
         createGroupCallback: GroupService.GroupCallback<GroupData>,
     ) {
-        retrofit.createGroup("Bearer $ACCESS_TOKEN", createGroupData).enqueue(
+        retrofit.createGroup(createGroupData).enqueue(
             object : Callback<BaseResponse<GroupData>> {
                 override fun onFailure(call: Call<BaseResponse<GroupData>>, t: Throwable) {
                     t.localizedMessage?.let { createGroupCallback.onError(it) }
@@ -35,7 +35,7 @@ class GroupServiceImpl : GroupService {
     }
 
     override suspend fun getGroups(groupCallback: GroupService.GroupCallback<List<GroupResponseData>>) {
-        retrofit.getGroups("Bearer $ACCESS_TOKEN").enqueue(
+        retrofit.getGroups().enqueue(
             object : Callback<BaseResponse<List<GroupResponseData>>> {
                 override fun onResponse(
                     call: Call<BaseResponse<List<GroupResponseData>>>,
@@ -60,7 +60,7 @@ class GroupServiceImpl : GroupService {
         groupCallback: GroupService.GroupCallback<GroupData>,
         groupId: String,
     ) {
-        retrofit.getGroup("Bearer $ACCESS_TOKEN", groupId).enqueue(
+        retrofit.getGroup(groupId).enqueue(
             object : Callback<BaseResponse<GroupData>> {
                 override fun onResponse(call: Call<BaseResponse<GroupData>>, response: Response<BaseResponse<GroupData>>) {
                     if (response.isSuccessful) {
@@ -83,7 +83,7 @@ class GroupServiceImpl : GroupService {
         groupId: String,
         editGroupData: EditGroupData,
     ) {
-        retrofit.editGroup("Bearer $ACCESS_TOKEN", groupId, editGroupData).enqueue(
+        retrofit.editGroup(groupId, editGroupData).enqueue(
             object : Callback<BaseResponse<EditGroupData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<EditGroupData>>,
@@ -107,7 +107,7 @@ class GroupServiceImpl : GroupService {
         groupCallback: GroupService.GroupCallback<Unit>,
         groupId: String,
     ) {
-        retrofit.deleteGroup("Bearer $ACCESS_TOKEN", groupId).enqueue(
+        retrofit.deleteGroup(groupId).enqueue(
             object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
                     call: Call<BaseResponse<Unit>>,
@@ -129,7 +129,7 @@ class GroupServiceImpl : GroupService {
     }
 
     override suspend fun getMyGroups(groupCallback: GroupService.GroupCallback<List<GroupResponseData>>) {
-        retrofit.getMyGroups("Bearer $ACCESS_TOKEN").enqueue(
+        retrofit.getMyGroups().enqueue(
            object : Callback<BaseResponse<List<GroupResponseData>>> {
                override fun onResponse(
                    call: Call<BaseResponse<List<GroupResponseData>>>,

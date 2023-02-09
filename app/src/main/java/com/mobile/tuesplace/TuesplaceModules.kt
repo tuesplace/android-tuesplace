@@ -1,6 +1,6 @@
 package com.mobile.tuesplace
 
-import android.content.Intent
+import com.google.gson.Gson
 import com.mobile.tuesplace.services.*
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
@@ -17,12 +17,18 @@ import com.mobile.tuesplace.ui.students.AllStudentsViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import com.mobile.tuesplace.usecase.*
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 val TuesplaceModules = module {
-    viewModel { LoginViewModel(get(), get()) }
+
+    viewModel { LoginViewModel(get(), get(), androidContext()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { CreateGroupViewModel(get()) }
     viewModel { WelcomeAdminViewModel() }
@@ -37,6 +43,8 @@ val TuesplaceModules = module {
     viewModel { ChatroomViewModel(get()) }
     viewModel { AllStudentsViewModel(get()) }
 
+    single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
+
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }
     factory { GetGroupsUseCase(get()) }
@@ -48,11 +56,41 @@ val TuesplaceModules = module {
     factory { GetProfileByIdUseCase(get()) }
     factory { GetAllProfilesUseCase(get()) }
 
-    factory { AuthenticationManager(androidContext(), Intent()) }
+//    factory { AuthenticationManager(androidContext(), Intent()) }
 
-    factory<GroupService> { GroupServiceImpl() }
+    factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }
-    factory<ProfileService> { ProfileServiceImpl() }
+    factory<ProfileService> { ProfileServiceImpl(get()) }
+    factory<CommentService> { CommentServiceImpl(get()) }
+    factory<MarkService> { MarkServiceImpl(get()) }
+    factory<PostService> { PostServiceImpl(get()) }
 
+    factory { TuesAuthenticator() }
+    factory { TuesInterceptor(androidContext()) }
+    single {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        OkHttpClient().newBuilder()
+           // .authenticator(get<TuesAuthenticator>())
+            .addInterceptor(get<TuesInterceptor>())
+            .addInterceptor(interceptor)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
+    }
+    single {
+        Gson()
+    }
+    single {
+        val okHttpClient = get<OkHttpClient>()
+
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(get()))
+            .build()
+    }
 //    single<>
 }

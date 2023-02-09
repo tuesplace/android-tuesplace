@@ -8,7 +8,7 @@ import org.koin.core.context.startKoin
 
 class TuesplaceApplication : Application() {
 
-    private lateinit var authenticationManager: AuthenticationManager
+//    private lateinit var authenticationManager: AuthenticationManager
 
     companion object {
         lateinit var instance: TuesplaceApplication
@@ -17,7 +17,7 @@ class TuesplaceApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        authenticationManager = AuthenticationManager(instance, provideLoginIntent())
+//        authenticationManager = AuthenticationManager(instance, provideLoginIntent())
         startKoin {
             androidLogger()
             androidContext(this@TuesplaceApplication)

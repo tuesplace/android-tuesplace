@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.instanc
 
 import java.io.IOException
 
-class AuthenticationManager(context: Context?, val loginIntent: Intent) :
+class AuthenticationManager(context: Context?, private val loginIntent: Intent) :
     AbstractAccountAuthenticator(context) {
 
     private var accountManager: AccountManager = AccountManager.get(TuesplaceApplication.instance)

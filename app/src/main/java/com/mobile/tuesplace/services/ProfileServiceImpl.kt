@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ACCESS_TOKEN
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.ProfileData
@@ -9,11 +8,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ProfileServiceImpl : ProfileService {
+class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
 
-    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
     override suspend fun getAllProfiles(getProfileCallback: ProfileService.GetProfileCallback<List<ProfileResponseData>>) {
-        retrofit.getAllProfiles("Bearer $ACCESS_TOKEN").enqueue(
+        retrofit.getAllProfiles().enqueue(
             object : Callback<BaseResponse<List<ProfileResponseData>>> {
                 override fun onResponse(
                     call: Call<BaseResponse<List<ProfileResponseData>>>,
@@ -36,7 +34,7 @@ class ProfileServiceImpl : ProfileService {
     }
 
     override suspend fun getProfile(getProfileCallback: ProfileService.GetProfileCallback<ProfileData>) {
-        retrofit.getProfile("Bearer $ACCESS_TOKEN").enqueue(
+        retrofit.getProfile().enqueue(
             object : Callback<BaseResponse<ProfileData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<ProfileData>>,
@@ -61,7 +59,7 @@ class ProfileServiceImpl : ProfileService {
         getProfileCallback: ProfileService.GetProfileCallback<ProfileData>,
         profileId: String,
     ) {
-        retrofit.getProfiles("Bearer $ACCESS_TOKEN", profileId).enqueue(
+        retrofit.getProfiles(profileId).enqueue(
             object : Callback<BaseResponse<ProfileData>> {
                 override fun onResponse(
                     call: Call<BaseResponse<ProfileData>>,
@@ -86,7 +84,7 @@ class ProfileServiceImpl : ProfileService {
         profileId: String,
         editProfileData: EditProfileData,
     ) {
-        retrofit.editProfile("Bearer $ACCESS_TOKEN", profileId, editProfileData = editProfileData)
+        retrofit.editProfile(profileId, editProfileData = editProfileData)
             .enqueue(
                 object : Callback<BaseResponse<Unit>> {
                     override fun onResponse(
@@ -111,7 +109,7 @@ class ProfileServiceImpl : ProfileService {
         getProfileCallback: ProfileService.GetProfileCallback<Unit>,
         profileId: String,
     ) {
-        retrofit.deleteProfile("Bearer $ACCESS_TOKEN", profileId).enqueue(
+        retrofit.deleteProfile(profileId).enqueue(
             object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
                     call: Call<BaseResponse<Unit>>,

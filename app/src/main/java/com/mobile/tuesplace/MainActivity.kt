@@ -1,5 +1,6 @@
 package com.mobile.tuesplace
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,12 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.datastore.dataStore
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mobile.tuesplace.session.AppSettingSerializer
 import com.mobile.tuesplace.ui.navigation.LOGIN_SCREEN
 import com.mobile.tuesplace.ui.navigation.NavHost
 import com.mobile.tuesplace.ui.navigation.SETTINGS_SCREEN
 import com.mobile.tuesplace.ui.theme.TuesplaceTheme
+
+val Context.dataStore by dataStore("app-settings.json", AppSettingSerializer)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

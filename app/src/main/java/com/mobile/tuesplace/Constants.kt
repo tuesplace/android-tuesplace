@@ -22,3 +22,5 @@ var USER_ID = ""
 
 var ROLE = ""
 
+const val HEADER_PREFIX_TOKEN = "token"
+

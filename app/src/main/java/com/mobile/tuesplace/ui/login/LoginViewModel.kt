@@ -1,11 +1,14 @@
 package com.mobile.tuesplace.ui.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.data.SignInData
+import com.mobile.tuesplace.dataStore
 import com.mobile.tuesplace.services.AuthService
 import com.mobile.tuesplace.services.ProfileService
+import com.mobile.tuesplace.session.SessionManager
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.states.SignInUiState
 import com.mobile.tuesplace.usecase.GetProfileUseCase
@@ -17,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val signInUseCase: SignInUseCase,
-    private val profileUseCase: GetProfileUseCase
+    private val profileUseCase: GetProfileUseCase,
+    private val context: Context
 ) : ViewModel() {
 
     private val _email =
@@ -52,6 +56,8 @@ class LoginViewModel(
     private val _isCorrectEmail = MutableStateFlow(false)
     val isCorrectEmail: StateFlow<Boolean> = _isCorrectEmail
 
+    private val sessionManager = SessionManager.getInstance(dataStore = context.dataStore)
+
     fun signIn(email: String, password: String) {
         if (ValidateFields.isValidEmail(email)) {
             if (ValidateFields.validatePassword(password)) {
@@ -59,6 +65,8 @@ class LoginViewModel(
                     signInUseCase.invoke(email, password, object : AuthService.AuthCallback {
                         override fun onSuccess(signInResponse: SignInData) {
                             viewModelScope.launch {
+                                continueAfterLogin(signInResponse.accessToken, signInResponse.refreshToken)
+                                sessionManager.setTokens()
                                 _uiStateFlow.emit(SignInUiState.Success)
                                 _isCorrectPassword.value = false
                             }
@@ -112,5 +120,16 @@ class LoginViewModel(
         viewModelScope.launch {
             _getProfileStateFlow.emit(GetProfileUiState.Empty)
         }
+    }
+
+    fun continueAfterLogin(token: String?, refreshToken: String?) {
+        //We should check if we are already logged in
+        //Go to next screen, currently it requirs some login model that if we are logged in we wont have
+        viewModelScope
+            .launch {
+                if (token != null && refreshToken != null) {
+                    sessionManager.setAuthEntities(token, refreshToken)
+                }
+            }
     }
 }
