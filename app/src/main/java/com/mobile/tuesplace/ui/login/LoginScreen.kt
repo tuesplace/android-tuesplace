@@ -5,13 +5,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -23,7 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
-import com.mobile.tuesplace.ui.TextFields
+import com.mobile.tuesplace.ui.TextField
+import com.mobile.tuesplace.ui.states.SignInUiState
 
 @Composable
 fun LoginScreen(
@@ -35,7 +34,23 @@ fun LoginScreen(
     setPassword: (String) -> Unit,
     passwordVisibility: Boolean,
     setPasswordVisibility: (Boolean) -> Unit,
+    uiState: SignInUiState,
+    onSuccess: () -> Unit,
+    isCorrectPassword: Boolean,
+    isCorrectEmail: Boolean
 ) {
+    when (uiState) {
+        SignInUiState.Empty -> {
+        }
+        is SignInUiState.Error -> {
+        }
+        SignInUiState.Loading -> {
+        }
+        SignInUiState.Success -> {
+            onSuccess()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -63,21 +78,24 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFields(email, setEmail, R.string.email)
+                    TextField(email, setEmail, stringResource(id = R.string.email), null, true, isError = isCorrectEmail)
                     TextField(
                         value = password,
+                        isError = isCorrectPassword,
                         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                         onValueChange = { setPassword(it) },
                         trailingIcon = {
                             IconButton(onClick = {
                                 setPasswordVisibility(passwordVisibility)
                             }) {
-                                Icon(painter = painterResource(id = R.drawable.ic_view), contentDescription = "", tint = Color.Black)
+                                Icon(painter = painterResource(id = R.drawable.ic_view),
+                                    contentDescription = "",
+                                    tint = Color.Black)
                             }
                         },
                         maxLines = 1,
-                        placeholder = { Text(stringResource(id = R.string.password))},
-                        modifier =  Modifier
+                        placeholder = { Text(stringResource(id = R.string.password)) },
+                        modifier = Modifier
                             .padding(top = 22.dp, start = 12.dp, end = 12.dp)
                             .fillMaxWidth()
                             .border(BorderStroke(2.dp, Color.White), RoundedCornerShape(16.dp))
@@ -100,7 +118,7 @@ fun LoginScreen(
                         style = TextStyle(textDecoration = TextDecoration.Underline),
                         modifier = Modifier
                             .padding(PaddingValues(16.dp))
-                            .clickable{onForgottenPasswordClick()}
+                            .clickable { onForgottenPasswordClick() }
                     )
                     GradientBorderButtonRound(
                         paddingValues = PaddingValues(1.dp),
@@ -108,7 +126,10 @@ fun LoginScreen(
                         modifier = Modifier
                             .width(200.dp)
                             .height(100.dp),
-                        onLoginClick = onLoginClick, buttonPadding = PaddingValues(16.dp),
+                        onLoginClick = {
+                            onLoginClick()
+                        },
+                        buttonPadding = PaddingValues(16.dp),
                         colors = null
                     )
                 }
@@ -121,5 +142,7 @@ fun LoginScreen(
 @Preview
 @Composable
 fun ComposablePreview() {
-    LoginScreen({}, {}, "", {}, "", {}, true, {})
+    LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {},
+        isCorrectPassword = false,
+        isCorrectEmail = false)
 }

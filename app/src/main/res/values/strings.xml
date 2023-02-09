@@ -9,4 +9,20 @@
     <string name="enter_class">Влез в час</string>
     <string name="enter_classroom">Към\nкласната\nстая</string>
     <string name="link_to_website">Влез в сайта</string>
+    <string name="create_group">Създай група</string>
+    <string name="add_student">Добави ученик</string>
+    <string name="all_students">Всички ученици</string>
+    <string name="remove_student">Изтрий ученик</string>
+    <string name="group_name">Име на групата</string>
+    <string name="group_type">Избери тип</string>
+    <string name="choose_classes">Добави класове</string>
+    <string name="add">Добави</string>
+    <string name="all_groups">Всички групи</string>
+    <string name="save_changes">Запази промените</string>
+    <string name="delete_group">Изтрий групата</string>
+    <string name="edit">Редактирай</string>
+    <string name="name">Име</string>
+    <string name="sign_out">Излез от профила си</string>
+    <string name="screen_not_found">Not found. Contact admin</string>
+    <string name="agenda">Програма</string>
 </resources>

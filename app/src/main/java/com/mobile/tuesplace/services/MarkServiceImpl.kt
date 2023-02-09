@@ -1,0 +1,151 @@
+package com.mobile.tuesplace.services
+
+import com.mobile.tuesplace.data.BaseResponse
+import com.mobile.tuesplace.data.MarkData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
+
+    override fun getGroupMarks(
+        markCallback: MarkService.MarkCallback<List<MarkData>>,
+        groupId: String,
+    ) {
+        retrofit.getGroupMarks(groupId = groupId).enqueue(
+            object : Callback<BaseResponse<List<MarkData>>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<List<MarkData>>>,
+                    response: Response<BaseResponse<List<MarkData>>>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.response?.let { markCallback.onSuccess(it) }
+                    } else {
+                        markCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<List<MarkData>>>, t: Throwable) {
+                    t.localizedMessage?.let { markCallback.onError(it) }
+                }
+
+            }
+        )
+    }
+
+    override fun getStudentMarks(
+        markCallback: MarkService.MarkCallback<List<MarkData>>,
+        groupId: String,
+        studentId: String,
+    ) {
+        retrofit.getStudentMarks(groupId = groupId, studentId = studentId)
+            .enqueue(
+                object : Callback<BaseResponse<List<MarkData>>> {
+                    override fun onResponse(
+                        call: Call<BaseResponse<List<MarkData>>>,
+                        response: Response<BaseResponse<List<MarkData>>>,
+                    ) {
+                        if (response.isSuccessful) {
+                            response.body()?.response?.let { markCallback.onSuccess(it) }
+                        } else {
+                            markCallback.onError(response.message())
+                        }
+                    }
+
+                    override fun onFailure(call: Call<BaseResponse<List<MarkData>>>, t: Throwable) {
+                        t.localizedMessage?.let { markCallback.onError(it) }
+                    }
+
+                }
+            )
+    }
+
+    override fun addStudentMark(
+        markCallback: MarkService.MarkCallback<MarkData>,
+        groupId: String,
+        studentId: String,
+        mark: Double
+    ) {
+        retrofit.addStudentMark(groupId = groupId, studentId = studentId, mark = mark)
+            .enqueue(
+                object : Callback<BaseResponse<MarkData>> {
+                    override fun onResponse(
+                        call: Call<BaseResponse<MarkData>>,
+                        response: Response<BaseResponse<MarkData>>,
+                    ) {
+                        if (response.isSuccessful) {
+                            response.body()?.response?.let { markCallback.onSuccess(it) }
+                        } else {
+                            markCallback.onError(response.message())
+                        }
+                    }
+
+                    override fun onFailure(call: Call<BaseResponse<MarkData>>, t: Throwable) {
+                        t.localizedMessage?.let { markCallback.onError(it) }
+                    }
+
+                }
+            )
+    }
+
+    override fun editStudentMark(
+        markCallback: MarkService.MarkCallback<MarkData>,
+        groupId: String,
+        studentId: String,
+        markId: String,
+        mark: Double
+    ) {
+        retrofit.editStudentMark(
+            groupId = groupId,
+            studentId = studentId,
+            markId = markId,
+            mark = mark).enqueue(
+            object : Callback<BaseResponse<MarkData>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<MarkData>>,
+                    response: Response<BaseResponse<MarkData>>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.response?.let { markCallback.onSuccess(it) }
+                    } else {
+                        markCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<MarkData>>, t: Throwable) {
+                    t.localizedMessage?.let { markCallback.onError(it) }
+                }
+            })
+    }
+
+    override fun deleteStudentMark(
+        markCallback: MarkService.MarkCallback<Unit>,
+        groupId: String,
+        studentId: String,
+        markId: String,
+    ) {
+        retrofit.deleteStudentMark(
+            groupId = groupId,
+            studentId = studentId,
+            markId = markId
+        ).enqueue(
+            object : Callback<BaseResponse<Unit>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.response?.let { markCallback.onSuccess(it) }
+                    } else {
+                        markCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
+                    t.localizedMessage?.let { markCallback.onError(it) }
+                }
+
+            }
+        )
+    }
+}

@@ -12,4 +12,9 @@
     <color name="light_blue">#5D8BF4</color>
     <color name="baby_blue">#DFF6FF</color>
     <color name="logo_blue">#4585FF</color>
+    <color name="royal_blue">#246EE9</color>
+    <color name="gray">#8f9fba</color>
+    <color name="blood_red">#880808</color>
+    <color name="bright_red">#EE4B2B</color>
+    <color name="brick_red">#AA4A44</color>
 </resources>
