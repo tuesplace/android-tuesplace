@@ -112,7 +112,8 @@ fun NavHost(navController: NavHostController) {
                     ContextCompat.startActivity(context,
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
                         null)
-                }
+                },
+                onAgendaClick = { }
             )
         }
         composable(FORGOTTEN_PASSWORD_SCREEN) {

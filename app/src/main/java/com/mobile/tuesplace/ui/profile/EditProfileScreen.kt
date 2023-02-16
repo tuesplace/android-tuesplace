@@ -94,7 +94,7 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.save_changes),
-            onLoginClick = { onSaveChanges() },
+            onClick = { onSaveChanges() },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(16.dp)

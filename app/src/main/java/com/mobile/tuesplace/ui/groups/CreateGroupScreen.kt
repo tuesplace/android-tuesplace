@@ -64,7 +64,7 @@ fun CreateGroupScreen(
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.create_group),
-            onLoginClick = { onCreateGroupClick() },
+            onClick = { onCreateGroupClick() },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(btn){
                 bottom.linkTo(parent.bottom)

@@ -126,7 +126,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .width(200.dp)
                             .height(100.dp),
-                        onLoginClick = {
+                        onClick = {
                             onLoginClick()
                         },
                         buttonPadding = PaddingValues(16.dp),

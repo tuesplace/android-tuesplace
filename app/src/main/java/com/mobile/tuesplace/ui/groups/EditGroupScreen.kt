@@ -118,7 +118,7 @@ fun EditGroupUi(
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.save_changes),
-            onLoginClick = { onEditClick() },
+            onClick = { onEditClick() },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(saveBtn) {
                 bottom.linkTo(deleteBtn.top)
@@ -134,7 +134,7 @@ fun EditGroupUi(
                 colorResource(id = R.color.bright_red)),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.delete_group),
-            onLoginClick = { onDeleteClick("63ce4efd8bd8e60aefbc5839") },
+            onClick = { onDeleteClick("63ce4efd8bd8e60aefbc5839") },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(deleteBtn) {
                 bottom.linkTo(parent.bottom)

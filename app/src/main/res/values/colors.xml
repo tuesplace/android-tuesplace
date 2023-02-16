@@ -7,10 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="dark_blue">#051367</color>
+    <color name="dark_blue">#0A2647</color>
+    <color name="sea_blue">#205295</color>
+    <color name="darker_sea_blue">#144272</color>
     <color name="blue">#2D31FA</color>
     <color name="light_blue">#5D8BF4</color>
-    <color name="baby_blue">#DFF6FF</color>
+    <color name="baby_blue">#AEE2FF</color>
     <color name="logo_blue">#4585FF</color>
     <color name="royal_blue">#246EE9</color>
     <color name="gray">#8f9fba</color>
