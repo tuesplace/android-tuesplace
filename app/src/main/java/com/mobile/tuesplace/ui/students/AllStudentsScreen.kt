@@ -12,32 +12,85 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
-import com.mobile.tuesplace.ui.theme.BabyBlue
+import com.mobile.tuesplace.R
+import com.mobile.tuesplace.ui.EmptyScreen
 
 @Composable
-fun AllStudentsScreen(getAllProfilesUiState: GetAllProfilesUiState, onStudentClick: (String) -> Unit) {
-    when(getAllProfilesUiState) {
-        GetAllProfilesUiState.Empty -> { }
-        is GetAllProfilesUiState.Error -> { }
-        GetAllProfilesUiState.Loading -> { }
+fun AllStudentsScreen(
+    getAllProfilesUiState: GetAllProfilesUiState,
+    onStudentClick: (String) -> Unit,
+) {
+    when (getAllProfilesUiState) {
+        GetAllProfilesUiState.Empty -> {
+            EmptyScreen()
+        }
+        is GetAllProfilesUiState.Error -> {
+            val error = getAllProfilesUiState.exception
+        }
+        GetAllProfilesUiState.Loading -> {}
         is GetAllProfilesUiState.Success -> {
-            AllStudentsUi(profiles = getAllProfilesUiState.profiles, onStudentClick = onStudentClick)
+            AllStudentsUi(profiles = getAllProfilesUiState.profiles,
+                onStudentClick = onStudentClick)
         }
     }
 }
 
 @Composable
 fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) -> Unit) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BabyBlue)
+
+    ConstraintLayout( modifier = Modifier
+        .fillMaxSize()
+        .background(colorResource(id = R.color.dark_blue))
     ) {
-        itemsIndexed(profiles) { _, data ->
-            StudentItem(student = data, onStudentClick)
+        val (allStudents, addStudent, studentsList) = createRefs()
+
+        Text(
+            text = stringResource(id = R.string.all_groups),
+            fontSize = 30.sp,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier
+                .padding(16.dp)
+                .constrainAs(allStudents) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                }
+        )
+
+        Text(
+            text = stringResource(id = R.string.create_new),
+            fontSize = 25.sp,
+            color = colorResource(id = R.color.baby_blue),
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable { }
+                .constrainAs(addStudent) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(allStudents.bottom)
+                }
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.dark_blue))
+                .constrainAs(studentsList){
+                    top.linkTo(addStudent.bottom)
+                }
+        ) {
+            itemsIndexed(profiles) { _, data ->
+                com.mobile.tuesplace.ui.StudentItem(student = data)
+            }
         }
     }
 }

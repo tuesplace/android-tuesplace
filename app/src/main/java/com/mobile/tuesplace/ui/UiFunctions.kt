@@ -30,6 +30,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
@@ -250,7 +251,7 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
             .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
             .align(BottomCenter)
         ) {
-            val (title, teacherString, teacher, classString, className) = createRefs()
+            val (title, teacher, classString, className) = createRefs()
 
             Text(
                 text = groupData.name,
@@ -333,7 +334,7 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
         .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
         .clickable { onGroupClick(groupData._id) }
     ) {
-        val (title, teacherString, teacher, classString, className) = createRefs()
+        val (title, teacher, classString, className) = createRefs()
 
         Text(
             text = groupData.name,
@@ -465,6 +466,40 @@ fun TextFieldWithTitle(
 }
 
 @Composable
+fun StudentItem(student: ProfileResponseData) {
+    ConstraintLayout(
+        modifier = Modifier
+            .size(150.dp)
+            .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+    ) {
+        //Image(painter = , contentDescription = )
+        val (classString, nameString) = createRefs()
+        student.className?.let {
+            Text(
+                text = it,
+                color = colorResource(id = R.color.baby_blue),
+                modifier = Modifier
+                    .padding(6.dp)
+                    .constrainAs(classString) {
+                        start.linkTo(parent.start)
+                    }
+            )
+        }
+
+        Text(
+            text = student.fullName,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier
+                .padding(6.dp)
+                .constrainAs(nameString) {
+                    start.linkTo(parent.start)
+                    top.linkTo(classString.bottom)
+                }
+        )
+    }
+}
+
+@Composable
 @Preview
 fun Preview() {
     // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
@@ -472,6 +507,6 @@ fun Preview() {
         "Bulgarian Language and Literature",
         "",
         arrayListOf("9B"),
-        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "")))) {}
+        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
 }
 
