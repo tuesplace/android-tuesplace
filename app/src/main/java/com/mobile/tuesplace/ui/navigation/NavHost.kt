@@ -7,13 +7,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
@@ -61,7 +59,7 @@ fun NavHost(navController: NavHostController) {
             //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
-                        viewModel.signIn(email, password)
+                    viewModel.signIn(email, password)
                 },
                 onForgottenPasswordClick = { },
                 email = email,
@@ -78,13 +76,13 @@ fun NavHost(navController: NavHostController) {
                 isCorrectPassword = isCorrectPasswordState,
                 isCorrectEmail = isCorrectEmailState
             )
-            when(profileUiState) {
+            when (profileUiState) {
                 GetProfileUiState.Empty -> {}
                 is GetProfileUiState.Error -> {}
                 GetProfileUiState.Loading -> {}
                 is GetProfileUiState.Success -> {
                     ROLE = (profileUiState as GetProfileUiState.Success).profile.role
-                    when(ROLE) {
+                    when (ROLE) {
                         "admin" -> navController.navigate(WELCOME_ADMIN_SCREEN)
                         "student" -> navController.navigate(WELCOME_SCREEN)
                         "teacher" -> navController.navigate(WELCOME_SCREEN)
@@ -112,7 +110,8 @@ fun NavHost(navController: NavHostController) {
                     ContextCompat.startActivity(context,
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
                         null)
-                }
+                },
+                onAgendaClick = { }
             )
         }
         composable(FORGOTTEN_PASSWORD_SCREEN) {
@@ -132,7 +131,7 @@ fun NavHost(navController: NavHostController) {
             val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
             viewModel.getMyGroups()
             ClassesScreen(
-                onClassClick = { navController.navigate(CLASSROOM_USER_SCREEN)},
+                onClassClick = { navController.navigate(CLASSROOM_USER_SCREEN) },
                 getMyGroupsUiState = getMyGroupsUiState
             )
         }
@@ -146,51 +145,47 @@ fun NavHost(navController: NavHostController) {
             )
         }
         composable(WELCOME_ADMIN_SCREEN) {
-            val allGroups = stringResource(id = R.string.all_groups)
-            val createStudent = stringResource(id = R.string.add_student)
-            val allStudents = stringResource(id = R.string.all_students)
-            val agenda = stringResource(id = R.string.agenda)
-            WelcomeAdminScreen(onClick = { string ->
-                when (string) {
-                    allGroups -> {
-                        navController.navigate(ALL_GROUPS_SCREEN)
-                    }
-                    createStudent -> {
-
-                    }
-                    allStudents -> {
-                        navController.navigate(ALL_STUDENTS_SCREEN)
-                    }
-                    agenda -> {
-
-                    }
+            val context = LocalContext.current
+            WelcomeAdminScreen(
+                onAgendaClick = { },
+                onGroupsClick = { navController.navigate(ALL_GROUPS_SCREEN) },
+                onStudentsClick = { navController.navigate(ALL_STUDENTS_SCREEN) },
+                onTeachersClick = { },
+                onLinkClick = {
+                    ContextCompat.startActivity(context,
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
+                        null)
                 }
-            })
+            )
         }
         composable(CREATE_GROUP_SCREEN) {
             val viewModel = getViewModel<CreateGroupViewModel>()
             val groupName by viewModel.groupName.collectAsState()
-            val groupType by viewModel.groupType.collectAsState()
+            val teachers by viewModel.teachers.collectAsState()
             val classes by viewModel.classes.collectAsState()
+            val groupType by viewModel.groupsTypeStateFlow.collectAsState()
             CreateGroupScreen(
                 groupName = groupName,
                 setGroupName = { viewModel.groupName(it) },
-                groupType = groupType,
-                setGroupType = { viewModel.groupType(it) },
                 classes = classes,
                 setClasses = { viewModel.classes(it) },
                 onCreateGroupClick = {
                     viewModel.createGroup(GroupData(
                         name = groupName,
-                        type = groupType,
+                        type = if (groupType) "chat" else "subject",
                         classes = arrayListOf(classes)
                     ))
-                }
+                },
+                teacher = teachers,
+                setTeacher = { viewModel.teachers(it) },
+                groupsType = groupType,
+                setGroupsType = { viewModel.groupsType(it) }
             )
         }
         composable(ALL_GROUPS_SCREEN) {
             val viewModel = getViewModel<AllGroupsViewModel>()
             val allGroupsUiStateFlow by viewModel.getGroupStateFlow.collectAsState()
+            val groupTypeStateFlow by viewModel.groupsTypeStateFlow.collectAsState()
             viewModel.getGroups()
             AllGroupsScreen(
                 allGroupsUiStateFlow,
@@ -200,7 +195,10 @@ fun NavHost(navController: NavHostController) {
                 onAddClick = {
                     navController.navigate(
                         CREATE_GROUP_SCREEN)
-                })
+                },
+                groupsType = groupTypeStateFlow,
+                setGroupsType = { viewModel.groupsType(it) }
+            )
         }
         composable("edit_group_screen/{groupId}",
             arguments = listOf(navArgument("groupId") {
@@ -231,7 +229,7 @@ fun NavHost(navController: NavHostController) {
                 deleteUiState = deleteGroupUiStateFlow,
                 onBackPressed = { navController.navigateUp() })
         }
-        composable(PROFILE_SCREEN){
+        composable(PROFILE_SCREEN) {
             val viewModel = getViewModel<EditProfileViewModel>()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
@@ -246,15 +244,17 @@ fun NavHost(navController: NavHostController) {
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            EditProfileScreen(profileUiState = profileUiState, enabled = enabled, onSaveChanges = {})
+            EditProfileScreen(profileUiState = profileUiState,
+                enabled = enabled,
+                onSaveChanges = {})
         }
-        composable(SETTINGS_SCREEN){
+        composable(SETTINGS_SCREEN) {
             SettingsScreen(
                 onEditClick = { navController.navigate(PROFILE_SCREEN) },
-                onSignOutClick = { navController.navigate(LOGIN_SCREEN)}
+                onSignOutClick = { navController.navigate(LOGIN_SCREEN) }
             )
         }
-        composable(CLASSROOM_USER_SCREEN){
+        composable(CLASSROOM_USER_SCREEN) {
             val viewModel = getViewModel<ClassroomUserViewModel>()
             val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
 
@@ -262,14 +262,17 @@ fun NavHost(navController: NavHostController) {
                 setProfile = {},
                 getGroupUiState = GetGroupUiState.Empty,
                 getProfileByIdUiState = getProfileByIdUiState,
-                onCreatePostClick = { navController.navigate(CREATE_POST)  },
+                onCreatePostClick = { navController.navigate(CREATE_POST) },
                 onEditPostClick = { }
             )
         }
-        composable(CREATE_POST){
+        composable(CREATE_POST) {
             CreatePostScreen()
         }
-        composable("$CHATROOM_SCREEN/{groupId}", arguments = listOf(navArgument("groupId"){type = NavType.StringType})){ backStackEntry ->
+        composable("$CHATROOM_SCREEN/{groupId}",
+            arguments = listOf(navArgument("groupId") {
+                type = NavType.StringType
+            })) { backStackEntry ->
             val viewModel = getViewModel<ChatroomViewModel>()
             val getGroupUiState by viewModel.groupStateFlow.collectAsState()
             LaunchedEffect(null) {
@@ -279,7 +282,7 @@ fun NavHost(navController: NavHostController) {
             }
             ChatroomScreen(getGroupUiState = getGroupUiState)
         }
-        composable(ALL_STUDENTS_SCREEN){
+        composable(ALL_STUDENTS_SCREEN) {
             val viewModel = getViewModel<AllStudentsViewModel>()
             val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
             viewModel.getAllProfiles()

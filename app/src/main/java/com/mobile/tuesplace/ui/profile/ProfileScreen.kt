@@ -26,8 +26,6 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.states.GetProfileUiState
-import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 fun ProfileScreen(profileUiState: GetProfileUiState) {
@@ -108,7 +106,7 @@ fun ProfileUi(profileData: ProfileData){
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.edit),
-            onLoginClick = { },
+            onClick = { },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(16.dp)

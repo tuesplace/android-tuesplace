@@ -15,7 +15,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
-import com.mobile.tuesplace.ui.TextField
+import com.mobile.tuesplace.ui.TextFieldFunction
 import com.mobile.tuesplace.ui.states.DeleteGroupUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 
@@ -88,7 +88,7 @@ fun EditGroupUi(
                 top.linkTo(parent.top)
                 bottom.linkTo(saveBtn.top)
             }) {
-            TextField(
+            TextFieldFunction(
                 value = groupName,
                 onValueChange = setGroupName,
                 placeholder = group.name,
@@ -96,7 +96,7 @@ fun EditGroupUi(
                 enabled = true,
                 isError = null
             )
-            TextField(
+            TextFieldFunction(
                 value = groupType,
                 onValueChange = setGroupType,
                 placeholder = group.type,
@@ -104,7 +104,7 @@ fun EditGroupUi(
                 enabled = true,
                 isError = null
             )
-            TextField(
+            TextFieldFunction(
                 value = classes,
                 onValueChange = setClasses,
                 placeholder = group.classes?.get(0)?: "",
@@ -118,7 +118,7 @@ fun EditGroupUi(
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.save_changes),
-            onLoginClick = { onEditClick() },
+            onClick = { onEditClick() },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(saveBtn) {
                 bottom.linkTo(deleteBtn.top)
@@ -134,7 +134,7 @@ fun EditGroupUi(
                 colorResource(id = R.color.bright_red)),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.delete_group),
-            onLoginClick = { onDeleteClick("63ce4efd8bd8e60aefbc5839") },
+            onClick = { onDeleteClick("63ce4efd8bd8e60aefbc5839") },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(deleteBtn) {
                 bottom.linkTo(parent.bottom)

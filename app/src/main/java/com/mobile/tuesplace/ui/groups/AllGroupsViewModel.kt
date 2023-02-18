@@ -34,4 +34,11 @@ class AllGroupsViewModel(private val getGroupsUseCase: GetGroupsUseCase): ViewMo
         }
     }
 
+    private val _groupsTypeStateFlow = MutableStateFlow(false)
+    val groupsTypeStateFlow: StateFlow<Boolean> = _groupsTypeStateFlow
+
+    fun groupsType(groupsType: Boolean) {
+        _groupsTypeStateFlow.value = !groupsType
+    }
+
 }

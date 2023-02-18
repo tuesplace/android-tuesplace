@@ -7,7 +7,7 @@
     <string name="selected_language">БГ</string>
     <string name="messages">Съобщения</string>
     <string name="enter_class">Влез в час</string>
-    <string name="enter_classroom">Към\nкласната\nстая</string>
+    <string name="enter_classroom">Към класната стая</string>
     <string name="link_to_website">Влез в сайта</string>
     <string name="create_group">Създай група</string>
     <string name="add_student">Добави ученик</string>
@@ -25,4 +25,13 @@
     <string name="sign_out">Излез от профила си</string>
     <string name="screen_not_found">Not found. Contact admin</string>
     <string name="agenda">Програма</string>
+    <string name="groups">Групи</string>
+    <string name="teachers">Учители</string>
+    <string name="students">Ученици</string>
+    <string name="teacher">Преподавател</string>
+    <string name="class_string">Клас</string>
+    <string name="create_new">Създай нова</string>
+    <string name="classes">Класове</string>
+    <string name="chats">Чатове</string>
+    <string name="choose_teacher">Избери преподавател/и</string>
 </resources>

@@ -17,7 +17,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
-import com.mobile.tuesplace.ui.TextField
+import com.mobile.tuesplace.ui.TextFieldFunction
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
@@ -62,7 +62,7 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 top.linkTo(photo.top)
                 bottom.linkTo(editBtn.top)
             }) {
-            TextField(
+            TextFieldFunction(
                 value = "",
                 onValueChange = {},
                 placeholder = profileData.role,
@@ -71,7 +71,7 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 isError = null
             )
 
-            TextField(
+            TextFieldFunction(
                 value = "",
                 onValueChange = {},
                 placeholder = profileData.fullName,
@@ -80,7 +80,7 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
                 isError = null
             )
 
-            TextField(
+            TextFieldFunction(
                 value = "",
                 onValueChange = {},
                 placeholder = profileData.email,
@@ -94,7 +94,7 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
             colors = null,
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.save_changes),
-            onLoginClick = { onSaveChanges() },
+            onClick = { onSaveChanges() },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(16.dp)
