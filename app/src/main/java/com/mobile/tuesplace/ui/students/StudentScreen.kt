@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.data.ProfileResponseData
-import com.mobile.tuesplace.ui.TextField
+import com.mobile.tuesplace.ui.TextFieldFunction
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
@@ -25,7 +25,7 @@ fun StudentUi(
         .fillMaxSize()
         .background(BabyBlue)
     ) {
-        TextField(
+        TextFieldFunction(
             value = nameChange,
             onValueChange = { setNameChange(nameChange) },
             placeholder = profile.fullName,

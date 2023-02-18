@@ -161,22 +161,25 @@ fun NavHost(navController: NavHostController) {
         composable(CREATE_GROUP_SCREEN) {
             val viewModel = getViewModel<CreateGroupViewModel>()
             val groupName by viewModel.groupName.collectAsState()
-            val groupType by viewModel.groupType.collectAsState()
+            val teachers by viewModel.teachers.collectAsState()
             val classes by viewModel.classes.collectAsState()
+            val groupType by viewModel.groupsTypeStateFlow.collectAsState()
             CreateGroupScreen(
                 groupName = groupName,
                 setGroupName = { viewModel.groupName(it) },
-                groupType = groupType,
-                setGroupType = { viewModel.groupType(it) },
                 classes = classes,
                 setClasses = { viewModel.classes(it) },
                 onCreateGroupClick = {
                     viewModel.createGroup(GroupData(
                         name = groupName,
-                        type = groupType,
+                        type = if (groupType) "chat" else "subject",
                         classes = arrayListOf(classes)
                     ))
-                }
+                },
+                teacher = teachers,
+                setTeacher = { viewModel.teachers(it) },
+                groupsType = groupType,
+                setGroupsType = { viewModel.groupsType(it) }
             )
         }
         composable(ALL_GROUPS_SCREEN) {

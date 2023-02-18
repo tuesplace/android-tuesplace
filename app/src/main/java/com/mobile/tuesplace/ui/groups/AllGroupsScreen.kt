@@ -45,7 +45,7 @@ fun AllGroupsScreen(
                 )
             }else{
                 AllGroupsUi(
-                    groups = allGroupsUiState.groups.filter { group ->  group.type == "class" },
+                    groups = allGroupsUiState.groups.filter { group ->  group.type == "subject" },
                     onGroupClick = onGroupClick,
                     onAddClick = onAddClick,
                     groupsType = false,

@@ -8,10 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -31,7 +33,7 @@ import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
-fun TextField(
+fun TextFieldFunction(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -53,8 +55,8 @@ fun TextField(
         placeholder = { Text(placeholder) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = White,
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent,
+            focusedBorderColor = Transparent,
+            unfocusedBorderColor = Transparent,
             textColor = Color.Black,
             placeholderColor = Color.Black,
         )
@@ -70,10 +72,9 @@ fun GradientBorderButtonRound(
     onClick: () -> Unit,
     buttonPadding: PaddingValues?,
 ) {
-    val currentModifier = modifier ?: Modifier
+    val currentModifier = modifier ?: Modifier.fillMaxWidth()
     Box(
         modifier = currentModifier
-            .fillMaxWidth()
             .padding(buttonPadding ?: PaddingValues(start = 12.dp, end = 12.dp))
             .background(
                 brush = Brush.horizontalGradient(colors = colors ?: listOf(
@@ -406,11 +407,11 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
 fun buttonChangeColorOnClick(
     text: String,
     colorState: Boolean,
-    setColor: (Boolean) -> Unit
-){
-    val color: Color = if (colorState){
+    setColor: (Boolean) -> Unit,
+) {
+    val color: Color = if (colorState) {
         colorResource(id = R.color.baby_blue)
-    }else{
+    } else {
         colorResource(id = R.color.white)
     }
     Box(
@@ -419,9 +420,47 @@ fun buttonChangeColorOnClick(
             .border(2.dp, color, RoundedCornerShape(8.dp))
             .clickable { setColor(colorState) }
             .padding(6.dp)
-            .padding(start=6.dp, end=6.dp)
-    ){
+            .padding(start = 6.dp, end = 6.dp)
+    ) {
         Text(text = text.uppercase(), color = color, fontSize = 25.sp)
+    }
+}
+
+@Composable
+fun TextFieldWithTitle(
+    title: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean?,
+    isError: Boolean?,
+) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.dark_blue)),
+        horizontalAlignment = Start
+    ) {
+        Text(
+            text = title.uppercase(),
+            fontSize = 25.sp,
+            color = colorResource(id = R.color.baby_blue)
+        )
+
+        TextField(
+            value = value,
+            onValueChange = { onValueChange(it) },
+            enabled = enabled ?: true,
+            isError = isError ?: false,
+            placeholder = {
+                Text(text = placeholder,
+                    color = colorResource(id = R.color.baby_blue))
+            },
+            modifier = Modifier
+                .background(colorResource(id = R.color.dark_blue))
+                .border(2.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+        )
     }
 }
 

@@ -20,12 +20,12 @@ class CreateGroupViewModel(private val createGroupUseCase: CreateGroupUseCase): 
         _groupName.value = nameInput
     }
 
-    private val _groupType =
+    private val _teachers =
         MutableStateFlow("")
-    val groupType: StateFlow<String> = _groupType
+    val teachers: StateFlow<String> = _teachers
 
-    fun groupType(typeInput: String) {
-        _groupType.value = typeInput
+    fun teachers(teacher: String) {
+        _teachers.value = teacher
     }
 
     private val _classes =
@@ -34,6 +34,13 @@ class CreateGroupViewModel(private val createGroupUseCase: CreateGroupUseCase): 
 
     fun classes(classesInput: String) {
         _classes.value = classesInput
+    }
+
+    private val _groupsTypeStateFlow = MutableStateFlow(false)
+    val groupsTypeStateFlow: StateFlow<Boolean> = _groupsTypeStateFlow
+
+    fun groupsType(groupsType: Boolean) {
+        _groupsTypeStateFlow.value = !groupsType
     }
 
     private val _uiStateFlow = MutableStateFlow<CreateGroupUiState>(CreateGroupUiState.Empty)
