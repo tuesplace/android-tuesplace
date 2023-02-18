@@ -1,43 +1,57 @@
 package com.mobile.tuesplace.ui.groups
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
+import com.mobile.tuesplace.ui.GroupChatItem
+import com.mobile.tuesplace.ui.GroupClassItem
+import com.mobile.tuesplace.ui.buttonChangeColorOnClick
 import com.mobile.tuesplace.ui.states.GetGroupsUiState
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
-fun AllGroupsScreen(allGroupsUiState: GetGroupsUiState,
-                    onGroupClick: (String) -> Unit,
-                    onAddClick: () -> Unit) {
+fun AllGroupsScreen(
+    allGroupsUiState: GetGroupsUiState,
+    onGroupClick: (String) -> Unit,
+    onAddClick: () -> Unit,
+    groupsType: Boolean,
+    setGroupsType: (Boolean) -> Unit
+) {
     when (allGroupsUiState) {
-        GetGroupsUiState.Empty -> { }
-        is GetGroupsUiState.Error -> { }
-        GetGroupsUiState.Loading -> { }
+        GetGroupsUiState.Empty -> {}
+        is GetGroupsUiState.Error -> {}
+        GetGroupsUiState.Loading -> {}
         is GetGroupsUiState.Success -> {
-            AllGroupsUi(
-                groups = allGroupsUiState.groups,
-                onGroupClick = onGroupClick,
-                onAddClick = onAddClick
-            )
+            if (groupsType){
+                AllGroupsUi(
+                    groups = allGroupsUiState.groups.filter { group ->  group.type == "chat" },
+                    onGroupClick = onGroupClick,
+                    onAddClick = onAddClick,
+                    groupsType = true,
+                    setGroupsType = setGroupsType
+                )
+            }else{
+                AllGroupsUi(
+                    groups = allGroupsUiState.groups.filter { group ->  group.type == "class" },
+                    onGroupClick = onGroupClick,
+                    onAddClick = onAddClick,
+                    groupsType = false,
+                    setGroupsType = setGroupsType
+                )
+            }
         }
     }
 }
@@ -46,69 +60,87 @@ fun AllGroupsScreen(allGroupsUiState: GetGroupsUiState,
 fun AllGroupsUi(
     groups: List<GroupResponseData>,
     onGroupClick: (String) -> Unit,
-    onAddClick: () -> Unit
-){
+    onAddClick: () -> Unit,
+    groupsType: Boolean,
+    setGroupsType: (Boolean) -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.gray))
+            .background(colorResource(id = R.color.dark_blue))
     ) {
-        val (addGroup, group) = createRefs()
+        val (allGroups, groupTypes, addGroup, groupsList) = createRefs()
 
-        Box(modifier = Modifier
-            .padding(6.dp)
-            .width(100.dp)
-            .height(70.dp)
-            .constrainAs(addGroup) {
-                top.linkTo(parent.top)
-                end.linkTo(parent.end)
-            }
-            .padding(PaddingValues(16.dp))
-            .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
-            .clickable { onAddClick() }
-        ){
-            Text(text = stringResource(id = R.string.add), color = Color.White, textAlign = TextAlign.Center)
+        Text(
+            text = stringResource(id = R.string.all_groups),
+            fontSize = 30.sp,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier
+                .padding(16.dp)
+                .constrainAs(allGroups) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                }
+        )
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(groupTypes){
+                    top.linkTo(allGroups.bottom)
+                },
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            buttonChangeColorOnClick(
+                text = stringResource(id = R.string.classes),
+                colorState = groupsType,
+                setColor = setGroupsType
+            )
+
+            buttonChangeColorOnClick(
+                text = stringResource(id = R.string.chats),
+                colorState = !groupsType,
+                setColor = { setGroupsType(groupsType) }
+            )
         }
+
+        Text(
+            text = stringResource(id = R.string.create_new),
+            fontSize = 25.sp,
+            color = colorResource(id = R.color.baby_blue),
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable { onAddClick() }
+                .constrainAs(addGroup) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(groupTypes.bottom)
+                }
+        )
 
         LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(group) {
+            .constrainAs(groupsList) {
                 top.linkTo(addGroup.bottom)
-                bottom.linkTo(parent.bottom)
-            }) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        ) {
             itemsIndexed(groups) { _, group ->
-                GroupItem(groupData = group, onGroupClick = onGroupClick)
+                if (groupsType){
+                    GroupChatItem(groupData = group, onGroupClick = { onGroupClick(it) })
+                } else {
+                    GroupClassItem(groupData = group, onGroupClick = { onGroupClick(it) })
+                }
             }
         }
-    }
-}
-
-@Composable
-fun GroupItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(5.dp)
-            .border(1.dp, Color.White, RoundedCornerShape(8.dp))
-            .background(colorResource(id = R.color.logo_blue), RoundedCornerShape(8.dp))
-            .clickable {
-                onGroupClick(groupData._id)
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = groupData.name,
-            fontSize = 20.sp,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
 @Composable
 @Preview
 fun GroupItemPreview() {
-    AllGroupsScreen(GetGroupsUiState.Empty, {}) {}
+    AllGroupsScreen(GetGroupsUiState.Empty, {}, {},false) {}
 }
 

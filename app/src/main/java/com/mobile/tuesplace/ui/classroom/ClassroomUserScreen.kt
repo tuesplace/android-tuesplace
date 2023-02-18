@@ -40,7 +40,6 @@ fun ClassroomUserScreen(
         GetGroupUiState.Loading -> { }
         is GetGroupUiState.Success -> {
             group = getGroupUiState.groupData
-            getGroupUiState.groupData.teachers?.get(0)?.let { setProfile(it) }
             when (getProfileByIdUiState) {
                 GetProfileByIdUiState.Empty -> { }
                 is GetProfileByIdUiState.Error -> { }

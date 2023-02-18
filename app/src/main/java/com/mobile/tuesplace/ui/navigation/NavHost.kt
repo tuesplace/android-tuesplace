@@ -182,6 +182,7 @@ fun NavHost(navController: NavHostController) {
         composable(ALL_GROUPS_SCREEN) {
             val viewModel = getViewModel<AllGroupsViewModel>()
             val allGroupsUiStateFlow by viewModel.getGroupStateFlow.collectAsState()
+            val groupTypeStateFlow by viewModel.groupsTypeStateFlow.collectAsState()
             viewModel.getGroups()
             AllGroupsScreen(
                 allGroupsUiStateFlow,
@@ -191,7 +192,10 @@ fun NavHost(navController: NavHostController) {
                 onAddClick = {
                     navController.navigate(
                         CREATE_GROUP_SCREEN)
-                })
+                },
+                groupsType = groupTypeStateFlow,
+                setGroupsType = { viewModel.groupsType(it) }
+            )
         }
         composable("edit_group_screen/{groupId}",
             arguments = listOf(navArgument("groupId") {
