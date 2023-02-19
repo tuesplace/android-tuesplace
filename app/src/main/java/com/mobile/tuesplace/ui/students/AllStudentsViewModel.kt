@@ -20,7 +20,7 @@ class AllStudentsViewModel(private val getAllProfilesUseCase: GetAllProfilesUseC
             getAllProfilesUseCase.invoke(object : ProfileService.GetProfileCallback<List<ProfileResponseData>>{
                 override fun onSuccess(profileGeneric: List<ProfileResponseData>) {
                     viewModelScope.launch {
-                        _getAllProfilesStateFlow.emit(GetAllProfilesUiState.Success(profileGeneric.filter { profile -> profile.role == "student" }))
+                        _getAllProfilesStateFlow.emit(GetAllProfilesUiState.Success(profileGeneric))
                     }
                 }
 

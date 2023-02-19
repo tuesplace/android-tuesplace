@@ -1,9 +1,11 @@
-package com.mobile.tuesplace.ui.students
+package com.mobile.tuesplace.ui.teachers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,17 +22,18 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.mobile.tuesplace.data.ProfileResponseData
-import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.EmptyScreen
 import com.mobile.tuesplace.ui.SearchView
+import com.mobile.tuesplace.ui.StudentItem
+import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
 
 @Composable
-fun AllStudentsScreen(
+fun AllTeachersScreen(
     getAllProfilesUiState: GetAllProfilesUiState,
-    onStudentClick: (String) -> Unit,
-    onCreateNewClick: () -> Unit
+    onTeacherClick: (String) -> Unit,
+    onCreateNewClick: () -> Unit,
 ) {
     when (getAllProfilesUiState) {
         GetAllProfilesUiState.Empty -> {
@@ -41,9 +44,9 @@ fun AllStudentsScreen(
         }
         GetAllProfilesUiState.Loading -> {}
         is GetAllProfilesUiState.Success -> {
-            AllStudentsUi(
-                profiles = getAllProfilesUiState.profiles.filter { profile -> profile.role == "student" },
-                onStudentClick = onStudentClick,
+            AllTeachersUi(
+                profiles = getAllProfilesUiState.profiles.filter { profile -> profile.role == "teacher" },
+                onStudentClick = onTeacherClick,
                 onCreateNewClick = onCreateNewClick
             )
         }
@@ -51,9 +54,12 @@ fun AllStudentsScreen(
 }
 
 @Composable
-fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) -> Unit, onCreateNewClick: () -> Unit) {
-
-    ConstraintLayout( modifier = Modifier
+fun AllTeachersUi(
+    profiles: List<ProfileResponseData>,
+    onStudentClick: (String) -> Unit,
+    onCreateNewClick: () -> Unit,
+) {
+    ConstraintLayout(modifier = Modifier
         .fillMaxSize()
         .background(colorResource(id = R.color.dark_blue))
     ) {
@@ -62,7 +68,7 @@ fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) 
         val textState = remember { mutableStateOf(TextFieldValue("")) }
 
         Text(
-            text = stringResource(id = R.string.all_students),
+            text = stringResource(id = R.string.all_teachers),
             fontSize = 30.sp,
             color = colorResource(id = R.color.white),
             modifier = Modifier
@@ -93,7 +99,9 @@ fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) 
             state = textState,
             modifier = Modifier
                 .padding(16.dp)
-                .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape (8.dp))
+                .border(1.dp,
+                    colorResource(id = R.color.darker_sea_blue),
+                    RoundedCornerShape(8.dp))
                 .constrainAs(searchView) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -111,8 +119,8 @@ fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) 
                 },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(profiles.filter { profile -> profile.className?.contains(textState.value.text) == true }) { _, data ->
-                com.mobile.tuesplace.ui.StudentItem(student = data, onClick = onStudentClick)
+            itemsIndexed(profiles.filter { profile -> profile.fullName.contains(textState.value.text) }) { _, data ->
+                StudentItem(student = data, onClick = onStudentClick)
             }
         }
     }

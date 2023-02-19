@@ -37,6 +37,7 @@ import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.students.AllStudentsScreen
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
+import com.mobile.tuesplace.ui.teachers.AllTeachersScreen
 import com.mobile.tuesplace.ui.videoroom.VideoroomScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
@@ -150,7 +151,7 @@ fun NavHost(navController: NavHostController) {
                 onAgendaClick = { },
                 onGroupsClick = { navController.navigate(ALL_GROUPS_SCREEN) },
                 onStudentsClick = { navController.navigate(ALL_STUDENTS_SCREEN) },
-                onTeachersClick = { },
+                onTeachersClick = { navController.navigate(ALL_TEACHERS_SCREEN) },
                 onLinkClick = {
                     ContextCompat.startActivity(context,
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
@@ -293,6 +294,16 @@ fun NavHost(navController: NavHostController) {
                 getAllProfilesUiState = getAllProfilesStateFlow,
                 onStudentClick = {},
                 onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
+            )
+        }
+        composable(ALL_TEACHERS_SCREEN){
+            val viewModel = getViewModel<AllStudentsViewModel>()
+            val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
+            viewModel.getAllProfiles()
+            AllTeachersScreen(
+                getAllProfilesUiState = getAllProfilesStateFlow,
+                onTeacherClick = { },
+                onCreateNewClick = { }
             )
         }
     }
