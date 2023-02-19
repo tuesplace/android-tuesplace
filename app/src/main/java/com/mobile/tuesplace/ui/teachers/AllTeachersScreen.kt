@@ -68,7 +68,7 @@ fun AllTeachersUi(
         val textState = remember { mutableStateOf(TextFieldValue("")) }
 
         Text(
-            text = stringResource(id = R.string.all_students),
+            text = stringResource(id = R.string.all_teachers),
             fontSize = 30.sp,
             color = colorResource(id = R.color.white),
             modifier = Modifier

@@ -12,6 +12,7 @@
     <string name="create_group">Създай група</string>
     <string name="add_student">Добави ученик</string>
     <string name="all_students">Всички ученици</string>
+    <string name="all_teachers">Всички учители</string>
     <string name="remove_student">Изтрий ученик</string>
     <string name="group_name">Име на групата</string>
     <string name="group_type">Избери тип</string>
