@@ -7,7 +7,6 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -40,7 +39,7 @@ interface ApiServices {
     fun deleteGroup(@Path("groupId") groupId: String): Call<BaseResponse<Unit>>
 
     @GET(PROFILE_ME)
-    fun getProfile(): Call<BaseResponse<ProfileData>>
+    fun getProfile(): Call<BaseResponse<ProfileResponseData>>
 
     @GET(ALL_PROFILES)
     fun getAllProfiles(): Call<BaseResponse<List<ProfileResponseData>>>
@@ -48,8 +47,8 @@ interface ApiServices {
     @GET(PROFILE)
     fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileData>>
 
-    @PUT(PROFILE)
-    fun editProfile(@Path("profileId") profileId: String, editProfileData: EditProfileData): Call<BaseResponse<Unit>>
+    @PUT(PROFILE_ME)
+    fun editProfile(@Body editProfileData: EditProfileData): Call<BaseResponse<Unit>>
 
     @DELETE(PROFILE)
     fun deleteProfile(@Path("profileId") profileId: String): Call<BaseResponse<Unit>>

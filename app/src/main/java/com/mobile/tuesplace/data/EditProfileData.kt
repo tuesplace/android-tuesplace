@@ -4,11 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 data class EditProfileData(
     @SerializedName("fullName")
-    var fullName: String,
+    var fullName: String?,
     @SerializedName("email")
-    var email: String,
+    var email: String?,
     @SerializedName("password")
-    var password: String,
+    var password: String?,
     @SerializedName("role")
-    var role: String,
+    var role: String?,
+    @SerializedName("class")
+    var className: String?
 )

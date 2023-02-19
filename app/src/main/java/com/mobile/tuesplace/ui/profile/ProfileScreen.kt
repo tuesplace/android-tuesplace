@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.InfoItem
 import com.mobile.tuesplace.ui.states.EditProfileUiState
@@ -39,7 +40,7 @@ fun ProfileScreen(profileUiState: GetProfileUiState, onEditClick: () -> Unit) {
 }
 
 @Composable
-fun ProfileUi(profileData: ProfileData, onEditClick: () -> Unit) {
+fun ProfileUi(profileData: ProfileResponseData, onEditClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -88,6 +89,7 @@ fun ProfileUi(profileData: ProfileData, onEditClick: () -> Unit) {
                 .constrainAs(info) {
                     start.linkTo(parent.start)
                     top.linkTo(photo.bottom)
+                    bottom.linkTo(editButton.top)
                 }
                 .padding(16.dp)
         ) {
@@ -107,29 +109,14 @@ fun ProfileUi(profileData: ProfileData, onEditClick: () -> Unit) {
         }
 
 
-//        GradientBorderButtonRound(
-//            colors = null,
-//            paddingValues = PaddingValues(16.dp),
-//            buttonText = stringResource(id = R.string.edit),
-//            onClick = { },
-//            buttonPadding = PaddingValues(16.dp),
-//            modifier = Modifier
-//                .padding(16.dp)
-//                .constrainAs() {
-//                    bottom.linkTo(parent.bottom)
-//                    start.linkTo(parent.start)
-//                    end.linkTo(parent.end)
-//                }
-//        )
         if(profileData.role == stringResource(id = R.string.admin_role)){
             GradientBorderButtonRound(
                 colors = listOf(colorResource(id = R.color.baby_blue), colorResource(id = R.color.lighter_dark_blue)),
                 paddingValues = PaddingValues(16.dp),
                 buttonText = stringResource(id = R.string.edit),
-                onClick = {  },
+                onClick = { onEditClick() },
                 buttonPadding = PaddingValues(16.dp),
                 modifier = Modifier
-                    .clickable { onEditClick() }
                     .constrainAs(editButton) {
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
@@ -143,5 +130,5 @@ fun ProfileUi(profileData: ProfileData, onEditClick: () -> Unit) {
 @Composable
 @Preview
 fun ProfilePreview() {
-    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", "")) {}
+    ProfileUi(ProfileResponseData( "", "Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", "")) {}
 }

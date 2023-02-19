@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.ROLE
+import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
@@ -239,18 +240,39 @@ fun NavHost(navController: NavHostController) {
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            ProfileScreen(profileUiState = profileUiState, onEditClick = { navController.navigate(EDIT_PROFILE_SCREEN)})
+            ProfileScreen(profileUiState = profileUiState,
+                onEditClick = { navController.navigate(EDIT_PROFILE_SCREEN) })
         }
         composable(EDIT_PROFILE_SCREEN) {
             val viewModel = getViewModel<EditProfileViewModel>()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
-            val enabled: Boolean = ROLE == "admin"
+            val changeName by viewModel.changeName.collectAsState()
+            val changeEmail by viewModel.changeEmail.collectAsState()
+            val changeClass by viewModel.changeClass.collectAsState()
+            val editProfileStateFlow by viewModel.editProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            EditProfileScreen(profileUiState = profileUiState,
-                enabled = enabled,
-                onSaveChanges = {})
+            EditProfileScreen(
+                profileUiState = profileUiState,
+                onSaveChanges = {
+                    viewModel.editProfile(EditProfileData(
+                        fullName = changeName.ifEmpty { null },
+                        email = changeEmail.ifEmpty { null },
+                        password = null,
+                        role = null,
+                        className = changeClass.ifEmpty { null }
+                    ))
+                },
+                onAddPhotoClick = {},
+                changeName = changeName,
+                setChangedName = { viewModel.changeName(it) },
+                changeEmail = changeEmail,
+                setChangedEmail = { viewModel.changeEmail(it) },
+                changeClass = changeClass,
+                setChangedClass = { viewModel.changeClass(it) },
+                editProfileStateFlow = editProfileStateFlow
+            )
         }
         composable(SETTINGS_SCREEN) {
             SettingsScreen(
@@ -296,7 +318,7 @@ fun NavHost(navController: NavHostController) {
                 onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
             )
         }
-        composable(ALL_TEACHERS_SCREEN){
+        composable(ALL_TEACHERS_SCREEN) {
             val viewModel = getViewModel<AllStudentsViewModel>()
             val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
             viewModel.getAllProfiles()
