@@ -4,7 +4,11 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
@@ -20,7 +24,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +36,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
@@ -250,7 +257,7 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
             .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
             .align(BottomCenter)
         ) {
-            val (title, teacherString, teacher, classString, className) = createRefs()
+            val (title, teacher, classString, className) = createRefs()
 
             Text(
                 text = groupData.name,
@@ -333,7 +340,7 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
         .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
         .clickable { onGroupClick(groupData._id) }
     ) {
-        val (title, teacherString, teacher, classString, className) = createRefs()
+        val (title, teacher, classString, className) = createRefs()
 
         Text(
             text = groupData.name,
@@ -434,9 +441,11 @@ fun TextFieldWithTitle(
     onValueChange: (String) -> Unit,
     enabled: Boolean?,
     isError: Boolean?,
+    modifier: Modifier?
 ) {
+    val currentModifier = modifier?: Modifier
     Column(
-        modifier = Modifier
+        modifier = currentModifier
             .padding(16.dp)
             .fillMaxWidth()
             .background(colorResource(id = R.color.dark_blue)),
@@ -465,6 +474,100 @@ fun TextFieldWithTitle(
 }
 
 @Composable
+fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
+    ConstraintLayout(
+        modifier = Modifier
+            .clickable { onClick(student._id) }
+            .padding(6.dp)
+            .size(150.dp)
+            .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+    ) {
+        //Image(painter = , contentDescription = )
+        val (classString, nameString) = createRefs()
+        student.className?.let {
+            Text(
+                text = it,
+                color = colorResource(id = R.color.baby_blue),
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .constrainAs(classString) {
+                        start.linkTo(parent.start)
+                        bottom.linkTo(nameString.top)
+                    }
+            )
+        }
+
+        Text(
+            text = student.fullName,
+            color = colorResource(id = R.color.white),
+            modifier = Modifier
+                .padding(start = 6.dp, bottom = 6.dp)
+                .constrainAs(nameString) {
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom)
+                }
+        )
+    }
+}
+
+@Composable
+fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
+    val currentModifier = modifier?: Modifier
+    TextField(
+        value = state.value,
+        onValueChange = { value ->
+            state.value = value
+        },
+        modifier = currentModifier
+            .fillMaxWidth()
+            .border(2.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp)),
+        textStyle = TextStyle(color = White, fontSize = 18.sp),
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(24.dp)
+            )
+        },
+        placeholder = { Text(text = stringResource(id = R.string.search))},
+        trailingIcon = {
+            if (state.value != TextFieldValue("")) {
+                IconButton(
+                    onClick = {
+                        state.value =
+                            TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(8.dp), // The TextFiled has rounded corners top left and right by default
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = colorResource(id = R.color.baby_blue),
+            cursorColor = colorResource(id = R.color.baby_blue),
+            leadingIconColor = colorResource(id = R.color.baby_blue),
+            trailingIconColor = colorResource(id = R.color.baby_blue),
+            backgroundColor = colorResource(id = R.color.darker_sea_blue),
+            focusedIndicatorColor = Transparent,
+            unfocusedIndicatorColor = Transparent,
+            disabledIndicatorColor = Transparent,
+            placeholderColor = colorResource(id = R.color.baby_blue)
+        )
+    )
+}
+
+
+@Composable
 @Preview
 fun Preview() {
     // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
@@ -472,6 +575,6 @@ fun Preview() {
         "Bulgarian Language and Literature",
         "",
         arrayListOf("9B"),
-        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "")))) {}
+        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
 }
 

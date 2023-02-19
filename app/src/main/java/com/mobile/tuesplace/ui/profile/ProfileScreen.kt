@@ -122,5 +122,5 @@ fun ProfileUi(profileData: ProfileData){
 @Composable
 @Preview
 fun ProfilePreview() {
-    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"))
+    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", ""))
 }

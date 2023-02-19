@@ -1,20 +1,25 @@
 package com.mobile.tuesplace.ui.groups
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.SearchView
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.buttonChangeColorOnClick
 
@@ -28,7 +33,9 @@ fun CreateGroupScreen(
     teacher: String,
     setTeacher: (String) -> Unit,
     groupsType: Boolean,
-    setGroupsType: (Boolean) -> Unit
+    setGroupsType: (Boolean) -> Unit,
+    query: String,
+    setQuery: (String) -> Unit
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
@@ -50,7 +57,8 @@ fun CreateGroupScreen(
                 onValueChange = setGroupName,
                 placeholder = stringResource(id = R.string.group_name),
                 enabled = true,
-                isError = null
+                isError = null,
+                modifier = Modifier.clickable {  }
             )
 
             TextFieldWithTitle(
@@ -59,7 +67,8 @@ fun CreateGroupScreen(
                 onValueChange = setClasses,
                 placeholder = stringResource(id = R.string.choose_classes),
                 enabled = true,
-                isError = null
+                isError = null,
+                modifier = Modifier.clickable {  }
             )
 
             TextFieldWithTitle(
@@ -68,7 +77,8 @@ fun CreateGroupScreen(
                 onValueChange = setTeacher,
                 placeholder = stringResource(id = R.string.choose_teacher),
                 enabled = true,
-                isError = null
+                isError = null,
+                modifier = Modifier.clickable {  }
             )
 
             Column(
@@ -120,6 +130,8 @@ fun CreateGroupScreen(
     }
 }
 
+
+
 @Composable
 @Preview
 fun Preview() {
@@ -128,5 +140,5 @@ fun Preview() {
         setGroupName = {},
         classes = "12b",
         setClasses = {},
-        onCreateGroupClick = {}, "", {}, false, {})
+        onCreateGroupClick = {}, "", {}, false, {}, "", {})
 }

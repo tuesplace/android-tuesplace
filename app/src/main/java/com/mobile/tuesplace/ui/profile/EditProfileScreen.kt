@@ -110,5 +110,5 @@ fun EditProfileUi(profileData: ProfileData, enabled: Boolean, onSaveChanges: () 
 @Composable
 @Preview
 fun EditProfilePreview() {
-    EditProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin"), false) {}
+    EditProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", ""), false) {}
 }

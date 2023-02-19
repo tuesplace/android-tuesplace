@@ -164,6 +164,7 @@ fun NavHost(navController: NavHostController) {
             val teachers by viewModel.teachers.collectAsState()
             val classes by viewModel.classes.collectAsState()
             val groupType by viewModel.groupsTypeStateFlow.collectAsState()
+            val query by viewModel.search.collectAsState()
             CreateGroupScreen(
                 groupName = groupName,
                 setGroupName = { viewModel.groupName(it) },
@@ -179,7 +180,9 @@ fun NavHost(navController: NavHostController) {
                 teacher = teachers,
                 setTeacher = { viewModel.teachers(it) },
                 groupsType = groupType,
-                setGroupsType = { viewModel.groupsType(it) }
+                setGroupsType = { viewModel.groupsType(it) },
+                query = query,
+                setQuery = { viewModel.search(it) }
             )
         }
         composable(ALL_GROUPS_SCREEN) {
@@ -286,7 +289,11 @@ fun NavHost(navController: NavHostController) {
             val viewModel = getViewModel<AllStudentsViewModel>()
             val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
             viewModel.getAllProfiles()
-            AllStudentsScreen(getAllProfilesUiState = getAllProfilesStateFlow, onStudentClick = {})
+            AllStudentsScreen(
+                getAllProfilesUiState = getAllProfilesStateFlow,
+                onStudentClick = {},
+                onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
+            )
         }
     }
 }
