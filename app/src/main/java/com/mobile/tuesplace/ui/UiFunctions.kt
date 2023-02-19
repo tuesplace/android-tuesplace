@@ -213,7 +213,8 @@ fun WebViewImage(onImageClick: () -> Unit, image: Painter, text: String, modifie
     val currentModifier = modifier ?: Modifier
     Box(modifier = currentModifier
         .clickable { onImageClick() }
-        .padding(16.dp)
+        .padding(top = 50.dp)
+        .padding(6.dp)
         .background(White, RoundedCornerShape(8.dp))
         .border(2.dp,
             colorResource(id = R.color.white),

@@ -38,7 +38,6 @@ fun WelcomeAdminScreen(
             image = painterResource(id = R.drawable.tues_webview),
             text = stringResource(id = R.string.link_to_website),
             modifier = Modifier
-                .padding(16.dp)
                 .height(200.dp)
                 .constrainAs(webView) {
                     top.linkTo(parent.top)
