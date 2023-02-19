@@ -2,125 +2,146 @@ package com.mobile.tuesplace.ui.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.InfoItem
+import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
-fun ProfileScreen(profileUiState: GetProfileUiState) {
-    when(profileUiState){
+fun ProfileScreen(profileUiState: GetProfileUiState, onEditClick: () -> Unit) {
+    when (profileUiState) {
         GetProfileUiState.Empty -> {}
         is GetProfileUiState.Error -> {}
         GetProfileUiState.Loading -> {}
         is GetProfileUiState.Success -> {
-            ProfileUi(profileData = profileUiState.profile)
+            ProfileUi(profileData = profileUiState.profile, onEditClick)
         }
+        EditProfileUiState.Loading -> {}
     }
 }
 
 @Composable
-fun ProfileUi(profileData: ProfileData){
+fun ProfileUi(profileData: ProfileData, onEditClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.gray))
+            .background(colorResource(id = R.color.darker_sea_blue))
     ) {
-        val (photo, name, role, email, editBtn) = createRefs()
+        val (photo, photoBackground, info, editButton) = createRefs()
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = stringResource(id = R.string.email),
-            contentScale = ContentScale.Crop,
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .background(colorResource(id = R.color.dark_blue))
+            .constrainAs(photoBackground) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        )
+
+        Box(
             modifier = Modifier
-                .size(200.dp)
-                .padding(16.dp)
-                .clip(CircleShape)
+                .fillMaxWidth()
+                .height(220.dp)
+                .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(50.dp))
                 .constrainAs(photo) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = stringResource(id = R.string.email),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(100.dp)
+                    .border(2.dp, colorResource(id = R.color.white), CircleShape)
+                    .clip(CircleShape)
+            )
 
-        Text(text = profileData.role.uppercase(),
-            color = Color.White,
-            fontSize = 30.sp,
+        }
+
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .constrainAs(role) {
+                .constrainAs(info) {
+                    start.linkTo(parent.start)
                     top.linkTo(photo.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
                 }
-        )
-
-        Text(
-            text = profileData.fullName,
-            color = Color.White,
-            fontSize = 25.sp,
-            modifier = Modifier
-                .padding(6.dp)
-                .constrainAs(name) {
-                    top.linkTo(role.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
-
-        Text(
-            text = profileData.email,
-            color = Color.White,
-            fontSize = 20.sp,
-            style = TextStyle(textDecoration = TextDecoration.Underline),
-            modifier = Modifier
                 .padding(16.dp)
-                .constrainAs(email) {
-                    top.linkTo(name.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+        ) {
+            InfoItem(title = stringResource(id = R.string.name), text = profileData.fullName)
+            Spacer(modifier = Modifier.padding(6.dp))
+            InfoItem(title = stringResource(id = R.string.role), text = profileData.role)
+            Spacer(modifier = Modifier.padding(6.dp))
+            InfoItem(title = stringResource(id = R.string.email), text = profileData.email)
+            Spacer(modifier = Modifier.padding(6.dp))
+//            InfoItem(title = stringResource(id = R.string.phone), text = profileData.)
+            if (profileData.role == stringResource(id = R.string.student_role)) {
+                profileData.className?.let {
+                    InfoItem(title = stringResource(id = R.string.class_string),
+                        text = it)
                 }
-        )
+            }
+        }
 
-        GradientBorderButtonRound(
-            colors = null,
-            paddingValues = PaddingValues(16.dp),
-            buttonText = stringResource(id = R.string.edit),
-            onClick = { },
-            buttonPadding = PaddingValues(16.dp),
-            modifier = Modifier
-                .padding(16.dp)
-                .constrainAs(editBtn) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
+
+//        GradientBorderButtonRound(
+//            colors = null,
+//            paddingValues = PaddingValues(16.dp),
+//            buttonText = stringResource(id = R.string.edit),
+//            onClick = { },
+//            buttonPadding = PaddingValues(16.dp),
+//            modifier = Modifier
+//                .padding(16.dp)
+//                .constrainAs() {
+//                    bottom.linkTo(parent.bottom)
+//                    start.linkTo(parent.start)
+//                    end.linkTo(parent.end)
+//                }
+//        )
+        if(profileData.role == stringResource(id = R.string.admin_role)){
+            GradientBorderButtonRound(
+                colors = listOf(colorResource(id = R.color.baby_blue), colorResource(id = R.color.lighter_dark_blue)),
+                paddingValues = PaddingValues(16.dp),
+                buttonText = stringResource(id = R.string.edit),
+                onClick = {  },
+                buttonPadding = PaddingValues(16.dp),
+                modifier = Modifier
+                    .clickable { onEditClick() }
+                    .constrainAs(editButton) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+        }
     }
 }
 
 @Composable
 @Preview
 fun ProfilePreview() {
-    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", ""))
+    ProfileUi(ProfileData("Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", "")) {}
 }

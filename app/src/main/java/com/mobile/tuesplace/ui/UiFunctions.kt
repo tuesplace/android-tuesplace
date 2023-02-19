@@ -569,6 +569,14 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
 
 
 @Composable
+fun InfoItem(title: String, text: String){
+    Column(horizontalAlignment = Start) {
+        Text(text = title.uppercase(), color = colorResource(id = R.color.baby_blue), fontSize = 25.sp)
+        Text(text = text, color = White, fontSize = 20.sp)
+    }
+}
+
+@Composable
 @Preview
 fun Preview() {
     // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}

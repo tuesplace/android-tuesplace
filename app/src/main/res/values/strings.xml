@@ -29,6 +29,8 @@
     <string name="groups">Групи</string>
     <string name="teachers">Учители</string>
     <string name="students">Ученици</string>
+    <string name="student_role">student</string>
+    <string name="admin_role">admin</string>
     <string name="teacher">Преподавател</string>
     <string name="class_string">Клас</string>
     <string name="create_new">Създай нова</string>
@@ -37,4 +39,6 @@
     <string name="chats">Чатове</string>
     <string name="choose_teacher">Избери преподавател/и</string>
     <string name="search">Търси</string>
+    <string name="role">Роля</string>
+    <string name="phone">Телефон</string>
 </resources>

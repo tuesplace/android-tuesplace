@@ -24,7 +24,9 @@ import com.mobile.tuesplace.ui.states.GetProfileUiState
 fun EditProfileScreen(profileUiState: GetProfileUiState, enabled: Boolean, onSaveChanges: () -> Unit) {
     when(profileUiState){
         GetProfileUiState.Empty -> { }
-        is GetProfileUiState.Error -> { }
+        is GetProfileUiState.Error -> {
+            val error = profileUiState.exception
+        }
         GetProfileUiState.Loading -> { }
         is GetProfileUiState.Success -> {
             EditProfileUi(profileData = profileUiState.profile, enabled = enabled, onSaveChanges = onSaveChanges)

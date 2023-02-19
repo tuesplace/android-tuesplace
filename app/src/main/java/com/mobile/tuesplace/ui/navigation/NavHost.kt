@@ -239,7 +239,7 @@ fun NavHost(navController: NavHostController) {
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            ProfileScreen(profileUiState = profileUiState)
+            ProfileScreen(profileUiState = profileUiState, onEditClick = { navController.navigate(EDIT_PROFILE_SCREEN)})
         }
         composable(EDIT_PROFILE_SCREEN) {
             val viewModel = getViewModel<EditProfileViewModel>()
