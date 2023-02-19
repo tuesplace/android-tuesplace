@@ -31,7 +31,9 @@
     <string name="teacher">Преподавател</string>
     <string name="class_string">Клас</string>
     <string name="create_new">Създай нова</string>
+    <string name="create_new_profile">Създай нов</string>
     <string name="classes">Класове</string>
     <string name="chats">Чатове</string>
     <string name="choose_teacher">Избери преподавател/и</string>
+    <string name="search">Търси</string>
 </resources>

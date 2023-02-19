@@ -36,6 +36,14 @@ class CreateGroupViewModel(private val createGroupUseCase: CreateGroupUseCase): 
         _classes.value = classesInput
     }
 
+    private val _search =
+        MutableStateFlow("")
+    val search: StateFlow<String> = _search
+
+    fun search(searchInput: String) {
+        _search.value = searchInput
+    }
+
     private val _groupsTypeStateFlow = MutableStateFlow(false)
     val groupsTypeStateFlow: StateFlow<Boolean> = _groupsTypeStateFlow
 
