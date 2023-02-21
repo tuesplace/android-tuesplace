@@ -33,10 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.GroupResponseData
-import com.mobile.tuesplace.data.PostData
-import com.mobile.tuesplace.data.ProfileData
-import com.mobile.tuesplace.data.ProfileResponseData
+import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
 @Composable
@@ -154,7 +151,7 @@ fun EmptyScreen() {
 }
 
 @Composable
-fun MenuItem(image: Painter, string: String, modifier: Modifier?, onClick: () -> Unit) {
+fun MenuItem(image: Painter?, string: String, modifier: Modifier?, onClick: () -> Unit) {
     val currentModifier = modifier ?: Modifier
     ConstraintLayout(
         modifier = currentModifier
@@ -167,18 +164,20 @@ fun MenuItem(image: Painter, string: String, modifier: Modifier?, onClick: () ->
             )
     ) {
         val (startIcon, text, arrow) = createRefs()
-        Image(
-            painter = image,
-            contentDescription = "",
-            modifier = Modifier
-                .padding(6.dp)
-                .size(30.dp)
-                .constrainAs(startIcon) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-        )
+        if (image != null) {
+            Image(
+                painter = image,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(6.dp)
+                    .size(30.dp)
+                    .constrainAs(startIcon) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+        }
         Text(
             text = string,
             modifier = Modifier
@@ -442,9 +441,9 @@ fun TextFieldWithTitle(
     onValueChange: (String) -> Unit,
     enabled: Boolean?,
     isError: Boolean?,
-    modifier: Modifier?
+    modifier: Modifier?,
 ) {
-    val currentModifier = modifier?: Modifier
+    val currentModifier = modifier ?: Modifier
     Column(
         modifier = currentModifier
             .padding(16.dp)
@@ -513,7 +512,7 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
 
 @Composable
 fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
-    val currentModifier = modifier?: Modifier
+    val currentModifier = modifier ?: Modifier
     TextField(
         value = state.value,
         onValueChange = { value ->
@@ -532,7 +531,7 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
                     .size(24.dp)
             )
         },
-        placeholder = { Text(text = stringResource(id = R.string.search))},
+        placeholder = { Text(text = stringResource(id = R.string.search)) },
         trailingIcon = {
             if (state.value != TextFieldValue("")) {
                 IconButton(
@@ -567,12 +566,81 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
     )
 }
 
+@Composable
+fun AgendaItem(agendaData: AgendaResponseData) {
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(6.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.water_blue), RoundedCornerShape(8.dp))
+    ) {
+        val (time, groupName, arrow) = createRefs()
+
+        Column(
+            modifier = Modifier
+                .padding(start = 6.dp)
+                .constrainAs(time) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            Text(text = convertMinutesToHoursAndMinutes(agendaData.start), color = White)
+            Text(text = convertMinutesToHoursAndMinutes(agendaData.end), color = White)
+        }
+
+        Column(modifier = Modifier
+            .padding(6.dp)
+            .constrainAs(groupName) {
+                start.linkTo(time.end)
+                end.linkTo(arrow.start)
+                top.linkTo(parent.top)
+            }) {
+            Text(text = agendaData.associations.group.data.name)
+            Text(
+                text = agendaData.associations.group.data.owners[0].data.fullName,
+                color = colorResource(id = R.color.baby_blue))
+        }
+
+        Image(painter = painterResource(
+            id = R.drawable.ic_baseline_keyboard_arrow_right_24),
+            contentDescription = "",
+            modifier = Modifier
+                .padding(end = 6.dp)
+                .constrainAs(arrow) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        )
+    }
+}
 
 @Composable
-fun InfoItem(title: String, text: String){
+fun InfoItem(title: String, text: String) {
     Column(horizontalAlignment = Start) {
-        Text(text = title.uppercase(), color = colorResource(id = R.color.baby_blue), fontSize = 25.sp)
+        Text(text = title.uppercase(),
+            color = colorResource(id = R.color.baby_blue),
+            fontSize = 25.sp)
         Text(text = text, color = White, fontSize = 20.sp)
+    }
+}
+
+@Composable
+fun DailyAgendaItem(day: String, agendaList: List<AgendaResponseData>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, colorResource(id = R.color.baby_blue))
+            .background(colorResource(id = R.color.darker_sea_blue))
+    ) {
+        Text(text = day,
+            color = colorResource(id = R.color.white),
+            fontSize = 20.sp,
+            modifier = Modifier.padding(start = 6.dp, top = 6.dp, bottom = 16.dp))
+        agendaList.forEach { activity ->
+            AgendaItem(agendaData = activity)
+        }
     }
 }
 

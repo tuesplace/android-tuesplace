@@ -95,4 +95,6 @@ interface ApiServices {
     @DELETE(POST_COMMENT)
     fun deletePostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String): Call<BaseResponse<Unit>>
 
+    @GET(ACTIVITIES)
+    fun getActivities(): Call<BaseResponse<List<AgendaResponseData>>>
 }

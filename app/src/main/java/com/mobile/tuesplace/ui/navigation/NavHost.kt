@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -15,6 +16,7 @@ import androidx.navigation.navArgument
 import com.mobile.tuesplace.ROLE
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.classes.ClassesScreen
@@ -28,6 +30,7 @@ import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
+import com.mobile.tuesplace.ui.navigate
 import com.mobile.tuesplace.ui.post.CreatePostScreen
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
@@ -149,7 +152,7 @@ fun NavHost(navController: NavHostController) {
         composable(WELCOME_ADMIN_SCREEN) {
             val context = LocalContext.current
             WelcomeAdminScreen(
-                onAgendaClick = { },
+                onAgendaClick = { navController.navigate(ACTIVITIES_OPTION_MENU_SCREEN) },
                 onGroupsClick = { navController.navigate(ALL_GROUPS_SCREEN) },
                 onStudentsClick = { navController.navigate(ALL_STUDENTS_SCREEN) },
                 onTeachersClick = { navController.navigate(ALL_TEACHERS_SCREEN) },
@@ -314,7 +317,9 @@ fun NavHost(navController: NavHostController) {
             viewModel.getAllProfiles()
             AllStudentsScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
-                onStudentClick = {},
+                onStudentClick = { id ->
+                    navController.navigate(PROFILE_SCREEN)
+                },
                 onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
             )
         }
@@ -328,5 +333,43 @@ fun NavHost(navController: NavHostController) {
                 onCreateNewClick = { }
             )
         }
+        composable(AGENDA_SCREEN) {
+            val viewModel = getViewModel<AgendaViewModel>()
+            val getActivitiesStateFlow by viewModel.getActivitiesStateFlow.collectAsState()
+            viewModel.getActivities()
+            AgendaScreen(getActivitiesUiState = getActivitiesStateFlow)
+        }
+        composable(ACTIVITIES_OPTION_MENU_SCREEN) {
+            ActivitiesOptionMenuScreen(
+                onStudentsClick = { navController.navigate(ACTIVITIES_STUDENTS_CLASS_MENU) },
+                onTeachersClick = { /*TODO*/ },
+                onChangeAgendaClick = { }
+            )
+        }
+        composable(ACTIVITIES_STUDENTS_CLASS_MENU) {
+            ActivitiesStudentsClassMenuScreen(
+                onEightGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "8")) },
+                onNinthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "9")) },
+                onTenthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "10")) },
+                onEleventhGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "11")) },
+                onTwelfthGradClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "12")) }
+            )
+        }
+        composable(ACTIVITIES_STUDENTS_SCREEN) { backStackEntry ->
+            val viewModel = getViewModel<ActivitiesStudentsViewModel>()
+            val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
+            val setVisibilityStateFlow by viewModel.setVisibilityStateFlow.collectAsState()
+
+            viewModel.getActivities()
+            backStackEntry.arguments?.getString("grade")?.let { grade ->
+                ActivitiesStudentsScreen(
+                    grade = grade,
+                    getActivitiesUiState = getActivitiesUiState,
+                    setVisibilityStateFlow = setVisibilityStateFlow,
+                    setVisibility = { viewModel.setVisibilities(it) }
+                )
+            }
+        }
+
     }
 }

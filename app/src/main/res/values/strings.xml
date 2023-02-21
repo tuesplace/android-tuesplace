@@ -41,4 +41,23 @@
     <string name="search">Търси</string>
     <string name="role">Роля</string>
     <string name="phone">Телефон</string>
+    <string name="full_agenda">Виж пълната програма</string>
+    <string name="students_agenda">Ученици програма</string>
+    <string name="teachers_agenda">Учители програма</string>
+    <string name="change_agenda">Промени програма</string>
+    <string name="eight_grade">8 клас</string>
+    <string name="ninth_grade">9 клас</string>
+    <string name="tenth_grade">10 клас</string>
+    <string name="eleventh_grade">11 клас</string>
+    <string name="twelfth_grade">12 клас</string>
+    <string name="a_class">А</string>
+    <string name="b_class">Б</string>
+    <string name="v_class">В</string>
+    <string name="g_class">Г</string>
+    <string name="monday">Понеделник</string>
+    <string name="tuesday">Вторник</string>
+    <string name="wednesday">Сряда</string>
+    <string name="thursday">Четвъртък</string>
+    <string name="friday">Петък</string>
+    <string name="empty">" "</string>
 </resources>

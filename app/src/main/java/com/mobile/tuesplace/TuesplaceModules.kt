@@ -2,6 +2,8 @@ package com.mobile.tuesplace
 
 import com.google.gson.Gson
 import com.mobile.tuesplace.services.*
+import com.mobile.tuesplace.ui.activities.ActivitiesStudentsViewModel
+import com.mobile.tuesplace.ui.activities.AgendaViewModel
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.classes.ClassesViewModel
@@ -42,6 +44,8 @@ val TuesplaceModules = module {
     viewModel { ChatsViewModel(get()) }
     viewModel { ChatroomViewModel(get()) }
     viewModel { AllStudentsViewModel(get()) }
+    viewModel { AgendaViewModel(get()) }
+    viewModel { ActivitiesStudentsViewModel(get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -55,6 +59,7 @@ val TuesplaceModules = module {
     factory { GetMyGroupsUseCase(get()) }
     factory { GetProfileByIdUseCase(get()) }
     factory { GetAllProfilesUseCase(get()) }
+    factory { GetActivitiesUseCase(get()) }
 
 //    factory { AuthenticationManager(androidContext(), Intent()) }
 
@@ -64,6 +69,7 @@ val TuesplaceModules = module {
     factory<CommentService> { CommentServiceImpl(get()) }
     factory<MarkService> { MarkServiceImpl(get()) }
     factory<PostService> { PostServiceImpl(get()) }
+    factory<ActivitiesService> { ActivitiesImpl(get()) }
 
     factory { TuesAuthenticator() }
     factory { TuesInterceptor(androidContext()) }
