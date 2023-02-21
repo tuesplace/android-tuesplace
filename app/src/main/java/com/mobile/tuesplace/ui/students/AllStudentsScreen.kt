@@ -93,12 +93,13 @@ fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) 
             state = textState,
             modifier = Modifier
                 .padding(16.dp)
-                .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape (8.dp))
+                .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
                 .constrainAs(searchView) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(addStudent.bottom)
-                }
+                },
+            placeholder = stringResource(id = R.string.search_by_class)
         )
 
         LazyColumn(

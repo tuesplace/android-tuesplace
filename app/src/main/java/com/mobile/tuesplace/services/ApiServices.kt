@@ -45,7 +45,7 @@ interface ApiServices {
     fun getAllProfiles(): Call<BaseResponse<List<ProfileResponseData>>>
 
     @GET(PROFILE)
-    fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileData>>
+    fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileResponseData>>
 
     @PUT(PROFILE_ME)
     fun editProfile(@Body editProfileData: EditProfileData): Call<BaseResponse<Unit>>

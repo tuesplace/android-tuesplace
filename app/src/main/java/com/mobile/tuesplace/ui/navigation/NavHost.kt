@@ -342,7 +342,7 @@ fun NavHost(navController: NavHostController) {
         composable(ACTIVITIES_OPTION_MENU_SCREEN) {
             ActivitiesOptionMenuScreen(
                 onStudentsClick = { navController.navigate(ACTIVITIES_STUDENTS_CLASS_MENU) },
-                onTeachersClick = { /*TODO*/ },
+                onTeachersClick = { navController.navigate(ACTIVITIES_TEACHERS_SCREEN) },
                 onChangeAgendaClick = { }
             )
         }
@@ -370,6 +370,20 @@ fun NavHost(navController: NavHostController) {
                 )
             }
         }
-
+        composable(ACTIVITIES_TEACHERS_SCREEN) {
+            val viewModel = getViewModel<ActivitiesTeachersViewModel>()
+            val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
+            viewModel.getAllProfiles()
+            ActivitiesTeachersScreen(
+                getAllProfileUiState = getAllProfilesStateFlow,
+                onTeacherClick = { navController.navigate(ACTIVITIES_TEACHER_SCREEN, bundleOf("profileId" to it))}
+            )
+        }
+        composable(ACTIVITIES_TEACHER_SCREEN){ backStackEntry ->
+            val viewModel = getViewModel<ActivitiesTeacherViewModel>()
+            val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
+            viewModel.getActivities()
+            backStackEntry.arguments?.getString("profileId")?.let { ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState, profileId = it) }
+        }
     }
 }

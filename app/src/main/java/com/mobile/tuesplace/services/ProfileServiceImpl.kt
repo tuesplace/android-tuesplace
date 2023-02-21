@@ -56,14 +56,14 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
     }
 
     override suspend fun getProfiles(
-        getProfileCallback: ProfileService.GetProfileCallback<ProfileData>,
+        getProfileCallback: ProfileService.GetProfileCallback<ProfileResponseData>,
         profileId: String,
     ) {
         retrofit.getProfiles(profileId).enqueue(
-            object : Callback<BaseResponse<ProfileData>> {
+            object : Callback<BaseResponse<ProfileResponseData>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<ProfileData>>,
-                    response: Response<BaseResponse<ProfileData>>,
+                    call: Call<BaseResponse<ProfileResponseData>>,
+                    response: Response<BaseResponse<ProfileResponseData>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { getProfileCallback.onSuccess(it) }
@@ -72,7 +72,7 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<ProfileData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<ProfileResponseData>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
             }

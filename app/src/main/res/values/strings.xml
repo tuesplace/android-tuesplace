@@ -31,6 +31,7 @@
     <string name="students">Ученици</string>
     <string name="student_role">student</string>
     <string name="admin_role">admin</string>
+    <string name="teacher_role">teacher</string>
     <string name="teacher">Преподавател</string>
     <string name="class_string">Клас</string>
     <string name="create_new">Създай нова</string>
@@ -60,4 +61,6 @@
     <string name="thursday">Четвъртък</string>
     <string name="friday">Петък</string>
     <string name="empty">" "</string>
+    <string name="search_by_class">Търси по клас</string>
+    <string name="search_by_name">Търси по име</string>
 </resources>

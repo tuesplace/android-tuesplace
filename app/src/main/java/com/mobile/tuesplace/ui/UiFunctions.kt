@@ -143,7 +143,9 @@ fun EmptyScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BabyBlue)) {
+            .background(colorResource(id = R.color.dark_blue)),
+        contentAlignment = Center
+    ) {
         Text(text = stringResource(id = R.string.screen_not_found),
             color = White,
             textAlign = TextAlign.Center)
@@ -511,7 +513,7 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
+fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?, placeholder: String) {
     val currentModifier = modifier ?: Modifier
     TextField(
         value = state.value,
@@ -531,7 +533,7 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
                     .size(24.dp)
             )
         },
-        placeholder = { Text(text = stringResource(id = R.string.search)) },
+        placeholder = { Text(text = placeholder) },
         trailingIcon = {
             if (state.value != TextFieldValue("")) {
                 IconButton(

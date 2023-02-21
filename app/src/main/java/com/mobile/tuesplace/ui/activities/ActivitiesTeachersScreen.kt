@@ -1,8 +1,7 @@
-package com.mobile.tuesplace.ui.teachers
+package com.mobile.tuesplace.ui.activities
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.EmptyScreen
@@ -30,70 +29,51 @@ import com.mobile.tuesplace.ui.StudentItem
 import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
 
 @Composable
-fun AllTeachersScreen(
-    getAllProfilesUiState: GetAllProfilesUiState,
+fun ActivitiesTeachersScreen(
+    getAllProfileUiState: GetAllProfilesUiState,
     onTeacherClick: (String) -> Unit,
-    onCreateNewClick: () -> Unit,
 ) {
-    when (getAllProfilesUiState) {
+    when (getAllProfileUiState) {
         GetAllProfilesUiState.Empty -> {
             EmptyScreen()
         }
-        is GetAllProfilesUiState.Error -> {
-            //val error = getAllProfilesUiState.exception
-        }
+        is GetAllProfilesUiState.Error -> {}
         GetAllProfilesUiState.Loading -> {}
         is GetAllProfilesUiState.Success -> {
-            AllTeachersUi(
-                profiles = getAllProfilesUiState.profiles.filter { profile -> profile.role == "teacher" },
-                onStudentClick = onTeacherClick,
-                onCreateNewClick = onCreateNewClick
+            ActivitiesTeachersUi(
+                list = getAllProfileUiState.profiles.filter { profile ->
+                profile.role == stringResource(id = R.string.teacher_role) },
+                onTeacherClick = onTeacherClick
             )
         }
     }
 }
 
 @Composable
-fun AllTeachersUi(
-    profiles: List<ProfileResponseData>,
-    onStudentClick: (String) -> Unit,
-    onCreateNewClick: () -> Unit,
+fun ActivitiesTeachersUi(
+    list: List<ProfileResponseData>,
+    onTeacherClick: (String) -> Unit,
 ) {
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(id = R.color.dark_blue))
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_blue))
     ) {
-        val (searchView, allStudents, addStudent, studentsList) = createRefs()
-
-        val textState = remember { mutableStateOf(TextFieldValue("")) }
+        val (title, search, itemsList) = createRefs()
 
         Text(
-            text = stringResource(id = R.string.all_teachers),
-            fontSize = 30.sp,
+            text = stringResource(id = R.string.teachers_agenda),
             color = colorResource(id = R.color.white),
+            fontSize = 20.sp,
             modifier = Modifier
-                .padding(16.dp)
-                .constrainAs(allStudents) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+                .padding(6.dp)
+                .constrainAs(title) {
                     top.linkTo(parent.top)
-                }
-        )
-
-        Text(
-            text = stringResource(id = R.string.create_new_profile),
-            fontSize = 25.sp,
-            color = colorResource(id = R.color.baby_blue),
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .padding(16.dp)
-                .clickable { onCreateNewClick() }
-                .constrainAs(addStudent) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(allStudents.bottom)
                 }
         )
+        val textState = remember { mutableStateOf(TextFieldValue("")) }
 
         SearchView(
             state = textState,
@@ -102,10 +82,10 @@ fun AllTeachersUi(
                 .border(1.dp,
                     colorResource(id = R.color.darker_sea_blue),
                     RoundedCornerShape(8.dp))
-                .constrainAs(searchView) {
+                .constrainAs(search) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(addStudent.bottom)
+                    top.linkTo(title.bottom)
                 },
             placeholder = stringResource(id = R.string.search_by_name)
         )
@@ -115,14 +95,17 @@ fun AllTeachersUi(
                 .fillMaxWidth()
                 .padding(6.dp)
                 .background(colorResource(id = R.color.dark_blue))
-                .constrainAs(studentsList) {
-                    top.linkTo(searchView.bottom)
+                .constrainAs(itemsList) {
+                    top.linkTo(search.bottom)
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
                 },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(profiles.filter { profile -> profile.fullName.contains(textState.value.text) }) { _, data ->
-                StudentItem(student = data, onClick = onStudentClick)
+            itemsIndexed(list.filter { profile -> profile.fullName.contains(textState.value.text) }) { _, data ->
+                StudentItem(student = data, onClick = onTeacherClick)
             }
         }
     }
 }
+

@@ -3,6 +3,8 @@ package com.mobile.tuesplace
 import com.google.gson.Gson
 import com.mobile.tuesplace.services.*
 import com.mobile.tuesplace.ui.activities.ActivitiesStudentsViewModel
+import com.mobile.tuesplace.ui.activities.ActivitiesTeacherViewModel
+import com.mobile.tuesplace.ui.activities.ActivitiesTeachersViewModel
 import com.mobile.tuesplace.ui.activities.AgendaViewModel
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
@@ -46,6 +48,8 @@ val TuesplaceModules = module {
     viewModel { AllStudentsViewModel(get()) }
     viewModel { AgendaViewModel(get()) }
     viewModel { ActivitiesStudentsViewModel(get()) }
+    viewModel { ActivitiesTeachersViewModel(get()) }
+    viewModel { ActivitiesTeacherViewModel(get(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
