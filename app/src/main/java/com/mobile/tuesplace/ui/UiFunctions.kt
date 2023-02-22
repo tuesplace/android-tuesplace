@@ -1,5 +1,10 @@
 package com.mobile.tuesplace.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +14,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
@@ -21,6 +28,7 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.theme.BabyBlue
@@ -645,6 +654,27 @@ fun DailyAgendaItem(day: String, agendaList: List<AgendaResponseData>) {
         }
     }
 }
+
+@Composable
+fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?){
+    val currentModifier = modifier?: Modifier
+    Row(
+        modifier = currentModifier
+            .clickable { onClick() }
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = text, color = colorResource(id = R.color.white))
+        Image(
+            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24_white),
+            contentDescription = stringResource(id = R.string.empty)
+        )
+    }
+}
+
+
+
 
 @Composable
 @Preview

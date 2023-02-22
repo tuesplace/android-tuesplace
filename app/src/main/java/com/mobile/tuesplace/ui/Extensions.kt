@@ -1,10 +1,16 @@
 package com.mobile.tuesplace.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.navigation.*
 import com.mobile.tuesplace.R
+import java.io.File
 
 fun convertMinutesToHoursAndMinutes(minutes: Int): String {
     val hours = minutes / 60
@@ -65,3 +71,4 @@ fun NavHostController.navigate(
         navigate(route, navOptions, navigatorExtras)
     }
 }
+

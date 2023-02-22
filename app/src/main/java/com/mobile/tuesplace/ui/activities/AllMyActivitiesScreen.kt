@@ -65,7 +65,6 @@ fun AllMyActivitiesUi(list: List<AgendaResponseData>) {
             }
         ) {
 
-
             DailyAgendaItem(
                 day = stringResource(id = numToDay(1)),
                 agendaList = list

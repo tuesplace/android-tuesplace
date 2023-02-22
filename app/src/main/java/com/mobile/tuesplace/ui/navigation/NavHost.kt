@@ -280,7 +280,8 @@ fun NavHost(navController: NavHostController) {
         composable(SETTINGS_SCREEN) {
             SettingsScreen(
                 onEditClick = { navController.navigate(PROFILE_SCREEN) },
-                onSignOutClick = { navController.navigate(LOGIN_SCREEN) }
+                onSignOutClick = { navController.navigate(LOGIN_SCREEN) },
+                onForgottenPasswordClick = {}
             )
         }
         composable(CLASSROOM_USER_SCREEN) {
@@ -352,7 +353,7 @@ fun NavHost(navController: NavHostController) {
             ActivitiesOptionMenuScreen(
                 onStudentsClick = { navController.navigate(ACTIVITIES_STUDENTS_CLASS_MENU) },
                 onTeachersClick = { navController.navigate(ACTIVITIES_TEACHERS_SCREEN) },
-                onChangeAgendaClick = { }
+                onChangeAgendaClick = { navController.navigate(UPLOAD_ACTIVITIES_SCREEN) }
             )
         }
         composable(ACTIVITIES_STUDENTS_CLASS_MENU) {
@@ -393,6 +394,9 @@ fun NavHost(navController: NavHostController) {
             val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
             viewModel.getActivities()
             backStackEntry.arguments?.getString("profileId")?.let { ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState, profileId = it) }
+        }
+        composable(UPLOAD_ACTIVITIES_SCREEN) {
+            UploadActivity()
         }
     }
 }
