@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.ui.activities
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,26 +19,28 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.AgendaItem
-import com.mobile.tuesplace.ui.states.GetActivitiesUiState
+import com.mobile.tuesplace.ui.dayToNum
+import com.mobile.tuesplace.ui.states.GetMyActivitiesUiState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AgendaScreen(getActivitiesUiState: GetActivitiesUiState) {
-    when(getActivitiesUiState){
-        GetActivitiesUiState.Empty -> {}
-        is GetActivitiesUiState.Error -> {
-           getActivitiesUiState.exception
-        }
-        GetActivitiesUiState.Loading -> {}
-        is GetActivitiesUiState.Success -> {
-            AgendaUi(list = getActivitiesUiState.activities)
+fun MyActivitiesScreen(getMyActivitiesUiState: GetMyActivitiesUiState, onFullAgendaClick: () -> Unit) {
+    when(getMyActivitiesUiState){
+        GetMyActivitiesUiState.Empty -> {}
+        is GetMyActivitiesUiState.Error -> {}
+        GetMyActivitiesUiState.Loading -> {}
+        is GetMyActivitiesUiState.Success -> {
+            MyActivitiesUi(
+                list = getMyActivitiesUiState.activities.filter { activity -> activity.day == dayToNum(LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE"))) },
+                onFullAgendaClick = onFullAgendaClick
+            )
         }
     }
 }
 
 @Composable
-fun AgendaUi(list: List<AgendaResponseData>){
+fun MyActivitiesUi(list: List<AgendaResponseData>, onFullAgendaClick: () -> Unit){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -51,6 +54,7 @@ fun AgendaUi(list: List<AgendaResponseData>){
             color = colorResource(id = R.color.baby_blue),
             fontSize = 16.sp,
             modifier = Modifier
+                .clickable { onFullAgendaClick() }
                 .padding(16.dp)
                 .constrainAs(fullAgenda) {
                     top.linkTo(parent.top)
@@ -58,11 +62,9 @@ fun AgendaUi(list: List<AgendaResponseData>){
                     end.linkTo(parent.end)
                 }
         )
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("EEE, MMM d")
-        val formattedDateTime = currentDateTime.format(formatter)
+
         Text(
-            text = formattedDateTime,
+            text = LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE, MMM d")),
             color = colorResource(id = R.color.white),
             fontSize = 20.sp,
             modifier = Modifier
@@ -74,6 +76,7 @@ fun AgendaUi(list: List<AgendaResponseData>){
         )
 
         LazyColumn(modifier = Modifier
+            .padding(6.dp)
             .padding(top = 50.dp)
             .fillMaxWidth()
             .constrainAs(currentAgenda) {

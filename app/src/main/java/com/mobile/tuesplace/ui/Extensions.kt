@@ -33,6 +33,17 @@ fun numToDay(number: Int): Int{
     }
 }
 
+fun dayToNum(day: String): Int{
+    return when(day) {
+        "Mon" -> 1
+        "Tue" -> 2
+        "Wed" -> 3
+        "Thu" -> 4
+        "Fri" -> 5
+        else -> { 0 }
+    }
+}
+
 @SuppressLint("RestrictedApi")
 fun NavHostController.navigate(
     route: String,

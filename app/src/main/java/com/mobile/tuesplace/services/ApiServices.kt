@@ -97,4 +97,7 @@ interface ApiServices {
 
     @GET(ACTIVITIES)
     fun getActivities(): Call<BaseResponse<List<AgendaResponseData>>>
+
+    @GET(MY_ACTIVITIES)
+    fun getMyActivities(): Call<BaseResponse<List<AgendaResponseData>>>
 }

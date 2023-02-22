@@ -116,7 +116,7 @@ fun NavHost(navController: NavHostController) {
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
                         null)
                 },
-                onAgendaClick = { }
+                onAgendaClick = { navController.navigate(MY_ACTIVITIES_SCREEN) }
             )
         }
         composable(FORGOTTEN_PASSWORD_SCREEN) {
@@ -333,11 +333,20 @@ fun NavHost(navController: NavHostController) {
                 onCreateNewClick = { }
             )
         }
-        composable(AGENDA_SCREEN) {
-            val viewModel = getViewModel<AgendaViewModel>()
-            val getActivitiesStateFlow by viewModel.getActivitiesStateFlow.collectAsState()
-            viewModel.getActivities()
-            AgendaScreen(getActivitiesUiState = getActivitiesStateFlow)
+        composable(MY_ACTIVITIES_SCREEN) {
+            val viewModel = getViewModel<MyActivitiesViewModel>()
+            val getActivitiesStateFlow by viewModel.getMyActivitiesStateFlow.collectAsState()
+            viewModel.getMyActivities()
+            MyActivitiesScreen(
+                getMyActivitiesUiState = getActivitiesStateFlow,
+                onFullAgendaClick = { navController.navigate(ALL_MY_ACTIVITIES_SCREEN) }
+            )
+        }
+        composable(ALL_MY_ACTIVITIES_SCREEN) {
+            val viewModel = getViewModel<AllMyActivitiesViewModel>()
+            val getMyActivitiesUiState by viewModel.getMyActivitiesStateFlow.collectAsState()
+            viewModel.getMyActivities()
+            AllMyActivitiesScreen(getMyActivitiesUiState = getMyActivitiesUiState)
         }
         composable(ACTIVITIES_OPTION_MENU_SCREEN) {
             ActivitiesOptionMenuScreen(
