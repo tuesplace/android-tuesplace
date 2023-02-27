@@ -43,7 +43,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
-import com.mobile.tuesplace.ui.theme.BabyBlue
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+
 
 @Composable
 fun TextFieldFunction(
@@ -656,8 +660,8 @@ fun DailyAgendaItem(day: String, agendaList: List<AgendaResponseData>) {
 }
 
 @Composable
-fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?){
-    val currentModifier = modifier?: Modifier
+fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?) {
+    val currentModifier = modifier ?: Modifier
     Row(
         modifier = currentModifier
             .clickable { onClick() }
@@ -671,6 +675,81 @@ fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?){
             contentDescription = stringResource(id = R.string.empty)
         )
     }
+}
+
+@Composable
+fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
+    val selectedFileUri = remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    val getContentLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            selectedFileUri.value = uri
+        }
+    val requestPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission is granted, launch the GetContent ActivityResultLauncher
+                getContentLauncher.launch(type)
+            } else {
+                // Permission is not granted, show an error message to the user
+                //viewModel.showPermissionError()
+            }
+        }
+
+//    val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//    pickIntent.type = "image/*"
+//    startActivityForResult((LocalContext.current as Activity), pickIntent, UPLOAD_CODE, null)
+
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Select a file to upload")
+        Button(
+            onClick = {
+
+                if (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                ) {
+
+                    getContentLauncher.launch(type)
+                } else {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            },
+            enabled = selectedFileUri.value == null
+        ) {
+            Text(text = "Select file")
+        }
+
+
+        selectedFileUri.value?.let { uri ->
+            Text(text = "Selected file: ${uri.path}")
+            Button(
+                onClick = {
+//                    val path = getPath(context, uri)
+//                    val file = uri.path?.let { File(it) }
+
+                    val file = getFileWithFileDescriptor(context, uri)
+//                    val reqFile = file?.asRequestBody(type.toMediaTypeOrNull())
+//                    val body = reqFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
+                    val requestFile =
+                        file?.let {
+                            RequestBody.create("application/xls".toMediaTypeOrNull(),
+                                it)
+                        }
+                    if (requestFile != null) {
+                        val filePart = MultipartBody.Part.createFormData("specification", "filename.xlsx", requestFile)
+                        onUploadClick(filePart)
+                    }
+                },
+                enabled = true
+            ) {
+                Text(text = "Upload file")
+            }
+        }
+    }
+
+
 }
 
 

@@ -2,15 +2,10 @@ package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
+import okhttp3.MultipartBody
 
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiServices {
 
@@ -100,4 +95,11 @@ interface ApiServices {
 
     @GET(MY_ACTIVITIES)
     fun getMyActivities(): Call<BaseResponse<List<AgendaResponseData>>>
+
+    @GET(SPECIFICATION)
+    fun getSpecification(): Call<BaseResponse<ArrayList<Specification>>>
+
+    @Multipart
+    @PUT(SPECIFICATION_ASSETS)
+    fun editSpecificationAssets(@Path("specificationId") specificationId: String, @Part specification: MultipartBody.Part): Call<Unit>
 }

@@ -35,7 +35,6 @@ fun ProfileScreen(profileUiState: GetProfileUiState, onEditClick: () -> Unit) {
         is GetProfileUiState.Success -> {
             ProfileUi(profileData = profileUiState.profile, onEditClick)
         }
-        EditProfileUiState.Loading -> {}
     }
 }
 

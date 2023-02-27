@@ -94,7 +94,6 @@ fun NavHost(navController: NavHostController) {
                     }
                     viewModel.resetProfileState()
                 }
-                EditProfileUiState.Loading -> {}
             }
         }
         composable(WELCOME_SCREEN) {
@@ -396,7 +395,26 @@ fun NavHost(navController: NavHostController) {
             backStackEntry.arguments?.getString("profileId")?.let { ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState, profileId = it) }
         }
         composable(UPLOAD_ACTIVITIES_SCREEN) {
-            UploadActivity()
+            val viewModel = getViewModel<UploadActivityViewModel>()
+            val getSpecificationStateFlow by viewModel.getSpecificationStateFlow.collectAsState()
+            val editSpecificationAssetsStateFlow by viewModel.editSpecificationAssetsStateFlow.collectAsState()
+            var idString = ""
+            LaunchedEffect(null) {
+                viewModel.getSpecification()
+            }
+            UploadActivityScreen(
+                onUploadClick = { url ->
+                    if (idString.isNotEmpty()) {
+                        viewModel.editSpecificationAssets(idString, url)
+                    }
+                },
+                onGetSpecificationSuccess = { id ->
+                    idString = id
+                },
+                specificationUiState = getSpecificationStateFlow,
+                editSpecificationUiState = editSpecificationAssetsStateFlow,
+                onEditSuccess = { navController.navigateUp() }
+            )
         }
     }
 }

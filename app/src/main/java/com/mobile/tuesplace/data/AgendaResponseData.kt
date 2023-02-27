@@ -47,12 +47,10 @@ data class AgendaProfileData(
     var className: String,
     var role: String,
     var updatedAt: String,
-    var assets: Assets<Image<ImageData>>,
+    var assets: ProfileAssets
 )
 
-data class Assets<Data>(
-    var assets: ArrayList<Data>
-)
+
 
 data class RoomData(
     var _id: String,

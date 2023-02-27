@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.ui.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,7 +56,6 @@ fun EditProfileScreen(
                 setChangedEmail = setChangedEmail
             )
         }
-        EditProfileUiState.Loading -> {}
     }
     when(editProfileStateFlow){
         EditProfileUiState.Empty -> {  }
