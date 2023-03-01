@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.data
 
 data class PostData(
+    val title: String,
     var authorId: String,
     var reactions: List<ReactionsData>? = listOf(),
     var createdAt: String,

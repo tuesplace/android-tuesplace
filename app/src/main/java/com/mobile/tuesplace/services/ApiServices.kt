@@ -49,10 +49,10 @@ interface ApiServices {
     fun deleteProfile(@Path("profileId") profileId: String): Call<BaseResponse<Unit>>
 
     @GET(GET_POSTS)
-    fun getPosts(@Path("groupId") groupId: String): Call<BaseResponse<List<PostData>>>
+    fun getPosts(@Path("groupId") groupId: String): Call<BaseResponse<List<PostResponseData>>>
 
     @POST(GET_POSTS)
-    fun createPost(@Path("groupId") groupId: String, @Body post: String): Call<BaseResponse<PostData>>
+    fun createPost(@Path("groupId") groupId: String, @Body post: PostRequestData): Call<BaseResponse<PostRequestData>>
 
     @PUT(EDIT_POST)
     fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: String): Call<BaseResponse<PostData>>

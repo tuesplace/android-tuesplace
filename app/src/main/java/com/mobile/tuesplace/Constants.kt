@@ -1,6 +1,6 @@
 package com.mobile.tuesplace
 
-const val BASE_URL = "http://172.20.10.2:8123/api/"
+const val BASE_URL = "https://server-tuesplace-97zq3.ondigitalocean.app/api/"
 const val SIGN_IN = "v1/auth/sign-in"
 const val GENERATE_TOKEN_PAIR = "v1/auth/generate-token-pair"
 const val CREATE_GROUP = "v1/groups/"

@@ -23,9 +23,8 @@ class ClassesViewModel(private val getMyGroupsUseCase: GetMyGroupsUseCase): View
                 object : GroupService.GroupCallback<List<GroupResponseData>> {
                     override fun onSuccess(groupGeneric: List<GroupResponseData>) {
                         viewModelScope.launch{
-                            _getMyGroupsStateFlow.emit(GetMyGroupsUiState.Success(groupGeneric.filter {
-                                it.type == "class"
-                            }))
+                            val classes = groupGeneric.filter { it.type == "subject" }
+                            _getMyGroupsStateFlow.emit(GetMyGroupsUiState.Success(classes))
                         }
                     }
 

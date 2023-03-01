@@ -7,8 +7,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -19,11 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
@@ -36,6 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +48,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -118,36 +122,177 @@ fun GradientBorderButtonRound(
 
 
 @Composable
-fun PostItem(post: PostData, onPostClick: () -> Unit) {
-    Box(
+fun PostItem(
+    post: PostResponseData,
+    onPostClick: () -> Unit,
+    onSendClick: (String) -> Unit,
+    onViewCommentsClick: () -> Unit,
+    commentInput: String,
+    onCommentChange: (String) -> Unit,
+) {
+    ConstraintLayout(
         modifier = Modifier
+            .padding(3.dp)
             .fillMaxWidth()
-            .heightIn(300.dp, 9999.dp)
-            .padding(16.dp)
+            .heightIn(200.dp, 9999.dp)
             .clickable { onPostClick() }
             .background(White, RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
     ) {
-        Text(
-            text = "Dora",
-            color = Color.Black,
+        val (profilePic, teacherName, createTime, title, body, commentItem) = createRefs()
+
+        Image(
+            painter = painterResource(id = R.drawable.tues_webview),
+            contentDescription = "",
             modifier = Modifier
                 .padding(6.dp)
-                .align(Alignment.TopStart)
+                .size(45.dp)
+                .clip(CircleShape)
+                .border(1.dp,
+                    colorResource(id = R.color.darker_sea_blue),
+                    CircleShape)
+                .constrainAs(profilePic) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
         )
+
+        post.owner.data?.fullName?.let {
+            Text(
+                text = it,
+                color = colorResource(id = R.color.darker_sea_blue),
+                modifier = Modifier
+                    .padding(top = 6.dp, start = 6.dp)
+                    .constrainAs(teacherName) {
+                        start.linkTo(profilePic.end)
+                        top.linkTo(parent.top)
+                    }
+            )
+        }
+
         Text(
             text = post.createdAt,
+            color = colorResource(id = R.color.black),
             modifier = Modifier
-                .padding(6.dp)
-                .align(Alignment.TopEnd)
+                .padding(start = 6.dp)
+                .constrainAs(createTime) {
+                    start.linkTo(teacherName.start)
+                    top.linkTo(teacherName.bottom)
+                }
         )
+
+        Text(
+            text = post.title,
+            fontSize = 16.sp,
+            color = colorResource(id = R.color.black),
+            modifier = Modifier
+                .padding(top = 6.dp, start = 6.dp)
+                .constrainAs(title) {
+                    start.linkTo(profilePic.start)
+                    top.linkTo(createTime.bottom)
+                }
+        )
+
         Text(
             text = post.body,
             color = Color.Black,
+            fontSize = 16.sp,
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(6.dp)
-                .align(Center)
+                .fillMaxWidth()
+                .constrainAs(body) {
+                    top.linkTo(title.bottom)
+                    bottom.linkTo(commentItem.top)
+                }
         )
+
+        CommentItem(
+            profilePic = painterResource(id = R.drawable.tues_webview),
+            onSendClick = onSendClick,
+            onViewCommentsClick = onViewCommentsClick,
+            modifier = Modifier
+                .constrainAs(commentItem) {
+                    bottom.linkTo(parent.bottom)
+                },
+            commentInput = commentInput,
+            onCommentChange = onCommentChange)
+    }
+}
+
+@Composable
+fun CommentItem(
+    profilePic: Painter,
+    onSendClick: (String) -> Unit,
+    onViewCommentsClick: () -> Unit,
+    modifier: Modifier?,
+    commentInput: String,
+    onCommentChange: (String) -> Unit,
+) {
+    val currentModifier = modifier ?: Modifier
+    Row(
+        modifier = currentModifier
+            .height(64.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp)),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.tues_webview),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .padding(2.dp)
+                .size(40.dp)
+                .clip(CircleShape)
+                .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+        )
+
+        TextField(
+            value = commentInput,
+            maxLines = 1,
+            isError = false,
+            onValueChange = { onCommentChange(it) },
+            modifier = Modifier
+                .wrapContentWidth()
+                .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp)),
+            placeholder = {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        ) {
+                    Text(
+                        text = stringResource(id = R.string.add_comment),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 12.sp
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24_darker_sea_blue),
+                        contentDescription = stringResource(id = R.string.empty),
+                        modifier = Modifier
+                            .clickable { onSendClick(commentInput) }
+                    )
+                }
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = White,
+                focusedBorderColor = Transparent,
+                unfocusedBorderColor = Transparent,
+                textColor = Black,
+                placeholderColor = colorResource(id = R.color.darker_sea_blue),
+            )
+        )
+//        Text(
+//            text = stringResource(id = R.string.view_all),
+//            color = colorResource(id = R.color.darker_sea_blue),
+//            textDecoration = TextDecoration.Underline,
+//            modifier = Modifier
+//                .wrapContentWidth()
+//                .padding(2.dp)
+//                .clickable { onViewCommentsClick() }
+//        )
     }
 }
 
@@ -368,7 +513,6 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
                     top.linkTo(parent.top)
                 }
         )
-
 //            Text(
 //                text = stringResource(id = R.string.teacher).uppercase(),
 //                color = colorResource(id = R.color.baby_blue),
@@ -688,17 +832,11 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                // Permission is granted, launch the GetContent ActivityResultLauncher
                 getContentLauncher.launch(type)
             } else {
-                // Permission is not granted, show an error message to the user
                 //viewModel.showPermissionError()
             }
         }
-
-//    val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//    pickIntent.type = "image/*"
-//    startActivityForResult((LocalContext.current as Activity), pickIntent, UPLOAD_CODE, null)
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -726,19 +864,15 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
             Text(text = "Selected file: ${uri.path}")
             Button(
                 onClick = {
-//                    val path = getPath(context, uri)
-//                    val file = uri.path?.let { File(it) }
-
                     val file = getFileWithFileDescriptor(context, uri)
-//                    val reqFile = file?.asRequestBody(type.toMediaTypeOrNull())
-//                    val body = reqFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
                     val requestFile =
                         file?.let {
-                            RequestBody.create("application/xls".toMediaTypeOrNull(),
-                                it)
+                            RequestBody.create("application/xls".toMediaTypeOrNull(), it)
                         }
                     if (requestFile != null) {
-                        val filePart = MultipartBody.Part.createFormData("specification", "filename.xlsx", requestFile)
+                        val filePart = MultipartBody.Part.createFormData("specification",
+                            "filename.xlsx",
+                            requestFile)
                         onUploadClick(filePart)
                     }
                 },
@@ -748,21 +882,23 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
             }
         }
     }
-
-
 }
-
-
 
 
 @Composable
 @Preview
 fun Preview() {
     // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
-    GroupClassItem(GroupResponseData("",
-        "Bulgarian Language and Literature",
-        "",
-        arrayListOf("9B"),
-        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
+//    GroupClassItem(GroupResponseData("",
+//        "Bulgarian Language and Literature",
+//        "",
+//        arrayListOf("9B"),
+//        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
+//    PostItem(post = PostData("",
+//        "",
+//        listOf(),
+//        "12:30",
+//        "",
+//        "This is a test post. I am testing the UI."), {}, {}, {}, "") {}
 }
 

@@ -1,22 +1,24 @@
 package com.mobile.tuesplace.services
 
+import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.PostData
+import com.mobile.tuesplace.data.PostResponseData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class PostServiceImpl(private val retrofit: ApiServices) : PostService {
 
-    override fun getPosts(
-        postCallback: PostService.PostCallback<List<PostData>>,
+    override suspend fun getPosts(
+        postCallback: PostService.PostCallback<List<PostResponseData>>,
         groupId: String,
     ) {
         retrofit.getPosts(groupId = groupId).enqueue(
-            object : Callback<BaseResponse<List<PostData>>> {
+            object : Callback<BaseResponse<List<PostResponseData>>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<List<PostData>>>,
-                    response: Response<BaseResponse<List<PostData>>>,
+                    call: Call<BaseResponse<List<PostResponseData>>>,
+                    response: Response<BaseResponse<List<PostResponseData>>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { postCallback.onSuccess(it) }
@@ -25,7 +27,7 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<List<PostData>>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<List<PostResponseData>>>, t: Throwable) {
                     t.localizedMessage?.let { postCallback.onError(it) }
                 }
 
@@ -33,16 +35,16 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
         )
     }
 
-    override fun createPost(
-        postCallback: PostService.PostCallback<PostData>,
+    override suspend fun createPost(
+        postCallback: PostService.PostCallback<PostRequestData>,
         groupId: String,
-        post: String,
+        post: PostRequestData,
     ) {
         retrofit.createPost(groupId = groupId, post = post).enqueue(
-            object : Callback<BaseResponse<PostData>> {
+            object : Callback<BaseResponse<PostRequestData>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<PostData>>,
-                    response: Response<BaseResponse<PostData>>,
+                    call: Call<BaseResponse<PostRequestData>>,
+                    response: Response<BaseResponse<PostRequestData>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { postCallback.onSuccess(it) }
@@ -51,13 +53,13 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<PostData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<PostRequestData>>, t: Throwable) {
                     t.localizedMessage?.let { postCallback.onError(it) }
                 }
-
             }
         )
     }
+
 
     override fun editPost(
         postCallback: PostService.PostCallback<PostData>,
@@ -93,7 +95,10 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
     ) {
         retrofit.deletePost(groupId = groupId, postId = postId).enqueue(
             object : Callback<BaseResponse<Unit>> {
-                override fun onResponse(call: Call<BaseResponse<Unit>>, response: Response<BaseResponse<Unit>>) {
+                override fun onResponse(
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
+                ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { postCallback.onSuccess(it) }
                     } else {

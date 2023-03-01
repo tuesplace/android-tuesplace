@@ -19,47 +19,66 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupData
-import com.mobile.tuesplace.data.PostData
-import com.mobile.tuesplace.data.ProfileData
-import com.mobile.tuesplace.data.ProfileResponseData
+import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.ui.PostItem
 import com.mobile.tuesplace.ui.states.GetGroupUiState
-import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
+import com.mobile.tuesplace.ui.states.GetPostsUiState
 
 @Composable
 fun ClassroomUserScreen(
     setProfile: (String) -> Unit,
     getGroupUiState: GetGroupUiState,
-    getProfileByIdUiState: GetProfileByIdUiState,
+    onGroupSuccess: () -> Unit,
+    getPostsUiState: GetPostsUiState,
     onCreatePostClick: () -> Unit,
-    onEditPostClick: () -> Unit
+    onEditPostClick: () -> Unit,
+    onSendCommentClick: (String) -> Unit,
+    onPostClick: () -> Unit,
+    comment: String,
+    setComment: (String) -> Unit,
 ) {
-    val group: GroupData
+    var group = GroupData("", null, "", null)
     when (getGroupUiState) {
-        GetGroupUiState.Empty -> { }
-        is GetGroupUiState.Error -> { }
-        GetGroupUiState.Loading -> { }
+        GetGroupUiState.Empty -> {}
+        is GetGroupUiState.Error -> {}
+        GetGroupUiState.Loading -> {}
         is GetGroupUiState.Success -> {
+            onGroupSuccess()
             group = getGroupUiState.groupData
-            when (getProfileByIdUiState) {
-                GetProfileByIdUiState.Empty -> { }
-                is GetProfileByIdUiState.Error -> { }
-                GetProfileByIdUiState.Loading -> { }
-                is GetProfileByIdUiState.Success -> {
-                    ClassroomUserUi(group = group, posts = arrayListOf(), teacher = getProfileByIdUiState.profile, onCreatePostClick, onEditPostClick)
-                }
-            }
         }
     }
 
+    when(getPostsUiState){
+        GetPostsUiState.Empty -> {}
+        is GetPostsUiState.Error -> {}
+        GetPostsUiState.Loading -> {}
+        is GetPostsUiState.Success -> {
+            val posts = getPostsUiState.groups
+            ClassroomUserUi(group = group,
+                posts = getPostsUiState.groups,
+                onCreatePostClick,
+                onEditPostClick,
+                onSendCommentClick,
+                onPostClick, comment, setComment)
+        }
+    }
 }
 
 @Composable
-fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileResponseData, onAddClick: () -> Unit, onPostClick: () -> Unit){
+fun ClassroomUserUi(
+    group: GroupData,
+    posts: List<PostResponseData>,
+    onAddClick: () -> Unit,
+    onEditPostClick: () -> Unit,
+    onSendCommentClick: (String) -> Unit,
+    onPostClick: () -> Unit,
+    comment: String,
+    setComment: (String) -> Unit,
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.baby_blue))
+            .background(colorResource(id = R.color.dark_blue))
     ) {
         val (title, post, add) = createRefs()
         Text(
@@ -81,7 +100,7 @@ fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: Profi
                 .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
                 .padding(2.dp)
                 .clickable { onAddClick() }
-                .constrainAs(add){
+                .constrainAs(add) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 },
@@ -97,9 +116,15 @@ fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: Profi
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-        ){
+        ) {
             itemsIndexed(posts) { _, data ->
-                PostItem(post = data, onPostClick)
+                PostItem(
+                    post = data,
+                    onPostClick = onEditPostClick,
+                    onSendClick = onSendCommentClick,
+                    onViewCommentsClick = onPostClick,
+                    commentInput = comment,
+                    onCommentChange = setComment)
             }
         }
     }
