@@ -1,18 +1,19 @@
 package com.mobile.tuesplace.ui.classroom
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,16 +27,12 @@ import com.mobile.tuesplace.ui.states.GetPostsUiState
 
 @Composable
 fun ClassroomUserScreen(
-    setProfile: (String) -> Unit,
     getGroupUiState: GetGroupUiState,
     onGroupSuccess: () -> Unit,
     getPostsUiState: GetPostsUiState,
     onCreatePostClick: () -> Unit,
     onEditPostClick: () -> Unit,
-    onSendCommentClick: (String) -> Unit,
-    onPostClick: () -> Unit,
-    comment: String,
-    setComment: (String) -> Unit,
+    onPostClick: (String) -> Unit
 ) {
     var group = GroupData("", null, "", null)
     when (getGroupUiState) {
@@ -53,13 +50,11 @@ fun ClassroomUserScreen(
         is GetPostsUiState.Error -> {}
         GetPostsUiState.Loading -> {}
         is GetPostsUiState.Success -> {
-            val posts = getPostsUiState.groups
             ClassroomUserUi(group = group,
                 posts = getPostsUiState.groups,
                 onCreatePostClick,
                 onEditPostClick,
-                onSendCommentClick,
-                onPostClick, comment, setComment)
+                onPostClick)
         }
     }
 }
@@ -70,15 +65,13 @@ fun ClassroomUserUi(
     posts: List<PostResponseData>,
     onAddClick: () -> Unit,
     onEditPostClick: () -> Unit,
-    onSendCommentClick: (String) -> Unit,
-    onPostClick: () -> Unit,
-    comment: String,
-    setComment: (String) -> Unit,
+    onPostClick: (String) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
+
     ) {
         val (title, post, add) = createRefs()
         Text(
@@ -93,20 +86,6 @@ fun ClassroomUserUi(
             fontSize = 25.sp
         )
 
-        Text(
-            text = stringResource(id = R.string.add),
-            modifier = Modifier
-                .padding(16.dp)
-                .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
-                .padding(2.dp)
-                .clickable { onAddClick() }
-                .constrainAs(add) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                },
-            color = Color.White
-        )
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -115,17 +94,28 @@ fun ClassroomUserUi(
                     top.linkTo(title.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
                 }
         ) {
             itemsIndexed(posts) { _, data ->
                 PostItem(
                     post = data,
-                    onPostClick = onEditPostClick,
-                    onSendClick = onSendCommentClick,
-                    onViewCommentsClick = onPostClick,
-                    commentInput = comment,
-                    onCommentChange = setComment)
+                    onPostClick = onPostClick)
             }
         }
+
+        Image(
+            painter = painterResource(id = R.drawable.add_icon),
+            contentDescription = stringResource(id = R.string.add),
+            modifier = Modifier
+                .size(50.dp)
+                .padding(6.dp)
+                .clickable { onAddClick() }
+                .constrainAs(add) {
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+        )
     }
+
 }

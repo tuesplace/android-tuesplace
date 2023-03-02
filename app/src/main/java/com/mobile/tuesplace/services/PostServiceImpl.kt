@@ -27,7 +27,10 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<List<PostResponseData>>>, t: Throwable) {
+                override fun onFailure(
+                    call: Call<BaseResponse<List<PostResponseData>>>,
+                    t: Throwable,
+                ) {
                     t.localizedMessage?.let { postCallback.onError(it) }
                 }
 
@@ -58,6 +61,32 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                 }
             }
         )
+    }
+
+    override suspend fun getPost(
+        postCallback: PostService.PostCallback<PostResponseData>,
+        groupId: String,
+        postId: String,
+    ) {
+        retrofit.getPost(groupId, postId).enqueue(
+            object : Callback<BaseResponse<PostResponseData>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<PostResponseData>>,
+                    response: Response<BaseResponse<PostResponseData>>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.response?.let { postCallback.onSuccess(it) }
+                    } else {
+                        postCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<PostResponseData>>, t: Throwable) {
+                    t.localizedMessage?.let { postCallback.onError(it) }
+                }
+
+
+            })
     }
 
 

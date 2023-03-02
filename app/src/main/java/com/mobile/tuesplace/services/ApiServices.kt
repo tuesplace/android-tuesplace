@@ -57,6 +57,9 @@ interface ApiServices {
     @PUT(EDIT_POST)
     fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: String): Call<BaseResponse<PostData>>
 
+    @GET(EDIT_POST)
+    fun getPost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<PostResponseData>>
+
     @DELETE(EDIT_POST)
     fun deletePost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<Unit>>
 
@@ -79,7 +82,7 @@ interface ApiServices {
     fun getPostComments(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<List<CommentData>>>
 
     @POST(POST_COMMENTS)
-    fun addPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body commentBody: String): Call<BaseResponse<CommentData>>
+    fun addPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body comment: CommentRequestData): Call<BaseResponse<CommentRequestData>>
 
     @PUT(POST_COMMENT)
     fun editPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String, @Body commentBody: String): Call<BaseResponse<CommentData>>

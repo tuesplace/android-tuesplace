@@ -13,6 +13,7 @@ import com.mobile.tuesplace.ui.groups.CreateGroupViewModel
 import com.mobile.tuesplace.ui.groups.EditGroupViewModel
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.post.CreatePostViewModel
+import com.mobile.tuesplace.ui.post.PostViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileViewModel
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
@@ -52,6 +53,7 @@ val TuesplaceModules = module {
     viewModel { AllMyActivitiesViewModel(get()) }
     viewModel { UploadActivityViewModel(get(), get()) }
     viewModel { CreatePostViewModel(get()) }
+    viewModel { PostViewModel(get(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -71,6 +73,8 @@ val TuesplaceModules = module {
     factory { EditSpecificationAssetsUseCase(get()) }
     factory { CreatePostUseCase(get()) }
     factory { GetPostsUseCase(get()) }
+    factory { CreateCommentUseCase(get()) }
+    factory { GetPostUseCase(get()) }
 
 //    factory { AuthenticationManager(androidContext(), Intent()) }
 

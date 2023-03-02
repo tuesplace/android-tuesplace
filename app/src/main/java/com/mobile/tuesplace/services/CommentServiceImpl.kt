@@ -2,6 +2,7 @@ package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.CommentData
+import com.mobile.tuesplace.data.CommentRequestData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,20 +39,20 @@ class CommentServiceImpl(private val retrofit: ApiServices) : CommentService {
             )
     }
 
-    override fun addPostComment(
-        commentCallback: CommentService.CommentCallback<CommentData>,
+    override suspend fun addPostComment(
+        commentCallback: CommentService.CommentCallback<CommentRequestData>,
         groupId: String,
         postId: String,
-        comment: String,
+        comment: CommentRequestData,
     ) {
         retrofit.addPostComment(
             groupId = groupId,
             postId = postId,
-            commentBody = comment).enqueue(
-            object : Callback<BaseResponse<CommentData>> {
+            comment = comment).enqueue(
+            object : Callback<BaseResponse<CommentRequestData>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<CommentData>>,
-                    response: Response<BaseResponse<CommentData>>,
+                    call: Call<BaseResponse<CommentRequestData>>,
+                    response: Response<BaseResponse<CommentRequestData>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { commentCallback.onSuccess(it) }
@@ -60,7 +61,7 @@ class CommentServiceImpl(private val retrofit: ApiServices) : CommentService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<CommentData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<CommentRequestData>>, t: Throwable) {
                     t.localizedMessage?.let { commentCallback.onError(it) }
                 }
 

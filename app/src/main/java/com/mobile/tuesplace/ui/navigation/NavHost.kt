@@ -33,11 +33,12 @@ import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.navigate
 import com.mobile.tuesplace.ui.post.CreatePostScreen
 import com.mobile.tuesplace.ui.post.CreatePostViewModel
+import com.mobile.tuesplace.ui.post.PostScreen
+import com.mobile.tuesplace.ui.post.PostViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
-import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.students.AllStudentsScreen
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
@@ -89,8 +90,10 @@ fun NavHost(navController: NavHostController) {
                     ROLE = (profileUiState as GetProfileUiState.Success).profile.role
                     when (ROLE) {
                         "admin" -> navController.navigate(WELCOME_ADMIN_SCREEN)
-                        "student" -> navController.navigate(WELCOME_SCREEN, bundleOf("groupId" to "student"))
-                        "teacher" -> navController.navigate(WELCOME_SCREEN, bundleOf("groupId" to "teacher"))
+                        "student" -> navController.navigate(WELCOME_SCREEN,
+                            bundleOf("groupId" to "student"))
+                        "teacher" -> navController.navigate(WELCOME_SCREEN,
+                            bundleOf("groupId" to "teacher"))
                     }
                     viewModel.resetProfileState()
                 }
@@ -107,7 +110,8 @@ fun NavHost(navController: NavHostController) {
                     navController.navigate(CHATS_SCREEN)
                 },
                 onEnterClassClick = {
-                    navController.navigate(CLASSES_SCREEN, bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                    navController.navigate(CLASSES_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
                 },
                 onEnterVideoroomClick = { navController.navigate(VIDEOROOM_SCREEN) },
                 onLinkClick = {
@@ -135,7 +139,10 @@ fun NavHost(navController: NavHostController) {
             val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
             viewModel.getMyGroups()
             ClassesScreen(
-                onClassClick = { navController.navigate(CLASSROOM_USER_SCREEN, bundleOf("groupId" to it)) },
+                onClassClick = {
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to it))
+                },
                 getMyGroupsUiState = getMyGroupsUiState
             )
         }
@@ -287,22 +294,26 @@ fun NavHost(navController: NavHostController) {
             val viewModel = getViewModel<ClassroomUserViewModel>()
             val getPostsUiState by viewModel.getPostsStateFlow.collectAsState()
             val getGroupUiState by viewModel.getGroupStateFlow.collectAsState()
-            val comment by viewModel.comment.collectAsState()
-            LaunchedEffect(null){
+//            val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
+            LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let { viewModel.getGroup(it) }
             }
             ClassroomUserScreen(
-                setProfile = {},
                 getGroupUiState = getGroupUiState,
                 onGroupSuccess = {
-                    backStackEntry.arguments?.getString("groupId")?.let { viewModel.getPosts(it) } },
+                    backStackEntry.arguments?.getString("groupId")?.let { viewModel.getPosts(it) }
+                },
                 getPostsUiState = getPostsUiState,
-                onCreatePostClick = { navController.navigate(CREATE_POST,  bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"))) },
+                onCreatePostClick = {
+                    navController.navigate(CREATE_POST,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                },
                 onEditPostClick = { },
-                onSendCommentClick = { },
-                comment = comment,
-                setComment = { viewModel.comment(it) },
-                onPostClick = {}
+                onPostClick = {
+                    navController.navigate(POST_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
+                            "postId" to it))
+                }
             )
         }
         composable(CREATE_POST) { backStackEntry ->
@@ -468,6 +479,31 @@ fun NavHost(navController: NavHostController) {
                 specificationUiState = getSpecificationStateFlow,
                 editSpecificationUiState = editSpecificationAssetsStateFlow,
                 onEditSuccess = { navController.navigateUp() }
+            )
+        }
+        composable(POST_SCREEN) { backStackEntry ->
+
+            val viewModel = getViewModel<PostViewModel>()
+            val comment by viewModel.comment.collectAsState()
+            val getPostUiState by viewModel.getPostStateFlow.collectAsState()
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("groupId")?.let {
+                    backStackEntry.arguments?.getString("postId")
+                        ?.let { it1 -> viewModel.getPost(it, it1) }
+                }
+            }
+            PostScreen(
+                commentInput = comment,
+                onCommentChange = { viewModel.comment(it) },
+                getPostUiState = getPostUiState,
+                onSendClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { it1 ->
+                            viewModel.createComment(it1,
+                                it.postId,
+                                it.commentRequestData)
+                        }
+                }
             )
         }
     }
