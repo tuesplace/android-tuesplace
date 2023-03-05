@@ -9,7 +9,7 @@ import retrofit2.Response
 
 class CommentServiceImpl(private val retrofit: ApiServices) : CommentService {
 
-    override fun getPostComments(
+    override suspend fun getPostComments(
         commentCallback: CommentService.CommentCallback<List<CommentData>>,
         groupId: String,
         postId: String,

@@ -280,21 +280,39 @@ fun CreateCommentItem(
 fun CommentItem(commentData: CommentData){
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(2.dp)) {
+        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
+        .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
+    ) {
+        Row() {
+            Image(
+                painter = painterResource(id = R.drawable.tues_webview),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+            )
+
+            Column(modifier = Modifier.padding(start = 2.dp)) {
+                commentData.owner.data?.fullName?.let { Text(text = it, color = colorResource(id = R.color.darker_sea_blue)) }
+                Text(text = commentData.body, color = colorResource(id = R.color.black))
+            }
+
+        }
+
         Image(
-            painter = painterResource(id = R.drawable.tues_webview),
+            painter = painterResource(id = R.drawable.menu_dots),
             contentDescription = stringResource(id = R.string.empty),
             modifier = Modifier
-                .padding(2.dp)
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+                .padding(end = 6.dp)
+                .size(16.dp)
+                .clickable {
+                    
+                }
         )
-
-        Column(modifier = Modifier.padding(start = 2.dp)) {
-            commentData.owner.data?.fullName?.let { Text(text = it, color = colorResource(id = R.color.darker_sea_blue)) }
-            Text(text = commentData.body, color = colorResource(id = R.color.black))
-        }
     }
 }
 

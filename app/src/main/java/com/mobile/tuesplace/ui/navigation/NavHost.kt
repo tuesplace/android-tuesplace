@@ -486,6 +486,7 @@ fun NavHost(navController: NavHostController) {
             val viewModel = getViewModel<PostViewModel>()
             val comment by viewModel.comment.collectAsState()
             val getPostUiState by viewModel.getPostStateFlow.collectAsState()
+            val getPostCommentsUiState by viewModel.getPostCommentsStateFlow.collectAsState()
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let {
                     backStackEntry.arguments?.getString("postId")
@@ -502,6 +503,14 @@ fun NavHost(navController: NavHostController) {
                             viewModel.createComment(it1,
                                 it.postId,
                                 it.commentRequestData)
+                        }
+                },
+                getPostCommentsUiState = getPostCommentsUiState,
+                onPostSuccess = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let {
+                            backStackEntry.arguments?.getString("postId")
+                                ?.let { it1 -> viewModel.getPostComments(it, it1) }
                         }
                 }
             )

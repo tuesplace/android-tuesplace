@@ -18,12 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.CommentData
 import com.mobile.tuesplace.data.CreateCommentData
 import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.ui.CommentItem
 import com.mobile.tuesplace.ui.CreateCommentItem
+import com.mobile.tuesplace.ui.states.GetPostCommentsUiState
 import com.mobile.tuesplace.ui.states.GetPostUiState
 
 @Composable
@@ -31,14 +33,30 @@ fun PostScreen(
     commentInput: String,
     onCommentChange: (String) -> Unit,
     getPostUiState: GetPostUiState,
-    onSendClick: (CreateCommentData) -> Unit
+    onSendClick: (CreateCommentData) -> Unit,
+    getPostCommentsUiState: GetPostCommentsUiState,
+    onPostSuccess: () -> Unit,
 ) {
-    when(getPostUiState) {
+    when (getPostUiState) {
         GetPostUiState.Empty -> {}
         GetPostUiState.Loading -> {}
         is GetPostUiState.Error -> {}
         is GetPostUiState.Success -> {
-            PostUi(postResponseData = getPostUiState.post, commentInput = commentInput, onCommentChange = onCommentChange, postComments = listOf(), onSendClick = onSendClick)
+            onPostSuccess()
+            when (getPostCommentsUiState) {
+                GetPostCommentsUiState.Empty -> {}
+                is GetPostCommentsUiState.Error -> {}
+                GetPostCommentsUiState.Loading -> {}
+                is GetPostCommentsUiState.Success -> {
+                    PostUi(
+                        postResponseData = getPostUiState.post,
+                        commentInput = commentInput,
+                        onCommentChange = onCommentChange,
+                        postComments = getPostCommentsUiState.groups,
+                        onSendClick = onSendClick
+                    )
+                }
+            }
         }
     }
 }
@@ -49,7 +67,7 @@ fun PostUi(
     commentInput: String,
     onCommentChange: (String) -> Unit,
     postComments: List<CommentData>,
-    onSendClick: (CreateCommentData) -> Unit
+    onSendClick: (CreateCommentData) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -124,8 +142,8 @@ fun PostUi(
                 .fillMaxWidth()
                 .constrainAs(commentsItem) {
                     top.linkTo(addCommentItem.bottom)
-                    bottom.linkTo(parent.bottom)
-                }
+                },
+            verticalArrangement = Arrangement.Top,
         ) {
             itemsIndexed(postComments) { _, data ->
                 CommentItem(commentData = data)

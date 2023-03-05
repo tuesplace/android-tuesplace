@@ -2,13 +2,16 @@ package com.mobile.tuesplace.ui.post
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobile.tuesplace.data.CommentData
 import com.mobile.tuesplace.data.CommentRequestData
 import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.services.CommentService
 import com.mobile.tuesplace.services.PostService
 import com.mobile.tuesplace.ui.states.CreateCommentUiState
+import com.mobile.tuesplace.ui.states.GetPostCommentsUiState
 import com.mobile.tuesplace.ui.states.GetPostUiState
 import com.mobile.tuesplace.usecase.CreateCommentUseCase
+import com.mobile.tuesplace.usecase.GetPostCommentsUseCase
 import com.mobile.tuesplace.usecase.GetPostUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +20,7 @@ import kotlinx.coroutines.launch
 class PostViewModel(
     private val createCommentUseCase: CreateCommentUseCase,
     private val getPostUseCase: GetPostUseCase,
+    private val getPostCommentsUseCase: GetPostCommentsUseCase,
 ) : ViewModel() {
     private val _comment =
         MutableStateFlow("")
@@ -69,6 +73,30 @@ class PostViewModel(
                         _getPostStateFlow.emit(GetPostUiState.Error(error))
                     }
                 }
+            }, groupId, postId)
+        }
+    }
+
+    private val _getPostCommentsStateFlow =
+        MutableStateFlow<GetPostCommentsUiState>(GetPostCommentsUiState.Empty)
+    val getPostCommentsStateFlow: StateFlow<GetPostCommentsUiState> = _getPostCommentsStateFlow
+
+    fun getPostComments(groupId: String, postId: String) {
+        viewModelScope.launch {
+            getPostCommentsUseCase.invoke(object :
+                CommentService.CommentCallback<List<CommentData>> {
+                override fun onSuccess(generic: List<CommentData>) {
+                    viewModelScope.launch {
+                        _getPostCommentsStateFlow.emit(GetPostCommentsUiState.Success(generic))
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _getPostCommentsStateFlow.emit(GetPostCommentsUiState.Error(error))
+                    }
+                }
+
             }, groupId, postId)
         }
     }
