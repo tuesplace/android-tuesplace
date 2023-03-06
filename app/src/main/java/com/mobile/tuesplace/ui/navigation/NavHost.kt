@@ -31,10 +31,7 @@ import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.navigate
-import com.mobile.tuesplace.ui.post.CreatePostScreen
-import com.mobile.tuesplace.ui.post.CreatePostViewModel
-import com.mobile.tuesplace.ui.post.PostScreen
-import com.mobile.tuesplace.ui.post.PostViewModel
+import com.mobile.tuesplace.ui.post.*
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
@@ -512,6 +509,58 @@ fun NavHost(navController: NavHostController) {
                             backStackEntry.arguments?.getString("postId")
                                 ?.let { it1 -> viewModel.getPostComments(it, it1) }
                         }
+                },
+                onEditClick = { postInfo -> navController.navigate(EDIT_POST_SCREEN,
+                    bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
+                        "postId" to backStackEntry.arguments?.getString("postId"), "titleString" to postInfo.title, "bodyString" to postInfo.body))
+                }
+            )
+        }
+        composable(EDIT_POST_SCREEN) { backStackEntry ->
+
+            val viewModel = getViewModel<EditPostViewModel>()
+            val title by viewModel.postTitle.collectAsState()
+            val description by viewModel.postDescription.collectAsState()
+            val editPostUiState by viewModel.editPostUiState.collectAsState()
+            val deletePostUiState by viewModel.deletePostUiState.collectAsState()
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("titleString")?.let { viewModel.postTitle(it) }
+                backStackEntry.arguments?.getString("bodyString")?.let { viewModel.postDescription(it) }
+            }
+            EditPostScreen(
+                title = title,
+                onTitleChange = { viewModel.postTitle(it) },
+                description = description,
+                onDescriptionChange = { viewModel.postDescription(it) },
+                onEditClick = { post ->
+                    val postBody = viewModel.editPostBody(post)
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.editPost(groupId = groupId,
+                                    postId = postId,
+                                    post = postBody)
+                            }
+                        }
+                },
+                onDeleteClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")
+                                ?.let { postId -> viewModel.deletePost(groupId, postId) }
+                        }
+                },
+                deletePostUiState = deletePostUiState,
+                onDeleteSuccess = {
+                    viewModel.resetDeletePostUiState()
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                },
+                editPostUiState = editPostUiState,
+                onEditSuccess = {
+                    viewModel.resetEditPostUiState()
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
                 }
             )
         }

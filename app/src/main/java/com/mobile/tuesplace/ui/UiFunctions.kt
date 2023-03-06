@@ -310,7 +310,7 @@ fun CommentItem(commentData: CommentData){
                 .padding(end = 6.dp)
                 .size(16.dp)
                 .clickable {
-                    
+
                 }
         )
     }

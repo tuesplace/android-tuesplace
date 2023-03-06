@@ -3,6 +3,7 @@ package com.mobile.tuesplace.ui.post
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -15,10 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.CommentData
 import com.mobile.tuesplace.data.CreateCommentData
@@ -36,6 +39,7 @@ fun PostScreen(
     onSendClick: (CreateCommentData) -> Unit,
     getPostCommentsUiState: GetPostCommentsUiState,
     onPostSuccess: () -> Unit,
+    onEditClick: (PostRequestData) -> Unit
 ) {
     when (getPostUiState) {
         GetPostUiState.Empty -> {}
@@ -53,7 +57,8 @@ fun PostScreen(
                         commentInput = commentInput,
                         onCommentChange = onCommentChange,
                         postComments = getPostCommentsUiState.groups,
-                        onSendClick = onSendClick
+                        onSendClick = onSendClick,
+                        onEditClick = onEditClick
                     )
                 }
             }
@@ -68,6 +73,7 @@ fun PostUi(
     onCommentChange: (String) -> Unit,
     postComments: List<CommentData>,
     onSendClick: (CreateCommentData) -> Unit,
+    onEditClick: (PostRequestData) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -81,22 +87,37 @@ fun PostUi(
             .constrainAs(topItem) {
                 top.linkTo(parent.top)
             },
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.tues_webview),
-                contentDescription = stringResource(id = R.string.empty),
-                modifier = Modifier
-                    .padding(4.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
-            )
-            postResponseData.owner.data?.fullName?.let {
-                Text(text = it,
-                    color = colorResource(id = R.color.black),
-                    fontSize = 12.sp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.tues_webview),
+                    contentDescription = stringResource(id = R.string.empty),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+                )
+                postResponseData.owner.data?.fullName?.let {
+                    Text(
+                        text = it,
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 16.sp
+                    )
+                }
             }
+
+            Text(
+                text = stringResource(id = R.string.edit),
+                color = colorResource(id = R.color.darker_sea_blue),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .padding(end = 6.dp)
+                    .clickable { onEditClick(PostRequestData(postResponseData.title, postResponseData.body, assignmentInfo = null)) },
+                fontSize = 12.sp
+            )
         }
 
         Text(

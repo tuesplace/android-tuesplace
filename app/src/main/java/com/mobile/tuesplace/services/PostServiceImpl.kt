@@ -89,27 +89,26 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
             })
     }
 
-
-    override fun editPost(
-        postCallback: PostService.PostCallback<PostData>,
+    override suspend fun editPost(
+        postCallback: PostService.PostCallback<Unit>,
         postId: String,
         groupId: String,
-        post: String,
+        post: PostRequestData,
     ) {
         retrofit.editPost(groupId = groupId, postId = postId, post = post).enqueue(
-            object : Callback<BaseResponse<PostData>> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<PostData>>,
-                    response: Response<BaseResponse<PostData>>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { postCallback.onSuccess(it) }
+                        postCallback.onSuccess(Unit)
                     } else {
                         postCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<PostData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { postCallback.onError(it) }
                 }
 
@@ -117,7 +116,7 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
         )
     }
 
-    override fun deletePost(
+    override suspend fun deletePost(
         postCallback: PostService.PostCallback<Unit>,
         postId: String,
         groupId: String,
@@ -129,7 +128,7 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                     response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { postCallback.onSuccess(it) }
+                        postCallback.onSuccess(Unit)
                     } else {
                         postCallback.onError(response.message())
                     }

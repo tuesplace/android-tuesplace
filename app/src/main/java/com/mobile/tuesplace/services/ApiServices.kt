@@ -55,7 +55,7 @@ interface ApiServices {
     fun createPost(@Path("groupId") groupId: String, @Body post: PostRequestData): Call<BaseResponse<PostRequestData>>
 
     @PUT(EDIT_POST)
-    fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: String): Call<BaseResponse<PostData>>
+    fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: PostRequestData): Call<BaseResponse<Unit>>
 
     @GET(EDIT_POST)
     fun getPost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<PostResponseData>>
