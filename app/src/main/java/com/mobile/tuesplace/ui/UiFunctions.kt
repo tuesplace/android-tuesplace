@@ -9,6 +9,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -122,7 +123,7 @@ fun GradientBorderButtonRound(
 @Composable
 fun PostItem(
     post: PostResponseData,
-    onPostClick: (String) -> Unit
+    onPostClick: (String) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -277,15 +278,33 @@ fun CreateCommentItem(
 //        )
 
 @Composable
-fun CommentItem(commentData: CommentData){
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
-        .padding(4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = CenterVertically
+fun CommentItem(
+    commentData: CommentData,
+    index: Int,
+    commentIndex: Int,
+    onCommentClick: (Int) -> Unit,
+    onDeleteClick: () -> Unit,
+    onEditClick: (String) -> Unit,
+    enabled: Boolean,
+    setEnabled: (Boolean) -> Unit,
+    setEditCommentBody: (Pair<String, Int>) -> Unit
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue))
+            .padding(4.dp),
     ) {
-        Row() {
+        val (bodyItem, menuItem, menuOptions) = createRefs()
+
+        Row(
+            modifier = Modifier
+                .constrainAs(bodyItem) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.tues_webview),
                 contentDescription = stringResource(id = R.string.empty),
@@ -297,10 +316,32 @@ fun CommentItem(commentData: CommentData){
             )
 
             Column(modifier = Modifier.padding(start = 2.dp)) {
-                commentData.owner.data?.fullName?.let { Text(text = it, color = colorResource(id = R.color.darker_sea_blue)) }
-                Text(text = commentData.body, color = colorResource(id = R.color.black))
+                commentData.owner.data?.fullName?.let {
+                    Text(text = it,
+                        color = colorResource(id = R.color.darker_sea_blue))
+                }
+                TextField(
+                    value = commentData.body,
+                    onValueChange = { setEditCommentBody(Pair(it, index)) },
+                    enabled = enabled,
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            onEditClick(commentData.body)
+                            setEnabled(false)
+                        }
+                    ),
+                    colors =  TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Transparent,
+                        focusedBorderColor = Transparent,
+                        unfocusedBorderColor = Transparent,
+                        textColor = Black,
+                        disabledTextColor = Black,
+                        disabledLabelColor = Transparent,
+                        focusedLabelColor = Transparent,
+                        unfocusedLabelColor = Transparent
+                    )
+                )
             }
-
         }
 
         Image(
@@ -310,9 +351,53 @@ fun CommentItem(commentData: CommentData){
                 .padding(end = 6.dp)
                 .size(16.dp)
                 .clickable {
-
+                    onCommentClick(index)
+                }
+                .constrainAs(menuItem) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
                 }
         )
+
+        if (commentIndex == index) {
+            Column(
+                modifier = Modifier
+                    .padding(2.dp)
+                    .constrainAs(menuOptions) {
+                        top.linkTo(menuItem.bottom)
+                        end.linkTo(parent.end)
+                    }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.edit),
+                    color = colorResource(id = R.color.darker_sea_blue),
+                    fontSize = 10.sp,
+                    modifier = Modifier
+                        .background(colorResource(id = R.color.white))
+                        .padding(4.dp)
+                        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
+                        .clickable {
+                            setEnabled(true)
+                            onCommentClick(-1)
+                        }
+                )
+
+                Text(
+                    text = stringResource(id = R.string.delete),
+                    color = colorResource(id = R.color.darker_sea_blue),
+                    fontSize = 10.sp,
+                    modifier = Modifier
+                        .background(colorResource(id = R.color.white))
+                        .padding(4.dp)
+                        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
+                        .clickable {
+                            onDeleteClick()
+                            onCommentClick(-1)
+                        }
+                )
+            }
+        }
     }
 }
 
@@ -953,7 +1038,10 @@ fun UserMessage(profile: ProfileData, createTime: String, message: String) {
                     fontSize = 10.sp
                 )
             }
-            Text(text = createTime, color = colorResource(id = R.color.baby_blue), fontSize = 10.sp, modifier = Modifier.padding(start = 2.dp))
+            Text(text = createTime,
+                color = colorResource(id = R.color.baby_blue),
+                fontSize = 10.sp,
+                modifier = Modifier.padding(start = 2.dp))
         }
     }
 }
@@ -992,7 +1080,10 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
                     .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
                     .padding(6.dp),
             ) {
-                Text(text = createTime, color = colorResource(id = R.color.baby_blue), fontSize = 10.sp, modifier = Modifier.padding(start = 2.dp))
+                Text(text = createTime,
+                    color = colorResource(id = R.color.baby_blue),
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(start = 2.dp))
                 Text(
                     text = message,
                     color = colorResource(id = R.color.white),

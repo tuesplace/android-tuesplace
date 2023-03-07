@@ -131,7 +131,7 @@ fun NavHost(navController: NavHostController) {
                 onChatClick = { navController.navigate("$CHATROOM_SCREEN/$it") }
             )
         }
-        composable(CLASSES_SCREEN) { backStackEntry ->
+        composable(CLASSES_SCREEN) {
             val viewModel = getViewModel<ClassesViewModel>()
             val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
             viewModel.getMyGroups()
@@ -484,6 +484,10 @@ fun NavHost(navController: NavHostController) {
             val comment by viewModel.comment.collectAsState()
             val getPostUiState by viewModel.getPostStateFlow.collectAsState()
             val getPostCommentsUiState by viewModel.getPostCommentsStateFlow.collectAsState()
+            val commentMenuIndex by viewModel.commentMenuIndex.collectAsState()
+            val enabled by viewModel.enabled.collectAsState()
+            val commentsData by viewModel.commentList.collectAsState()
+
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let {
                     backStackEntry.arguments?.getString("postId")
@@ -513,7 +517,15 @@ fun NavHost(navController: NavHostController) {
                 onEditClick = { postInfo -> navController.navigate(EDIT_POST_SCREEN,
                     bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
                         "postId" to backStackEntry.arguments?.getString("postId"), "titleString" to postInfo.title, "bodyString" to postInfo.body))
-                }
+                },
+                commentMenuIndex = commentMenuIndex,
+                setCommentMenuIndex = { viewModel.setCommentMenuIndex(it) },
+                onDeleteClick = { },
+                onEditCommentClick = { },
+                enabled = enabled,
+                setEnabled = { viewModel.enabled(it) },
+                setEditCommentBody = { viewModel.editComment(it.first, it.second) },
+                commentData = commentsData
             )
         }
         composable(EDIT_POST_SCREEN) { backStackEntry ->

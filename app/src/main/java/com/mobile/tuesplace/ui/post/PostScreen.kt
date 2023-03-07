@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.CommentData
@@ -39,7 +38,15 @@ fun PostScreen(
     onSendClick: (CreateCommentData) -> Unit,
     getPostCommentsUiState: GetPostCommentsUiState,
     onPostSuccess: () -> Unit,
-    onEditClick: (PostRequestData) -> Unit
+    onEditClick: (PostRequestData) -> Unit,
+    commentMenuIndex: Int,
+    setCommentMenuIndex: (Int) -> Unit,
+    onDeleteClick: () -> Unit,
+    onEditCommentClick: () -> Unit,
+    enabled: Boolean,
+    setEnabled: (Boolean) -> Unit,
+    setEditCommentBody: (Pair<String, Int>) -> Unit,
+    commentData: List<CommentData>
 ) {
     when (getPostUiState) {
         GetPostUiState.Empty -> {}
@@ -56,9 +63,16 @@ fun PostScreen(
                         postResponseData = getPostUiState.post,
                         commentInput = commentInput,
                         onCommentChange = onCommentChange,
-                        postComments = getPostCommentsUiState.groups,
+                        postComments = commentData,
                         onSendClick = onSendClick,
-                        onEditClick = onEditClick
+                        onEditClick = onEditClick,
+                        commentMenuIndex = commentMenuIndex,
+                        setCommentMenuIndex = setCommentMenuIndex,
+                        onDeleteClick = onDeleteClick,
+                        onEditCommentClick = onEditCommentClick,
+                        enabled = enabled,
+                        setEnabled = setEnabled,
+                        setEditCommentBody = setEditCommentBody
                     )
                 }
             }
@@ -73,14 +87,22 @@ fun PostUi(
     onCommentChange: (String) -> Unit,
     postComments: List<CommentData>,
     onSendClick: (CreateCommentData) -> Unit,
-    onEditClick: (PostRequestData) -> Unit
+    onEditClick: (PostRequestData) -> Unit,
+    commentMenuIndex: Int,
+    setCommentMenuIndex: (Int) -> Unit,
+    onDeleteClick: () -> Unit,
+    onEditCommentClick: () -> Unit,
+    enabled: Boolean,
+    setEnabled: (Boolean) -> Unit,
+    setEditCommentBody: (Pair<String, Int>) -> Unit,
 ) {
+
     ConstraintLayout(
         modifier = Modifier
             .background(color = colorResource(id = R.color.white))
             .fillMaxSize()
     ) {
-        val (topItem, titleItem, bodyItem, addCommentItem, commentsItem, editItem) = createRefs()
+        val (topItem, titleItem, bodyItem, addCommentItem, commentsItem) = createRefs()
         Row(modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, colorResource(id = R.color.gray))
@@ -115,7 +137,11 @@ fun PostUi(
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .padding(end = 6.dp)
-                    .clickable { onEditClick(PostRequestData(postResponseData.title, postResponseData.body, assignmentInfo = null)) },
+                    .clickable {
+                        onEditClick(PostRequestData(postResponseData.title,
+                            postResponseData.body,
+                            assignmentInfo = null))
+                    },
                 fontSize = 12.sp
             )
         }
@@ -166,8 +192,18 @@ fun PostUi(
                 },
             verticalArrangement = Arrangement.Top,
         ) {
-            itemsIndexed(postComments) { _, data ->
-                CommentItem(commentData = data)
+            itemsIndexed(postComments) { index, data ->
+                CommentItem(
+                    commentData = data,
+                    index = index,
+                    commentIndex = commentMenuIndex,
+                    onCommentClick = setCommentMenuIndex,
+                    onDeleteClick = onDeleteClick,
+                    enabled = enabled,
+                    setEnabled = setEnabled,
+                    setEditCommentBody = setEditCommentBody,
+                    onEditClick = { onEditCommentClick() }
+                )
             }
         }
     }

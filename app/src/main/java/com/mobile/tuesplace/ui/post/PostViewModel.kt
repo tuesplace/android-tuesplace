@@ -22,12 +22,32 @@ class PostViewModel(
     private val getPostUseCase: GetPostUseCase,
     private val getPostCommentsUseCase: GetPostCommentsUseCase,
 ) : ViewModel() {
+
+    private val _enabled = MutableStateFlow(false)
+    val enabled: StateFlow<Boolean> = _enabled
+
+    fun enabled(enabledValue: Boolean) {
+        _enabled.value = enabledValue
+    }
+
     private val _comment =
         MutableStateFlow("")
     val comment: StateFlow<String> = _comment
 
     fun comment(commentInput: String) {
         _comment.value = commentInput
+    }
+
+    private val _commentMenuIndex =
+        MutableStateFlow(-1)
+    val commentMenuIndex: StateFlow<Int> = _commentMenuIndex
+
+    private val _commentList =
+        MutableStateFlow<List<CommentData>>(arrayListOf())
+    val commentList: StateFlow<List<CommentData>> = _commentList
+
+    fun setCommentMenuIndex(index: Int){
+        _commentMenuIndex.value = index
     }
 
     private val _createCommentStateFlow =
@@ -87,6 +107,7 @@ class PostViewModel(
                 CommentService.CommentCallback<List<CommentData>> {
                 override fun onSuccess(generic: List<CommentData>) {
                     viewModelScope.launch {
+                        _commentList.value = generic
                         _getPostCommentsStateFlow.emit(GetPostCommentsUiState.Success(generic))
                     }
                 }
@@ -99,5 +120,9 @@ class PostViewModel(
 
             }, groupId, postId)
         }
+    }
+
+    fun editComment(commentInput: String, index: Int) {
+        _commentList.value.get(index = index).body = commentInput
     }
 }
