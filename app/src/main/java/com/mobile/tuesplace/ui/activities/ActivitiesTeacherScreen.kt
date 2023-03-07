@@ -14,7 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.mobile.tuesplace.ONE
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.TWO
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
 import com.mobile.tuesplace.ui.EmptyScreen
@@ -77,7 +79,7 @@ fun ActivitiesTeacherUi(
         ) {
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(1)),
+                day = stringResource(id = numToDay(ONE)),
                 agendaList = list.filter { activity ->
                     activity.associations.group.data.owners.filter { owner -> owner._id == profileId}
                         .isNotEmpty()
@@ -85,7 +87,7 @@ fun ActivitiesTeacherUi(
                 })
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(2)),
+                day = stringResource(id = numToDay(TWO)),
                 agendaList = list.filter { activity ->
                     activity.associations.group.data.owners.filter { owner -> owner._id == profileId }
                         .isNotEmpty()

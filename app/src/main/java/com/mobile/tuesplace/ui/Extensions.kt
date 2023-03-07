@@ -10,6 +10,7 @@ import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import androidx.navigation.*
+import com.mobile.tuesplace.*
 import com.mobile.tuesplace.R
 import java.io.*
 
@@ -21,14 +22,18 @@ fun convertMinutesToHoursAndMinutes(minutes: Int): String {
 }
 
 fun indexToLetter(arrayList: ArrayList<Int>): String {
-    return when (arrayList.indexOf(1)) {
-        0 -> "A"
-        1 -> "Б"
-        2 -> "В"
-        3 -> "Г"
-        else -> {
-            ""
+    return if (arrayList.size > 1) {
+        when (arrayList.indexOf(1)) {
+            ZERO -> A_LETTER
+            ONE -> B_LETTER
+            TWO -> C_LETTER
+            THREE -> D_LETTER
+            else -> {
+                EMPTY_STRING
+            }
         }
+    } else {
+        EMPTY_STRING
     }
 }
 
@@ -47,11 +52,11 @@ fun numToDay(number: Int): Int {
 
 fun dayToNum(day: String): Int {
     return when (day) {
-        "Mon" -> 1
-        "Tue" -> 2
-        "Wed" -> 3
-        "Thu" -> 4
-        "Fri" -> 5
+        MONDAY -> 1
+        TUESDAY -> 2
+        WEDNESDAY -> 3
+        THURSDAY -> 4
+        FRIDAY -> 5
         else -> {
             0
         }
