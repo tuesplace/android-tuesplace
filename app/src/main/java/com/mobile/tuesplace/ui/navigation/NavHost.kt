@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.ROLE
+import com.mobile.tuesplace.data.CommentRequestData
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.activities.*
@@ -487,6 +488,10 @@ fun NavHost(navController: NavHostController) {
             val commentMenuIndex by viewModel.commentMenuIndex.collectAsState()
             val enabled by viewModel.enabled.collectAsState()
             val commentsData by viewModel.commentList.collectAsState()
+            val editCommentUiState by viewModel.editPostCommentsStateFlow.collectAsState()
+            val deleteCommentUiState by viewModel.deletePostCommentsStateFlow.collectAsState()
+            val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
+            val dialogVisibility by viewModel.dialogVisibility.collectAsState()
 
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let {
@@ -513,19 +518,54 @@ fun NavHost(navController: NavHostController) {
                             backStackEntry.arguments?.getString("postId")
                                 ?.let { it1 -> viewModel.getPostComments(it, it1) }
                         }
+                    viewModel.setPostStateAsLoaded()
                 },
-                onEditClick = { postInfo -> navController.navigate(EDIT_POST_SCREEN,
-                    bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
-                        "postId" to backStackEntry.arguments?.getString("postId"), "titleString" to postInfo.title, "bodyString" to postInfo.body))
+                onEditClick = { postInfo ->
+                    navController.navigate(EDIT_POST_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
+                            "postId" to backStackEntry.arguments?.getString("postId"),
+                            "titleString" to postInfo.title,
+                            "bodyString" to postInfo.body))
                 },
                 commentMenuIndex = commentMenuIndex,
                 setCommentMenuIndex = { viewModel.setCommentMenuIndex(it) },
-                onDeleteClick = { },
-                onEditCommentClick = { },
+                onDeleteClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.deleteComment(
+                                    groupId = groupId,
+                                    postId = postId,
+                                    commentId = it
+                                )
+                            }
+                        }
+                },
+                onEditCommentClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.editComment(CommentRequestData(body = it.second,
+                                    isPrivate = null),
+                                    commentId = it.first,
+                                    groupId = groupId,
+                                    postId = postId)
+                            }
+                        }
+                },
                 enabled = enabled,
                 setEnabled = { viewModel.enabled(it) },
                 setEditCommentBody = { viewModel.editComment(it.first, it.second) },
-                commentData = commentsData
+                commentData = commentsData,
+                post = viewModel.postData,
+                dialogVisibility = dialogVisibility,
+                setDialogVisibility = { viewModel.dialogVisibility(it) },
+                editCommentUiState = editCommentUiState,
+                onEditCommentSuccess = { viewModel.resetEditComment() },
+                deleteCommentUiState = deleteCommentUiState,
+                onDeleteCommentSuccess = { viewModel.resetDeleteComment() },
+                createCommentUiState = createCommentUiState,
+                onCreateCommentSuccess = { viewModel.resetCreateComment() }
             )
         }
         composable(EDIT_POST_SCREEN) { backStackEntry ->
@@ -537,7 +577,8 @@ fun NavHost(navController: NavHostController) {
             val deletePostUiState by viewModel.deletePostUiState.collectAsState()
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("titleString")?.let { viewModel.postTitle(it) }
-                backStackEntry.arguments?.getString("bodyString")?.let { viewModel.postDescription(it) }
+                backStackEntry.arguments?.getString("bodyString")
+                    ?.let { viewModel.postDescription(it) }
             }
             EditPostScreen(
                 title = title,

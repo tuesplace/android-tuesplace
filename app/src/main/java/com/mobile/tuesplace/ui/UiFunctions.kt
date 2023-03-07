@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -232,11 +233,11 @@ fun CreateCommentItem(
                 .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
         )
 
-
         TextField(
             value = commentInput,
             maxLines = 1,
             isError = false,
+            singleLine = true,
             onValueChange = { onCommentChange(it) },
             modifier = Modifier
                 .wrapContentWidth()
@@ -263,6 +264,7 @@ fun CreateCommentItem(
                 .clickable {
                     onSendClick(CreateCommentData(postId = postId,
                         CommentRequestData(commentInput, true)))
+                    onCommentChange(EMPTY_STRING)
                 })
     }
 }
@@ -283,11 +285,11 @@ fun CommentItem(
     index: Int,
     commentIndex: Int,
     onCommentClick: (Int) -> Unit,
-    onDeleteClick: () -> Unit,
-    onEditClick: (String) -> Unit,
-    enabled: Boolean,
-    setEnabled: (Boolean) -> Unit,
-    setEditCommentBody: (Pair<String, Int>) -> Unit
+    onEditClick: (Pair<String, String>) -> Unit,
+    enabled: Int,
+    setEnabled: (Int) -> Unit,
+    setEditCommentBody: (Pair<String, Int>) -> Unit,
+    setDialogVisibility: (Boolean) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -295,7 +297,7 @@ fun CommentItem(
             .border(1.dp, colorResource(id = R.color.darker_sea_blue))
             .padding(4.dp),
     ) {
-        val (bodyItem, menuItem, menuOptions) = createRefs()
+        val (bodyItem, menuItem) = createRefs()
 
         Row(
             modifier = Modifier
@@ -323,14 +325,15 @@ fun CommentItem(
                 TextField(
                     value = commentData.body,
                     onValueChange = { setEditCommentBody(Pair(it, index)) },
-                    enabled = enabled,
+                    enabled = enabled != -1 && enabled == index,
+                    singleLine = true,
                     keyboardActions = KeyboardActions(
-                        onSend = {
-                            onEditClick(commentData.body)
-                            setEnabled(false)
+                        onDone = {
+                            onEditClick(Pair(commentData._id, commentData.body))
+                            setEnabled(-1)
                         }
                     ),
-                    colors =  TextFieldDefaults.outlinedTextFieldColors(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
                         backgroundColor = Transparent,
                         focusedBorderColor = Transparent,
                         unfocusedBorderColor = Transparent,
@@ -343,59 +346,54 @@ fun CommentItem(
                 )
             }
         }
-
-        Image(
-            painter = painterResource(id = R.drawable.menu_dots),
-            contentDescription = stringResource(id = R.string.empty),
-            modifier = Modifier
-                .padding(end = 6.dp)
-                .size(16.dp)
-                .clickable {
-                    onCommentClick(index)
-                }
-                .constrainAs(menuItem) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                }
-        )
-
-        if (commentIndex == index) {
-            Column(
+        Box(modifier = Modifier
+            .constrainAs(menuItem) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }) {
+            Image(
+                painter = painterResource(id = R.drawable.menu_dots),
+                contentDescription = stringResource(id = R.string.empty),
                 modifier = Modifier
-                    .padding(2.dp)
-                    .constrainAs(menuOptions) {
-                        top.linkTo(menuItem.bottom)
-                        end.linkTo(parent.end)
+                    .padding(end = 6.dp)
+                    .size(16.dp)
+                    .clickable {
+                        onCommentClick(index)
                     }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.edit),
-                    color = colorResource(id = R.color.darker_sea_blue),
-                    fontSize = 10.sp,
-                    modifier = Modifier
-                        .background(colorResource(id = R.color.white))
-                        .padding(4.dp)
-                        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
-                        .clickable {
-                            setEnabled(true)
-                            onCommentClick(-1)
-                        }
-                )
 
-                Text(
-                    text = stringResource(id = R.string.delete),
-                    color = colorResource(id = R.color.darker_sea_blue),
-                    fontSize = 10.sp,
+            )
+
+            if (commentIndex == index) {
+                DropdownMenu(
+                    expanded = true,
+                    onDismissRequest = {},
                     modifier = Modifier
                         .background(colorResource(id = R.color.white))
-                        .padding(4.dp)
-                        .border(1.dp, colorResource(id = R.color.darker_sea_blue))
-                        .clickable {
-                            onDeleteClick()
-                            onCommentClick(-1)
-                        }
-                )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.edit),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                setEnabled(commentIndex)
+                                onCommentClick(-1)
+                            }
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.delete),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                setDialogVisibility(true)
+                            }
+                    )
+                }
             }
         }
     }

@@ -31,3 +31,4 @@ const val HEADER_PREFIX_TOKEN = "token"
 
 const val UPLOAD_CODE = 1
 const val DOCUMENTS_DIR = "documents"
+const val EMPTY_STRING = ""

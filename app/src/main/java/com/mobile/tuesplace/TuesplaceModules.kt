@@ -54,7 +54,7 @@ val TuesplaceModules = module {
     viewModel { AllMyActivitiesViewModel(get()) }
     viewModel { UploadActivityViewModel(get(), get()) }
     viewModel { CreatePostViewModel(get()) }
-    viewModel { PostViewModel(get(), get(), get()) }
+    viewModel { PostViewModel(get(), get(), get(), get(), get()) }
     viewModel { EditPostViewModel(get(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
@@ -80,7 +80,8 @@ val TuesplaceModules = module {
     factory { GetPostCommentsUseCase(get()) }
     factory { EditPostUseCase(get()) }
     factory { DeletePostUseCase(get()) }
-
+    factory { EditCommentUseCase(get()) }
+    factory { DeleteCommentUseCase(get()) }
 //    factory { AuthenticationManager(androidContext(), Intent()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }

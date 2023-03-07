@@ -76,4 +76,10 @@
     <string name="post">Пост</string>
     <string name="deadline">Срок</string>
     <string name="deadline_placeholder">Краен срок</string>
+    <string name="delete_comment_popup_alert">Сигурен/на ли сте, че искате да изтриете този коментар?</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отказ</string>
+    <string name="added">Добавен успешно</string>
+    <string name="edited">Редактиран успешно</string>
+    <string name="deleted">Изтрит успешно</string>
 </resources>
