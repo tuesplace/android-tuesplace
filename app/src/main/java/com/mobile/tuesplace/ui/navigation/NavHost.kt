@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.ROLE
+import com.mobile.tuesplace.data.CommentRequestData
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.ui.activities.*
@@ -31,13 +32,11 @@ import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.navigate
-import com.mobile.tuesplace.ui.post.CreatePostScreen
+import com.mobile.tuesplace.ui.post.*
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileScreen
 import com.mobile.tuesplace.ui.settings.SettingsScreen
-import com.mobile.tuesplace.ui.states.EditProfileUiState
-import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.students.AllStudentsScreen
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
@@ -89,14 +88,16 @@ fun NavHost(navController: NavHostController) {
                     ROLE = (profileUiState as GetProfileUiState.Success).profile.role
                     when (ROLE) {
                         "admin" -> navController.navigate(WELCOME_ADMIN_SCREEN)
-                        "student" -> navController.navigate(WELCOME_SCREEN)
-                        "teacher" -> navController.navigate(WELCOME_SCREEN)
+                        "student" -> navController.navigate(WELCOME_SCREEN,
+                            bundleOf("groupId" to "student"))
+                        "teacher" -> navController.navigate(WELCOME_SCREEN,
+                            bundleOf("groupId" to "teacher"))
                     }
                     viewModel.resetProfileState()
                 }
             }
         }
-        composable(WELCOME_SCREEN) {
+        composable(WELCOME_SCREEN) { backStackEntry ->
             val context = LocalContext.current
             val viewModel = getViewModel<WelcomeViewModel>()
             LaunchedEffect(null) {
@@ -107,7 +108,8 @@ fun NavHost(navController: NavHostController) {
                     navController.navigate(CHATS_SCREEN)
                 },
                 onEnterClassClick = {
-                    navController.navigate(CLASSES_SCREEN)
+                    navController.navigate(CLASSES_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
                 },
                 onEnterVideoroomClick = { navController.navigate(VIDEOROOM_SCREEN) },
                 onLinkClick = {
@@ -135,7 +137,10 @@ fun NavHost(navController: NavHostController) {
             val getMyGroupsUiState by viewModel.getMyGroupsStateFlow.collectAsState()
             viewModel.getMyGroups()
             ClassesScreen(
-                onClassClick = { navController.navigate(CLASSROOM_USER_SCREEN) },
+                onClassClick = {
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to it))
+                },
                 getMyGroupsUiState = getMyGroupsUiState
             )
         }
@@ -283,20 +288,57 @@ fun NavHost(navController: NavHostController) {
                 onForgottenPasswordClick = {}
             )
         }
-        composable(CLASSROOM_USER_SCREEN) {
+        composable(CLASSROOM_USER_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<ClassroomUserViewModel>()
-            val getProfileByIdUiState by viewModel.getProfileByIdStateFlow.collectAsState()
-
+            val getPostsUiState by viewModel.getPostsStateFlow.collectAsState()
+            val getGroupUiState by viewModel.getGroupStateFlow.collectAsState()
+//            val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("groupId")?.let { viewModel.getGroup(it) }
+            }
             ClassroomUserScreen(
-                setProfile = {},
-                getGroupUiState = GetGroupUiState.Empty,
-                getProfileByIdUiState = getProfileByIdUiState,
-                onCreatePostClick = { navController.navigate(CREATE_POST) },
-                onEditPostClick = { }
+                getGroupUiState = getGroupUiState,
+                onGroupSuccess = {
+                    backStackEntry.arguments?.getString("groupId")?.let { viewModel.getPosts(it) }
+                },
+                getPostsUiState = getPostsUiState,
+                onCreatePostClick = {
+                    navController.navigate(CREATE_POST,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                },
+                onEditPostClick = { },
+                onPostClick = {
+                    navController.navigate(POST_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
+                            "postId" to it))
+                }
             )
         }
-        composable(CREATE_POST) {
-            CreatePostScreen()
+        composable(CREATE_POST) { backStackEntry ->
+
+            val viewModel = getViewModel<CreatePostViewModel>()
+            val postName by viewModel.postName.collectAsState()
+            val postDescription by viewModel.postDescription.collectAsState()
+            val postDeadline by viewModel.postDeadline.collectAsState()
+            val postType by viewModel.postType.collectAsState()
+            val createPostUiState by viewModel.createPostStateFlow.collectAsState()
+
+            CreatePostScreen(
+                role = "student",
+                postName = postName,
+                setPostName = { viewModel.postName(it) },
+                postDescription = postDescription,
+                setPostDescription = { viewModel.postDescription(it) },
+                deadline = postDeadline,
+                setDeadline = { viewModel.postDeadline },
+                postType = postType,
+                setPostType = { viewModel.postType(it) },
+                onCreateClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { it1 -> viewModel.createPost(it1, it) }
+                },
+                createPostUiState = createPostUiState
+            )
         }
         composable("$CHATROOM_SCREEN/{groupId}",
             arguments = listOf(navArgument("groupId") {
@@ -357,11 +399,26 @@ fun NavHost(navController: NavHostController) {
         }
         composable(ACTIVITIES_STUDENTS_CLASS_MENU) {
             ActivitiesStudentsClassMenuScreen(
-                onEightGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "8")) },
-                onNinthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "9")) },
-                onTenthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "10")) },
-                onEleventhGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "11")) },
-                onTwelfthGradClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "12")) }
+                onEightGradeClick = {
+                    navController.navigate(ACTIVITIES_STUDENTS_SCREEN,
+                        bundleOf("grade" to "8"))
+                },
+                onNinthGradeClick = {
+                    navController.navigate(ACTIVITIES_STUDENTS_SCREEN,
+                        bundleOf("grade" to "9"))
+                },
+                onTenthGradeClick = {
+                    navController.navigate(ACTIVITIES_STUDENTS_SCREEN,
+                        bundleOf("grade" to "10"))
+                },
+                onEleventhGradeClick = {
+                    navController.navigate(ACTIVITIES_STUDENTS_SCREEN,
+                        bundleOf("grade" to "11"))
+                },
+                onTwelfthGradClick = {
+                    navController.navigate(ACTIVITIES_STUDENTS_SCREEN,
+                        bundleOf("grade" to "12"))
+                }
             )
         }
         composable(ACTIVITIES_STUDENTS_SCREEN) { backStackEntry ->
@@ -385,14 +442,20 @@ fun NavHost(navController: NavHostController) {
             viewModel.getAllProfiles()
             ActivitiesTeachersScreen(
                 getAllProfileUiState = getAllProfilesStateFlow,
-                onTeacherClick = { navController.navigate(ACTIVITIES_TEACHER_SCREEN, bundleOf("profileId" to it))}
+                onTeacherClick = {
+                    navController.navigate(ACTIVITIES_TEACHER_SCREEN,
+                        bundleOf("profileId" to it))
+                }
             )
         }
-        composable(ACTIVITIES_TEACHER_SCREEN){ backStackEntry ->
+        composable(ACTIVITIES_TEACHER_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<ActivitiesTeacherViewModel>()
             val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
             viewModel.getActivities()
-            backStackEntry.arguments?.getString("profileId")?.let { ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState, profileId = it) }
+            backStackEntry.arguments?.getString("profileId")?.let {
+                ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState,
+                    profileId = it)
+            }
         }
         composable(UPLOAD_ACTIVITIES_SCREEN) {
             val viewModel = getViewModel<UploadActivityViewModel>()
@@ -414,6 +477,144 @@ fun NavHost(navController: NavHostController) {
                 specificationUiState = getSpecificationStateFlow,
                 editSpecificationUiState = editSpecificationAssetsStateFlow,
                 onEditSuccess = { navController.navigateUp() }
+            )
+        }
+        composable(POST_SCREEN) { backStackEntry ->
+
+            val viewModel = getViewModel<PostViewModel>()
+            val comment by viewModel.comment.collectAsState()
+            val getPostUiState by viewModel.getPostStateFlow.collectAsState()
+            val getPostCommentsUiState by viewModel.getPostCommentsStateFlow.collectAsState()
+            val commentMenuIndex by viewModel.commentMenuIndex.collectAsState()
+            val enabled by viewModel.enabled.collectAsState()
+            val commentsData by viewModel.commentList.collectAsState()
+            val editCommentUiState by viewModel.editPostCommentsStateFlow.collectAsState()
+            val deleteCommentUiState by viewModel.deletePostCommentsStateFlow.collectAsState()
+            val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
+            val dialogVisibility by viewModel.dialogVisibility.collectAsState()
+
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("groupId")?.let {
+                    backStackEntry.arguments?.getString("postId")
+                        ?.let { it1 -> viewModel.getPost(it, it1) }
+                }
+            }
+            PostScreen(
+                commentInput = comment,
+                onCommentChange = { viewModel.comment(it) },
+                getPostUiState = getPostUiState,
+                onSendClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { it1 ->
+                            viewModel.createComment(it1,
+                                it.postId,
+                                it.commentRequestData)
+                        }
+                },
+                getPostCommentsUiState = getPostCommentsUiState,
+                onPostSuccess = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let {
+                            backStackEntry.arguments?.getString("postId")
+                                ?.let { it1 -> viewModel.getPostComments(it, it1) }
+                        }
+                    viewModel.setPostStateAsLoaded()
+                },
+                onEditClick = { postInfo ->
+                    navController.navigate(EDIT_POST_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId"),
+                            "postId" to backStackEntry.arguments?.getString("postId"),
+                            "titleString" to postInfo.title,
+                            "bodyString" to postInfo.body))
+                },
+                commentMenuIndex = commentMenuIndex,
+                setCommentMenuIndex = { viewModel.setCommentMenuIndex(it) },
+                onDeleteClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.deleteComment(
+                                    groupId = groupId,
+                                    postId = postId,
+                                    commentId = it
+                                )
+                            }
+                        }
+                },
+                onEditCommentClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.editComment(CommentRequestData(body = it.second,
+                                    isPrivate = null),
+                                    commentId = it.first,
+                                    groupId = groupId,
+                                    postId = postId)
+                            }
+                        }
+                },
+                enabled = enabled,
+                setEnabled = { viewModel.enabled(it) },
+                setEditCommentBody = { viewModel.editComment(it.first, it.second) },
+                commentData = commentsData,
+                post = viewModel.postData,
+                dialogVisibility = dialogVisibility,
+                setDialogVisibility = { viewModel.dialogVisibility(it) },
+                editCommentUiState = editCommentUiState,
+                onEditCommentSuccess = { viewModel.resetEditComment() },
+                deleteCommentUiState = deleteCommentUiState,
+                onDeleteCommentSuccess = { viewModel.resetDeleteComment() },
+                createCommentUiState = createCommentUiState,
+                onCreateCommentSuccess = { viewModel.resetCreateComment() }
+            )
+        }
+        composable(EDIT_POST_SCREEN) { backStackEntry ->
+
+            val viewModel = getViewModel<EditPostViewModel>()
+            val title by viewModel.postTitle.collectAsState()
+            val description by viewModel.postDescription.collectAsState()
+            val editPostUiState by viewModel.editPostUiState.collectAsState()
+            val deletePostUiState by viewModel.deletePostUiState.collectAsState()
+            LaunchedEffect(null) {
+                backStackEntry.arguments?.getString("titleString")?.let { viewModel.postTitle(it) }
+                backStackEntry.arguments?.getString("bodyString")
+                    ?.let { viewModel.postDescription(it) }
+            }
+            EditPostScreen(
+                title = title,
+                onTitleChange = { viewModel.postTitle(it) },
+                description = description,
+                onDescriptionChange = { viewModel.postDescription(it) },
+                onEditClick = { post ->
+                    val postBody = viewModel.editPostBody(post)
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.editPost(groupId = groupId,
+                                    postId = postId,
+                                    post = postBody)
+                            }
+                        }
+                },
+                onDeleteClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")
+                                ?.let { postId -> viewModel.deletePost(groupId, postId) }
+                        }
+                },
+                deletePostUiState = deletePostUiState,
+                onDeleteSuccess = {
+                    viewModel.resetDeletePostUiState()
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                },
+                editPostUiState = editPostUiState,
+                onEditSuccess = {
+                    viewModel.resetEditPostUiState()
+                    navController.navigate(CLASSROOM_USER_SCREEN,
+                        bundleOf("groupId" to backStackEntry.arguments?.getString("groupId")))
+                }
             )
         }
     }

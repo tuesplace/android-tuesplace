@@ -4,7 +4,7 @@ import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.services.GroupService
 
 class GetGroupUseCase(private val groupService: GroupService) {
-    fun invoke(groupCallback: GroupService.GroupCallback<GroupData>, groupId: String){
+    suspend operator fun invoke(groupCallback: GroupService.GroupCallback<GroupData>, groupId: String){
         groupService.getGroup(groupCallback, groupId)
     }
 }

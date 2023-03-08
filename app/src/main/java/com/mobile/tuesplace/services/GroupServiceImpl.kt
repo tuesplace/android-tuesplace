@@ -56,7 +56,7 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
         )
     }
 
-    override fun getGroup(
+    override suspend fun getGroup(
         groupCallback: GroupService.GroupCallback<GroupData>,
         groupId: String,
     ) {

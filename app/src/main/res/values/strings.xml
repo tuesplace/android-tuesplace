@@ -21,6 +21,7 @@
     <string name="all_groups">Всички групи</string>
     <string name="save_changes">Запази промените</string>
     <string name="delete_group">Изтрий групата</string>
+    <string name="delete">Изтрий</string>
     <string name="edit">Редактирай</string>
     <string name="name">Име</string>
     <string name="sign_out">Излез от профила си</string>
@@ -64,4 +65,21 @@
     <string name="search_by_class">Търси по клас</string>
     <string name="search_by_name">Търси по име</string>
     <string name="my_profile">Моят профил</string>
+    <string name="add_comment">Добави коментар</string>
+    <string name="view_all">Виж всички</string>
+    <string name="post_name_placeholder_teacher">Име на пост/задание</string>
+    <string name="post_name_placeholder_student">Име на пост</string>
+    <string name="post_description_teacher">Описание на поста/заданието</string>
+    <string name="post_description_student">Описание на поста</string>
+    <string name="description">Описание</string>
+    <string name="assignment">Задание</string>
+    <string name="post">Пост</string>
+    <string name="deadline">Срок</string>
+    <string name="deadline_placeholder">Краен срок</string>
+    <string name="delete_comment_popup_alert">Сигурен/на ли сте, че искате да изтриете този коментар?</string>
+    <string name="yes">Да</string>
+    <string name="cancel">Отказ</string>
+    <string name="added">Добавен успешно</string>
+    <string name="edited">Редактиран успешно</string>
+    <string name="deleted">Изтрит успешно</string>
 </resources>

@@ -12,6 +12,9 @@ import com.mobile.tuesplace.ui.groups.AllGroupsViewModel
 import com.mobile.tuesplace.ui.groups.CreateGroupViewModel
 import com.mobile.tuesplace.ui.groups.EditGroupViewModel
 import com.mobile.tuesplace.ui.login.LoginViewModel
+import com.mobile.tuesplace.ui.post.CreatePostViewModel
+import com.mobile.tuesplace.ui.post.EditPostViewModel
+import com.mobile.tuesplace.ui.post.PostViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileViewModel
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
@@ -39,7 +42,7 @@ val TuesplaceModules = module {
     viewModel { ProfileViewModel(get()) }
     viewModel { EditProfileViewModel(get(), get()) }
     viewModel { VideoroomViewModel(get()) }
-    viewModel { ClassroomUserViewModel(get()) }
+    viewModel { ClassroomUserViewModel(get(), get()) }
     viewModel { ClassesViewModel(get()) }
     viewModel { ChatsViewModel(get()) }
     viewModel { ChatroomViewModel(get()) }
@@ -50,6 +53,9 @@ val TuesplaceModules = module {
     viewModel { ActivitiesTeacherViewModel(get(), get()) }
     viewModel { AllMyActivitiesViewModel(get()) }
     viewModel { UploadActivityViewModel(get(), get()) }
+    viewModel { CreatePostViewModel(get()) }
+    viewModel { PostViewModel(get(), get(), get(), get(), get()) }
+    viewModel { EditPostViewModel(get(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -67,7 +73,15 @@ val TuesplaceModules = module {
     factory { GetMyActivitiesUseCase(get()) }
     factory { SpecificationUseCase(get()) }
     factory { EditSpecificationAssetsUseCase(get()) }
-
+    factory { CreatePostUseCase(get()) }
+    factory { GetPostsUseCase(get()) }
+    factory { CreateCommentUseCase(get()) }
+    factory { GetPostUseCase(get()) }
+    factory { GetPostCommentsUseCase(get()) }
+    factory { EditPostUseCase(get()) }
+    factory { DeletePostUseCase(get()) }
+    factory { EditCommentUseCase(get()) }
+    factory { DeleteCommentUseCase(get()) }
 //    factory { AuthenticationManager(androidContext(), Intent()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }

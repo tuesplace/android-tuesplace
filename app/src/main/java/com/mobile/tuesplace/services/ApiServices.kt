@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.services
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
 import okhttp3.MultipartBody
@@ -49,13 +50,16 @@ interface ApiServices {
     fun deleteProfile(@Path("profileId") profileId: String): Call<BaseResponse<Unit>>
 
     @GET(GET_POSTS)
-    fun getPosts(@Path("groupId") groupId: String): Call<BaseResponse<List<PostData>>>
+    fun getPosts(@Path("groupId") groupId: String): Call<BaseResponse<List<PostResponseData>>>
 
     @POST(GET_POSTS)
-    fun createPost(@Path("groupId") groupId: String, @Body post: String): Call<BaseResponse<PostData>>
+    fun createPost(@Path("groupId") groupId: String, @Body post: PostRequestData): Call<BaseResponse<PostRequestData>>
 
     @PUT(EDIT_POST)
-    fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: String): Call<BaseResponse<PostData>>
+    fun editPost(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body post: PostRequestData): Call<BaseResponse<Unit>>
+
+    @GET(EDIT_POST)
+    fun getPost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<PostResponseData>>
 
     @DELETE(EDIT_POST)
     fun deletePost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<Unit>>
@@ -76,13 +80,13 @@ interface ApiServices {
     fun deleteStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<BaseResponse<Unit>>
 
     @GET(POST_COMMENTS)
-    fun getPostComments(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<List<CommentData>>>
+    fun getPostComments(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<SnapshotStateList<CommentData>>>
 
     @POST(POST_COMMENTS)
-    fun addPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body commentBody: String): Call<BaseResponse<CommentData>>
+    fun addPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Body comment: CommentRequestData): Call<BaseResponse<Unit>>
 
     @PUT(POST_COMMENT)
-    fun editPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String, @Body commentBody: String): Call<BaseResponse<CommentData>>
+    fun editPostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String, @Body commentBody: CommentRequestData): Call<BaseResponse<Unit>>
 
     @PATCH(POST_COMMENT)
     fun addCommentReaction(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String, emoji: String): Call<BaseResponse<Unit>>

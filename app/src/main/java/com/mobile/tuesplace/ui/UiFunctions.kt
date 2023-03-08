@@ -7,7 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -19,11 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
@@ -41,9 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -74,8 +78,8 @@ fun TextFieldFunction(
             backgroundColor = White,
             focusedBorderColor = Transparent,
             unfocusedBorderColor = Transparent,
-            textColor = Color.Black,
-            placeholderColor = Color.Black,
+            textColor = Black,
+            placeholderColor = Black,
         )
     )
 }
@@ -118,38 +122,283 @@ fun GradientBorderButtonRound(
 
 
 @Composable
-fun PostItem(post: PostData, onPostClick: () -> Unit) {
-    Box(
+fun PostItem(
+    post: PostResponseData,
+    onPostClick: (String) -> Unit,
+) {
+    ConstraintLayout(
         modifier = Modifier
+            .padding(3.dp)
             .fillMaxWidth()
-            .heightIn(300.dp, 9999.dp)
-            .padding(16.dp)
-            .clickable { onPostClick() }
+            .heightIn(100.dp, 9999.dp)
+            .clickable { onPostClick(post._id) }
             .background(White, RoundedCornerShape(8.dp))
+            .border(2.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
     ) {
-        Text(
-            text = "Dora",
-            color = Color.Black,
+        val (profilePic, teacherName, createTime, title, body, commentItem) = createRefs()
+
+        Image(
+            painter = painterResource(id = R.drawable.tues_webview),
+            contentDescription = "",
             modifier = Modifier
                 .padding(6.dp)
-                .align(Alignment.TopStart)
+                .size(45.dp)
+                .clip(CircleShape)
+                .border(1.dp,
+                    colorResource(id = R.color.darker_sea_blue),
+                    CircleShape)
+                .constrainAs(profilePic) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
         )
+
+        post.owner.data?.fullName?.let {
+            Text(
+                text = it,
+                color = colorResource(id = R.color.darker_sea_blue),
+                modifier = Modifier
+                    .padding(top = 6.dp, start = 6.dp)
+                    .constrainAs(teacherName) {
+                        start.linkTo(profilePic.end)
+                        top.linkTo(parent.top)
+                    }
+            )
+        }
+
         Text(
             text = post.createdAt,
+            color = colorResource(id = R.color.black),
             modifier = Modifier
-                .padding(6.dp)
-                .align(Alignment.TopEnd)
+                .padding(start = 6.dp)
+                .constrainAs(createTime) {
+                    start.linkTo(teacherName.start)
+                    top.linkTo(teacherName.bottom)
+                }
         )
+
+        Text(
+            text = post.title,
+            fontSize = 16.sp,
+            color = colorResource(id = R.color.black),
+            modifier = Modifier
+                .padding(top = 6.dp, start = 6.dp)
+                .constrainAs(title) {
+                    start.linkTo(profilePic.start)
+                    top.linkTo(createTime.bottom)
+                }
+        )
+
         Text(
             text = post.body,
-            color = Color.Black,
+            color = Black,
+            fontSize = 16.sp,
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(6.dp)
-                .align(Center)
+                .fillMaxWidth()
+                .constrainAs(body) {
+                    top.linkTo(title.bottom)
+                    bottom.linkTo(commentItem.top)
+                }
         )
     }
 }
+
+@Composable
+fun CreateCommentItem(
+    profilePic: Painter,
+    onSendClick: (CreateCommentData) -> Unit,
+    modifier: Modifier?,
+    commentInput: String,
+    onCommentChange: (String) -> Unit,
+    postId: String,
+) {
+    val currentModifier = modifier ?: Modifier
+    Row(
+        modifier = currentModifier
+            .height(64.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp)),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.tues_webview),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .padding(2.dp)
+                .size(40.dp)
+                .clip(CircleShape)
+                .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+        )
+
+        TextField(
+            value = commentInput,
+            maxLines = 1,
+            isError = false,
+            singleLine = true,
+            onValueChange = { onCommentChange(it) },
+            modifier = Modifier
+                .wrapContentWidth()
+                .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp)),
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.add_comment),
+                    color = colorResource(id = R.color.darker_sea_blue),
+                    fontSize = 12.sp
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = White,
+                focusedBorderColor = Transparent,
+                unfocusedBorderColor = Transparent,
+                textColor = Black,
+                placeholderColor = colorResource(id = R.color.darker_sea_blue),
+            ))
+        Image(
+            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24_darker_sea_blue),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .size(25.dp)
+                .clickable {
+                    onSendClick(CreateCommentData(postId = postId,
+                        CommentRequestData(commentInput, true)))
+                    onCommentChange(EMPTY_STRING)
+                })
+    }
+}
+
+//        Text(
+//            text = stringResource(id = R.string.view_all),
+//            color = colorResource(id = R.color.darker_sea_blue),
+//            textDecoration = TextDecoration.Underline,
+//            modifier = Modifier
+//                .wrapContentWidth()
+//                .padding(2.dp)
+//                .clickable { onViewCommentsClick() }
+//        )
+
+@Composable
+fun CommentItem(
+    commentData: CommentData,
+    index: Int,
+    commentIndex: Int,
+    onCommentClick: (Int) -> Unit,
+    onEditClick: (Pair<String, String>) -> Unit,
+    enabled: Int,
+    setEnabled: (Int) -> Unit,
+    setEditCommentBody: (Pair<String, Int>) -> Unit,
+    setDialogVisibility: (Boolean) -> Unit,
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue))
+            .padding(4.dp),
+    ) {
+        val (bodyItem, menuItem) = createRefs()
+
+        Row(
+            modifier = Modifier
+                .constrainAs(bodyItem) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.tues_webview),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+            )
+
+            Column(modifier = Modifier.padding(start = 2.dp)) {
+                commentData.owner.data?.fullName?.let {
+                    Text(text = it,
+                        color = colorResource(id = R.color.darker_sea_blue))
+                }
+                TextField(
+                    value = commentData.body,
+                    onValueChange = { setEditCommentBody(Pair(it, index)) },
+                    enabled = enabled != -1 && enabled == index,
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            onEditClick(Pair(commentData._id, commentData.body))
+                            setEnabled(-1)
+                        }
+                    ),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Transparent,
+                        focusedBorderColor = Transparent,
+                        unfocusedBorderColor = Transparent,
+                        textColor = Black,
+                        disabledTextColor = Black,
+                        disabledLabelColor = Transparent,
+                        focusedLabelColor = Transparent,
+                        unfocusedLabelColor = Transparent
+                    )
+                )
+            }
+        }
+        Box(modifier = Modifier
+            .constrainAs(menuItem) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }) {
+            Image(
+                painter = painterResource(id = R.drawable.menu_dots),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .padding(end = 6.dp)
+                    .size(16.dp)
+                    .clickable {
+                        onCommentClick(index)
+                    }
+
+            )
+
+            if (commentIndex == index) {
+                DropdownMenu(
+                    expanded = true,
+                    onDismissRequest = {},
+                    modifier = Modifier
+                        .background(colorResource(id = R.color.white))
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.edit),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                setEnabled(commentIndex)
+                                onCommentClick(-1)
+                            }
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.delete),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                setDialogVisibility(true)
+                            }
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun EmptyScreen() {
@@ -368,7 +617,6 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
                     top.linkTo(parent.top)
                 }
         )
-
 //            Text(
 //                text = stringResource(id = R.string.teacher).uppercase(),
 //                color = colorResource(id = R.color.baby_blue),
@@ -688,17 +936,11 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                // Permission is granted, launch the GetContent ActivityResultLauncher
                 getContentLauncher.launch(type)
             } else {
-                // Permission is not granted, show an error message to the user
                 //viewModel.showPermissionError()
             }
         }
-
-//    val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//    pickIntent.type = "image/*"
-//    startActivityForResult((LocalContext.current as Activity), pickIntent, UPLOAD_CODE, null)
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -726,19 +968,15 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
             Text(text = "Selected file: ${uri.path}")
             Button(
                 onClick = {
-//                    val path = getPath(context, uri)
-//                    val file = uri.path?.let { File(it) }
-
                     val file = getFileWithFileDescriptor(context, uri)
-//                    val reqFile = file?.asRequestBody(type.toMediaTypeOrNull())
-//                    val body = reqFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
                     val requestFile =
                         file?.let {
-                            RequestBody.create("application/xls".toMediaTypeOrNull(),
-                                it)
+                            RequestBody.create("application/xls".toMediaTypeOrNull(), it)
                         }
                     if (requestFile != null) {
-                        val filePart = MultipartBody.Part.createFormData("specification", "filename.xlsx", requestFile)
+                        val filePart = MultipartBody.Part.createFormData("specification",
+                            "filename.xlsx",
+                            requestFile)
                         onUploadClick(filePart)
                     }
                 },
@@ -748,21 +986,145 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
             }
         }
     }
+}
 
+@Composable
+fun UserMessage(profile: ProfileData, createTime: String, message: String) {
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val (row, name) = createRefs()
+        Text(
+            text = profile.fullName,
+            color = colorResource(id = R.color.white),
+            fontSize = 12.sp,
+            modifier = Modifier
+                .padding(start = 38.dp)
+                .constrainAs(name) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(row) {
+                    start.linkTo(parent.start)
+                    top.linkTo(name.bottom)
+                },
+            verticalAlignment = CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.tues_webview),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape))
 
+            Box(
+                modifier = Modifier
+                    .widthIn(min = 25.dp)
+                    .padding(start = 2.dp)
+                    .background(colorResource(id = R.color.darker_sea_blue),
+                        RoundedCornerShape(8.dp))
+                    .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+                    .padding(6.dp),
+            ) {
+                Text(
+                    text = message,
+                    color = colorResource(id = R.color.white),
+                    fontSize = 10.sp
+                )
+            }
+            Text(text = createTime,
+                color = colorResource(id = R.color.baby_blue),
+                fontSize = 10.sp,
+                modifier = Modifier.padding(start = 2.dp))
+        }
+    }
 }
 
 
+@Composable
+fun MyMessage(profile: ProfileData, createTime: String, message: String) {
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val (row, name) = createRefs()
+        Text(
+            text = profile.fullName,
+            color = colorResource(id = R.color.white),
+            fontSize = 12.sp,
+            modifier = Modifier
+                .padding(start = 38.dp)
+                .constrainAs(name) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(row) {
+                    start.linkTo(parent.start)
+                    top.linkTo(name.bottom)
+                },
+            verticalAlignment = CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .widthIn(min = 25.dp)
+                    .padding(start = 2.dp)
+                    .background(colorResource(id = R.color.darker_sea_blue),
+                        RoundedCornerShape(8.dp))
+                    .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+                    .padding(6.dp),
+            ) {
+                Text(text = createTime,
+                    color = colorResource(id = R.color.baby_blue),
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(start = 2.dp))
+                Text(
+                    text = message,
+                    color = colorResource(id = R.color.white),
+                    fontSize = 10.sp
+                )
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.tues_webview),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape))
+        }
+    }
+}
 
 
 @Composable
 @Preview
 fun Preview() {
     // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
-    GroupClassItem(GroupResponseData("",
-        "Bulgarian Language and Literature",
-        "",
-        arrayListOf("9B"),
-        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
+//    GroupClassItem(GroupResponseData("",
+//        "Bulgarian Language and Literature",
+//        "",
+//        arrayListOf("9B"),
+//        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
+//    PostItem(post = PostData("",
+//        "",
+//        listOf(),
+//        "12:30",
+//        "",
+//        "This is a test post. I am testing the UI."), {}, {}, {}, "") {}
+//    CommentItem(profilePic = painterResource(id = R.drawable.tues_webview),
+//        onSendClick = {},
+//        modifier = Modifier,
+//        commentInput = "",
+//        onCommentChange = {},
+//        postId = "")
+    UserMessage(profile = ProfileData("Kalina Valeva", "", "", "", ""),
+        createTime = "12:30",
+        message = "Hello, there!")
 }
 
