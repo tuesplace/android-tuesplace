@@ -2,6 +2,7 @@ package com.mobile.tuesplace
 
 import com.google.gson.Gson
 import com.mobile.tuesplace.services.*
+import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.classes.ClassesViewModel
@@ -24,6 +25,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
 import java.util.concurrent.TimeUnit
 
 val TuesplaceModules = module {
@@ -42,6 +44,12 @@ val TuesplaceModules = module {
     viewModel { ChatsViewModel(get()) }
     viewModel { ChatroomViewModel(get()) }
     viewModel { AllStudentsViewModel(get()) }
+    viewModel { MyActivitiesViewModel(get()) }
+    viewModel { ActivitiesStudentsViewModel(get()) }
+    viewModel { ActivitiesTeachersViewModel(get()) }
+    viewModel { ActivitiesTeacherViewModel(get(), get()) }
+    viewModel { AllMyActivitiesViewModel(get()) }
+    viewModel { UploadActivityViewModel(get(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -55,6 +63,10 @@ val TuesplaceModules = module {
     factory { GetMyGroupsUseCase(get()) }
     factory { GetProfileByIdUseCase(get()) }
     factory { GetAllProfilesUseCase(get()) }
+    factory { GetActivitiesUseCase(get()) }
+    factory { GetMyActivitiesUseCase(get()) }
+    factory { SpecificationUseCase(get()) }
+    factory { EditSpecificationAssetsUseCase(get()) }
 
 //    factory { AuthenticationManager(androidContext(), Intent()) }
 
@@ -64,6 +76,8 @@ val TuesplaceModules = module {
     factory<CommentService> { CommentServiceImpl(get()) }
     factory<MarkService> { MarkServiceImpl(get()) }
     factory<PostService> { PostServiceImpl(get()) }
+    factory<ActivitiesService> { ActivitiesImpl(get()) }
+    factory<SpecificationService> { SpecificationImpl(get()) }
 
     factory { TuesAuthenticator() }
     factory { TuesInterceptor(androidContext()) }

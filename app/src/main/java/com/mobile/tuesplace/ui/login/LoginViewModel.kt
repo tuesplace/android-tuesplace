@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.data.SignInData
 import com.mobile.tuesplace.dataStore
 import com.mobile.tuesplace.services.AuthService
@@ -99,8 +100,8 @@ class LoginViewModel(
 
     fun getProfile() {
         viewModelScope.launch {
-            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
-                override fun onSuccess(profileGeneric: ProfileData) {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                override fun onSuccess(profileGeneric: ProfileResponseData) {
                     viewModelScope.launch {
                         _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
                     }

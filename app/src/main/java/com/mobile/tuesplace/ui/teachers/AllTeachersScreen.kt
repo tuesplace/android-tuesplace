@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.EmptyScreen
@@ -106,18 +110,21 @@ fun AllTeachersUi(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(addStudent.bottom)
-                }
+                },
+            placeholder = stringResource(id = R.string.search_by_name)
         )
 
-        LazyColumn(
+        LazyVerticalGrid(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(6.dp)
                 .background(colorResource(id = R.color.dark_blue))
                 .constrainAs(studentsList) {
                     top.linkTo(searchView.bottom)
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
                 },
-            horizontalAlignment = Alignment.CenterHorizontally
+            columns = GridCells.Adaptive(minSize = 150.dp)
         ) {
             itemsIndexed(profiles.filter { profile -> profile.fullName.contains(textState.value.text) }) { _, data ->
                 StudentItem(student = data, onClick = onStudentClick)

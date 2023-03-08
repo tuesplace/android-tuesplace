@@ -1,10 +1,10 @@
 package com.mobile.tuesplace.data
 
-data class Image(
+data class Image<Data>(
     var _id: String,
     var collectionName: String,
     var shouldResolve: Boolean,
-    var imageData: ImageData
+    var data: Data
 )
 
 data class ImageData(

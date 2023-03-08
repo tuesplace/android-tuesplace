@@ -21,6 +21,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.PostItem
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
@@ -54,7 +55,7 @@ fun ClassroomUserScreen(
 }
 
 @Composable
-fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileData, onAddClick: () -> Unit, onPostClick: () -> Unit){
+fun ClassroomUserUi(group: GroupData, posts: ArrayList<PostData>, teacher: ProfileResponseData, onAddClick: () -> Unit, onPostClick: () -> Unit){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()

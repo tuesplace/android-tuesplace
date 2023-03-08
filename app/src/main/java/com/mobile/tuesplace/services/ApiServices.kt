@@ -2,16 +2,10 @@ package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
+import okhttp3.MultipartBody
 
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiServices {
 
@@ -40,16 +34,16 @@ interface ApiServices {
     fun deleteGroup(@Path("groupId") groupId: String): Call<BaseResponse<Unit>>
 
     @GET(PROFILE_ME)
-    fun getProfile(): Call<BaseResponse<ProfileData>>
+    fun getProfile(): Call<BaseResponse<ProfileResponseData>>
 
     @GET(ALL_PROFILES)
     fun getAllProfiles(): Call<BaseResponse<List<ProfileResponseData>>>
 
     @GET(PROFILE)
-    fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileData>>
+    fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileResponseData>>
 
-    @PUT(PROFILE)
-    fun editProfile(@Path("profileId") profileId: String, editProfileData: EditProfileData): Call<BaseResponse<Unit>>
+    @PUT(PROFILE_ME)
+    fun editProfile(@Body editProfileData: EditProfileData): Call<BaseResponse<Unit>>
 
     @DELETE(PROFILE)
     fun deleteProfile(@Path("profileId") profileId: String): Call<BaseResponse<Unit>>
@@ -96,4 +90,16 @@ interface ApiServices {
     @DELETE(POST_COMMENT)
     fun deletePostComment(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("commentId") commentId: String): Call<BaseResponse<Unit>>
 
+    @GET(ACTIVITIES)
+    fun getActivities(): Call<BaseResponse<List<AgendaResponseData>>>
+
+    @GET(MY_ACTIVITIES)
+    fun getMyActivities(): Call<BaseResponse<List<AgendaResponseData>>>
+
+    @GET(SPECIFICATION)
+    fun getSpecification(): Call<BaseResponse<ArrayList<Specification>>>
+
+    @Multipart
+    @PUT(SPECIFICATION_ASSETS)
+    fun editSpecificationAssets(@Path("specificationId") specificationId: String, @Part specification: MultipartBody.Part): Call<Unit>
 }

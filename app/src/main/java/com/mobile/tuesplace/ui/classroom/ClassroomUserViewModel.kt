@@ -3,6 +3,7 @@ package com.mobile.tuesplace.ui.classroom
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 import com.mobile.tuesplace.usecase.GetProfileByIdUseCase
@@ -21,8 +22,8 @@ class ClassroomUserViewModel(private val profileByIdUseCase: GetProfileByIdUseCa
 
     fun getProfileById(profileId: String) {
         viewModelScope.launch {
-            profileByIdUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
-                override fun onSuccess(profileGeneric: ProfileData) {
+            profileByIdUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                override fun onSuccess(profileGeneric: ProfileResponseData) {
                     viewModelScope.launch {
                         _getProfileByIdStateFlow.emit(GetProfileByIdUiState.Success(profileGeneric))
                     }

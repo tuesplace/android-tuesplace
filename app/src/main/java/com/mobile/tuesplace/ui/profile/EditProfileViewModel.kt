@@ -3,7 +3,7 @@ package com.mobile.tuesplace.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.EditProfileData
-import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
@@ -19,8 +19,8 @@ class EditProfileViewModel(private val profileUseCase: GetProfileUseCase, privat
 
     fun getProfile() {
         viewModelScope.launch {
-            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
-                override fun onSuccess(profileGeneric: ProfileData) {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                override fun onSuccess(profileGeneric: ProfileResponseData) {
                     viewModelScope.launch {
                         _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
                     }
@@ -39,7 +39,7 @@ class EditProfileViewModel(private val profileUseCase: GetProfileUseCase, privat
     private val _editProfileStateFlow = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Empty)
     val editProfileStateFlow: StateFlow<EditProfileUiState> = _editProfileStateFlow
 
-    fun editProfile(editProfileData: EditProfileData, profileId: String){
+    fun editProfile(editProfileData: EditProfileData){
         viewModelScope.launch {
             editProfileUseCase.invoke(object : ProfileService.GetProfileCallback<Unit> {
                 override fun onSuccess(profileGeneric: Unit) {
@@ -54,8 +54,32 @@ class EditProfileViewModel(private val profileUseCase: GetProfileUseCase, privat
                     }
                 }
 
-            }, editProfileData = editProfileData, profileId = profileId)
+            }, editProfileData = editProfileData)
         }
+    }
+
+    private val _changeName =
+        MutableStateFlow("")
+    val changeName: StateFlow<String> = _changeName
+
+    fun changeName(nameInput: String) {
+        _changeName.value = nameInput
+    }
+
+    private val _changeEmail =
+        MutableStateFlow("")
+    val changeEmail: StateFlow<String> = _changeEmail
+
+    fun changeEmail(emailInput: String) {
+        _changeEmail.value = emailInput
+    }
+
+    private val _changeClass =
+        MutableStateFlow("")
+    val changeClass: StateFlow<String> = _changeClass
+
+    fun changeClass(classInput: String) {
+        _changeClass.value = classInput
     }
 
 }

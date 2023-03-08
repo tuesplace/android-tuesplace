@@ -8,12 +8,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.ROLE
+import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
 import com.mobile.tuesplace.ui.classes.ClassesScreen
@@ -27,6 +30,7 @@ import com.mobile.tuesplace.ui.login.LoginScreen
 import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
+import com.mobile.tuesplace.ui.navigate
 import com.mobile.tuesplace.ui.post.CreatePostScreen
 import com.mobile.tuesplace.ui.profile.EditProfileScreen
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
@@ -90,7 +94,6 @@ fun NavHost(navController: NavHostController) {
                     }
                     viewModel.resetProfileState()
                 }
-                EditProfileUiState.Loading -> {}
             }
         }
         composable(WELCOME_SCREEN) {
@@ -112,7 +115,7 @@ fun NavHost(navController: NavHostController) {
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
                         null)
                 },
-                onAgendaClick = { }
+                onAgendaClick = { navController.navigate(MY_ACTIVITIES_SCREEN) }
             )
         }
         composable(FORGOTTEN_PASSWORD_SCREEN) {
@@ -148,7 +151,7 @@ fun NavHost(navController: NavHostController) {
         composable(WELCOME_ADMIN_SCREEN) {
             val context = LocalContext.current
             WelcomeAdminScreen(
-                onAgendaClick = { },
+                onAgendaClick = { navController.navigate(ACTIVITIES_OPTION_MENU_SCREEN) },
                 onGroupsClick = { navController.navigate(ALL_GROUPS_SCREEN) },
                 onStudentsClick = { navController.navigate(ALL_STUDENTS_SCREEN) },
                 onTeachersClick = { navController.navigate(ALL_TEACHERS_SCREEN) },
@@ -239,23 +242,45 @@ fun NavHost(navController: NavHostController) {
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            ProfileScreen(profileUiState = profileUiState)
+            ProfileScreen(profileUiState = profileUiState,
+                onEditClick = { navController.navigate(EDIT_PROFILE_SCREEN) })
         }
         composable(EDIT_PROFILE_SCREEN) {
             val viewModel = getViewModel<EditProfileViewModel>()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
-            val enabled: Boolean = ROLE == "admin"
+            val changeName by viewModel.changeName.collectAsState()
+            val changeEmail by viewModel.changeEmail.collectAsState()
+            val changeClass by viewModel.changeClass.collectAsState()
+            val editProfileStateFlow by viewModel.editProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            EditProfileScreen(profileUiState = profileUiState,
-                enabled = enabled,
-                onSaveChanges = {})
+            EditProfileScreen(
+                profileUiState = profileUiState,
+                onSaveChanges = {
+                    viewModel.editProfile(EditProfileData(
+                        fullName = changeName.ifEmpty { null },
+                        email = changeEmail.ifEmpty { null },
+                        password = null,
+                        role = null,
+                        className = changeClass.ifEmpty { null }
+                    ))
+                },
+                onAddPhotoClick = {},
+                changeName = changeName,
+                setChangedName = { viewModel.changeName(it) },
+                changeEmail = changeEmail,
+                setChangedEmail = { viewModel.changeEmail(it) },
+                changeClass = changeClass,
+                setChangedClass = { viewModel.changeClass(it) },
+                editProfileStateFlow = editProfileStateFlow
+            )
         }
         composable(SETTINGS_SCREEN) {
             SettingsScreen(
                 onEditClick = { navController.navigate(PROFILE_SCREEN) },
-                onSignOutClick = { navController.navigate(LOGIN_SCREEN) }
+                onSignOutClick = { navController.navigate(LOGIN_SCREEN) },
+                onForgottenPasswordClick = {}
             )
         }
         composable(CLASSROOM_USER_SCREEN) {
@@ -292,11 +317,13 @@ fun NavHost(navController: NavHostController) {
             viewModel.getAllProfiles()
             AllStudentsScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
-                onStudentClick = {},
+                onStudentClick = { id ->
+                    navController.navigate(PROFILE_SCREEN)
+                },
                 onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
             )
         }
-        composable(ALL_TEACHERS_SCREEN){
+        composable(ALL_TEACHERS_SCREEN) {
             val viewModel = getViewModel<AllStudentsViewModel>()
             val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
             viewModel.getAllProfiles()
@@ -304,6 +331,89 @@ fun NavHost(navController: NavHostController) {
                 getAllProfilesUiState = getAllProfilesStateFlow,
                 onTeacherClick = { },
                 onCreateNewClick = { }
+            )
+        }
+        composable(MY_ACTIVITIES_SCREEN) {
+            val viewModel = getViewModel<MyActivitiesViewModel>()
+            val getActivitiesStateFlow by viewModel.getMyActivitiesStateFlow.collectAsState()
+            viewModel.getMyActivities()
+            MyActivitiesScreen(
+                getMyActivitiesUiState = getActivitiesStateFlow,
+                onFullAgendaClick = { navController.navigate(ALL_MY_ACTIVITIES_SCREEN) }
+            )
+        }
+        composable(ALL_MY_ACTIVITIES_SCREEN) {
+            val viewModel = getViewModel<AllMyActivitiesViewModel>()
+            val getMyActivitiesUiState by viewModel.getMyActivitiesStateFlow.collectAsState()
+            viewModel.getMyActivities()
+            AllMyActivitiesScreen(getMyActivitiesUiState = getMyActivitiesUiState)
+        }
+        composable(ACTIVITIES_OPTION_MENU_SCREEN) {
+            ActivitiesOptionMenuScreen(
+                onStudentsClick = { navController.navigate(ACTIVITIES_STUDENTS_CLASS_MENU) },
+                onTeachersClick = { navController.navigate(ACTIVITIES_TEACHERS_SCREEN) },
+                onChangeAgendaClick = { navController.navigate(UPLOAD_ACTIVITIES_SCREEN) }
+            )
+        }
+        composable(ACTIVITIES_STUDENTS_CLASS_MENU) {
+            ActivitiesStudentsClassMenuScreen(
+                onEightGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "8")) },
+                onNinthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "9")) },
+                onTenthGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "10")) },
+                onEleventhGradeClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "11")) },
+                onTwelfthGradClick = { navController.navigate(ACTIVITIES_STUDENTS_SCREEN, bundleOf("grade" to "12")) }
+            )
+        }
+        composable(ACTIVITIES_STUDENTS_SCREEN) { backStackEntry ->
+            val viewModel = getViewModel<ActivitiesStudentsViewModel>()
+            val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
+            val setVisibilityStateFlow by viewModel.setVisibilityStateFlow.collectAsState()
+
+            viewModel.getActivities()
+            backStackEntry.arguments?.getString("grade")?.let { grade ->
+                ActivitiesStudentsScreen(
+                    grade = grade,
+                    getActivitiesUiState = getActivitiesUiState,
+                    setVisibilityStateFlow = setVisibilityStateFlow,
+                    setVisibility = { viewModel.setVisibilities(it) }
+                )
+            }
+        }
+        composable(ACTIVITIES_TEACHERS_SCREEN) {
+            val viewModel = getViewModel<ActivitiesTeachersViewModel>()
+            val getAllProfilesStateFlow by viewModel.getAllProfilesStateFlow.collectAsState()
+            viewModel.getAllProfiles()
+            ActivitiesTeachersScreen(
+                getAllProfileUiState = getAllProfilesStateFlow,
+                onTeacherClick = { navController.navigate(ACTIVITIES_TEACHER_SCREEN, bundleOf("profileId" to it))}
+            )
+        }
+        composable(ACTIVITIES_TEACHER_SCREEN){ backStackEntry ->
+            val viewModel = getViewModel<ActivitiesTeacherViewModel>()
+            val getActivitiesUiState by viewModel.getActivitiesStateFlow.collectAsState()
+            viewModel.getActivities()
+            backStackEntry.arguments?.getString("profileId")?.let { ActivitiesTeacherScreen(getActivitiesUiState = getActivitiesUiState, profileId = it) }
+        }
+        composable(UPLOAD_ACTIVITIES_SCREEN) {
+            val viewModel = getViewModel<UploadActivityViewModel>()
+            val getSpecificationStateFlow by viewModel.getSpecificationStateFlow.collectAsState()
+            val editSpecificationAssetsStateFlow by viewModel.editSpecificationAssetsStateFlow.collectAsState()
+            var idString = ""
+            LaunchedEffect(null) {
+                viewModel.getSpecification()
+            }
+            UploadActivityScreen(
+                onUploadClick = { url ->
+                    if (idString.isNotEmpty()) {
+                        viewModel.editSpecificationAssets(idString, url)
+                    }
+                },
+                onGetSpecificationSuccess = { id ->
+                    idString = id
+                },
+                specificationUiState = getSpecificationStateFlow,
+                editSpecificationUiState = editSpecificationAssetsStateFlow,
+                onEditSuccess = { navController.navigateUp() }
             )
         }
     }

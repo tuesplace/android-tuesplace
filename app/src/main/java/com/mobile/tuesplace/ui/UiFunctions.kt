@@ -1,5 +1,10 @@
 package com.mobile.tuesplace.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +14,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
@@ -21,6 +28,7 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,12 +40,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.GroupResponseData
-import com.mobile.tuesplace.data.PostData
-import com.mobile.tuesplace.data.ProfileData
-import com.mobile.tuesplace.data.ProfileResponseData
-import com.mobile.tuesplace.ui.theme.BabyBlue
+import com.mobile.tuesplace.data.*
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+
 
 @Composable
 fun TextFieldFunction(
@@ -146,7 +156,9 @@ fun EmptyScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BabyBlue)) {
+            .background(colorResource(id = R.color.dark_blue)),
+        contentAlignment = Center
+    ) {
         Text(text = stringResource(id = R.string.screen_not_found),
             color = White,
             textAlign = TextAlign.Center)
@@ -154,7 +166,7 @@ fun EmptyScreen() {
 }
 
 @Composable
-fun MenuItem(image: Painter, string: String, modifier: Modifier?, onClick: () -> Unit) {
+fun MenuItem(image: Painter?, string: String, modifier: Modifier?, onClick: () -> Unit) {
     val currentModifier = modifier ?: Modifier
     ConstraintLayout(
         modifier = currentModifier
@@ -167,18 +179,20 @@ fun MenuItem(image: Painter, string: String, modifier: Modifier?, onClick: () ->
             )
     ) {
         val (startIcon, text, arrow) = createRefs()
-        Image(
-            painter = image,
-            contentDescription = "",
-            modifier = Modifier
-                .padding(6.dp)
-                .size(30.dp)
-                .constrainAs(startIcon) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-        )
+        if (image != null) {
+            Image(
+                painter = image,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(6.dp)
+                    .size(30.dp)
+                    .constrainAs(startIcon) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+        }
         Text(
             text = string,
             modifier = Modifier
@@ -442,9 +456,9 @@ fun TextFieldWithTitle(
     onValueChange: (String) -> Unit,
     enabled: Boolean?,
     isError: Boolean?,
-    modifier: Modifier?
+    modifier: Modifier?,
 ) {
-    val currentModifier = modifier?: Modifier
+    val currentModifier = modifier ?: Modifier
     Column(
         modifier = currentModifier
             .padding(16.dp)
@@ -512,8 +526,8 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
-    val currentModifier = modifier?: Modifier
+fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?, placeholder: String) {
+    val currentModifier = modifier ?: Modifier
     TextField(
         value = state.value,
         onValueChange = { value ->
@@ -532,7 +546,7 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
                     .size(24.dp)
             )
         },
-        placeholder = { Text(text = stringResource(id = R.string.search))},
+        placeholder = { Text(text = placeholder) },
         trailingIcon = {
             if (state.value != TextFieldValue("")) {
                 IconButton(
@@ -566,6 +580,179 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?) {
         )
     )
 }
+
+@Composable
+fun AgendaItem(agendaData: AgendaResponseData) {
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(6.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.water_blue), RoundedCornerShape(8.dp))
+    ) {
+        val (time, groupName, arrow) = createRefs()
+
+        Column(
+            modifier = Modifier
+                .padding(start = 6.dp)
+                .constrainAs(time) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            Text(text = convertMinutesToHoursAndMinutes(agendaData.start), color = White)
+            Text(text = convertMinutesToHoursAndMinutes(agendaData.end), color = White)
+        }
+
+        Column(modifier = Modifier
+            .padding(6.dp)
+            .constrainAs(groupName) {
+                start.linkTo(time.end)
+                end.linkTo(arrow.start)
+                top.linkTo(parent.top)
+            }) {
+            Text(text = agendaData.associations.group.data.name)
+            Text(
+                text = agendaData.associations.group.data.owners[0].data.fullName,
+                color = colorResource(id = R.color.baby_blue))
+        }
+
+        Image(painter = painterResource(
+            id = R.drawable.ic_baseline_keyboard_arrow_right_24),
+            contentDescription = "",
+            modifier = Modifier
+                .padding(end = 6.dp)
+                .constrainAs(arrow) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        )
+    }
+}
+
+@Composable
+fun InfoItem(title: String, text: String) {
+    Column(horizontalAlignment = Start) {
+        Text(text = title.uppercase(),
+            color = colorResource(id = R.color.baby_blue),
+            fontSize = 25.sp)
+        Text(text = text, color = White, fontSize = 20.sp)
+    }
+}
+
+@Composable
+fun DailyAgendaItem(day: String, agendaList: List<AgendaResponseData>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, colorResource(id = R.color.baby_blue))
+            .background(colorResource(id = R.color.darker_sea_blue))
+    ) {
+        Text(text = day,
+            color = colorResource(id = R.color.white),
+            fontSize = 20.sp,
+            modifier = Modifier.padding(start = 6.dp, top = 6.dp, bottom = 16.dp))
+        agendaList.forEach { activity ->
+            AgendaItem(agendaData = activity)
+        }
+    }
+}
+
+@Composable
+fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?) {
+    val currentModifier = modifier ?: Modifier
+    Row(
+        modifier = currentModifier
+            .clickable { onClick() }
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = text, color = colorResource(id = R.color.white))
+        Image(
+            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24_white),
+            contentDescription = stringResource(id = R.string.empty)
+        )
+    }
+}
+
+@Composable
+fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
+    val selectedFileUri = remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    val getContentLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            selectedFileUri.value = uri
+        }
+    val requestPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permission is granted, launch the GetContent ActivityResultLauncher
+                getContentLauncher.launch(type)
+            } else {
+                // Permission is not granted, show an error message to the user
+                //viewModel.showPermissionError()
+            }
+        }
+
+//    val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//    pickIntent.type = "image/*"
+//    startActivityForResult((LocalContext.current as Activity), pickIntent, UPLOAD_CODE, null)
+
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Select a file to upload")
+        Button(
+            onClick = {
+
+                if (ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                ) {
+
+                    getContentLauncher.launch(type)
+                } else {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            },
+            enabled = selectedFileUri.value == null
+        ) {
+            Text(text = "Select file")
+        }
+
+
+        selectedFileUri.value?.let { uri ->
+            Text(text = "Selected file: ${uri.path}")
+            Button(
+                onClick = {
+//                    val path = getPath(context, uri)
+//                    val file = uri.path?.let { File(it) }
+
+                    val file = getFileWithFileDescriptor(context, uri)
+//                    val reqFile = file?.asRequestBody(type.toMediaTypeOrNull())
+//                    val body = reqFile?.let { MultipartBody.Part.createFormData("file", file.name, it) }
+                    val requestFile =
+                        file?.let {
+                            RequestBody.create("application/xls".toMediaTypeOrNull(),
+                                it)
+                        }
+                    if (requestFile != null) {
+                        val filePart = MultipartBody.Part.createFormData("specification", "filename.xlsx", requestFile)
+                        onUploadClick(filePart)
+                    }
+                },
+                enabled = true
+            ) {
+                Text(text = "Upload file")
+            }
+        }
+    }
+
+
+}
+
+
 
 
 @Composable

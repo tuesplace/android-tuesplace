@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.GroupService
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.GetGroupsUiState
@@ -23,8 +24,8 @@ class WelcomeViewModel(
 
     fun getProfile() {
         viewModelScope.launch {
-            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileData> {
-                override fun onSuccess(profileGeneric: ProfileData) {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                override fun onSuccess(profileGeneric: ProfileResponseData) {
                     viewModelScope.launch {
                         _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
                     }

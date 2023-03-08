@@ -1,6 +1,6 @@
 package com.mobile.tuesplace
 
-const val BASE_URL = "https://server-tuesplace-97zq3.ondigitalocean.app/api/"
+const val BASE_URL = "http://172.20.10.2:8123/api/"
 const val SIGN_IN = "v1/auth/sign-in"
 const val GENERATE_TOKEN_PAIR = "v1/auth/generate-token-pair"
 const val CREATE_GROUP = "v1/groups/"
@@ -16,6 +16,11 @@ const val STUDENT_MARKS = "v1/groups/{groupId}/marks/students/{studentId}"
 const val STUDENT_MARK = "v1/groups/{groupId}/marks/students/{studentId}/{markId}"
 const val POST_COMMENTS = "v1/groups/{groupId}/posts/{postId}/comments"
 const val POST_COMMENT = "v1/groups/{groupId}/posts/{postId}/comments/{commentId}"
+const val ACTIVITIES = "v1/activities"
+const val MY_ACTIVITIES = "v1/activities/me"
+const val ACTIVITY = "v1/activities/{activityId}"
+const val SPECIFICATION = "v1/specification"
+const val SPECIFICATION_ASSETS = "v1/specification/{specificationId}/assets"
 
 var ACCESS_TOKEN = ""
 var USER_ID = ""
@@ -24,3 +29,5 @@ var ROLE = ""
 
 const val HEADER_PREFIX_TOKEN = "token"
 
+const val UPLOAD_CODE = 1
+const val DOCUMENTS_DIR = "documents"
