@@ -60,7 +60,6 @@ fun NavHost(navController: NavHostController) {
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             val isCorrectPasswordState by viewModel.isCorrectPassword.collectAsState()
             val isCorrectEmailState by viewModel.isCorrectEmail.collectAsState()
-            //val accountManager = AccountManager.get(LocalContext.current)
             LoginScreen(
                 onLoginClick = {
                     viewModel.signIn(email, password)

@@ -5,3 +5,4 @@ data class EditGroupData(
     var type: String? = null,
     var classes: ArrayList<String>? = null,
 )
+

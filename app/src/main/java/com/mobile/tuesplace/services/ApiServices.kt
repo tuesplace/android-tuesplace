@@ -29,7 +29,7 @@ interface ApiServices {
     fun getMyGroups(): Call<BaseResponse<List<GroupResponseData>>>
 
     @PUT(GET_GROUP)
-    fun editGroup(@Path("groupId") groupId: String, groupData: EditGroupData): Call<BaseResponse<EditGroupData>>
+    fun editGroup(@Path("groupId") groupId: String, groupData: EditGroupData): Call<BaseResponse<Unit>>
 
     @DELETE(GET_GROUP)
     fun deleteGroup(@Path("groupId") groupId: String): Call<BaseResponse<Unit>>

@@ -1101,6 +1101,51 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
     }
 }
 
+@Composable
+fun AssignmentItem(post: PostResponseData, modifier: Modifier?){
+    val currentModifier = modifier?: Modifier
+    Row(
+        modifier = currentModifier
+            .padding(6.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row{
+            Image(
+                painter = painterResource(id = R.drawable.assigment_icon),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .size(30.dp)
+            )
+
+            Column {
+                post.owner.data?.fullName?.let {
+                    Text(
+                        text = it,
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(top = 6.dp, start = 6.dp)
+                    )
+                }
+
+                Text(
+                    text = post.createdAt,
+                    color = colorResource(id = R.color.black),
+                    fontSize = 10.sp,
+                    modifier = Modifier
+                        .padding(start = 6.dp)
+                )
+            }
+        }
+
+        Text(
+            text = stringResource(id = R.string.new_assignment),
+            fontSize = 12.sp,
+            color = colorResource(id = R.color.black),
+        )
+    }
+}
 
 @Composable
 @Preview

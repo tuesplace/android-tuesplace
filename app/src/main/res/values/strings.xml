@@ -82,4 +82,5 @@
     <string name="added">Добавен успешно</string>
     <string name="edited">Редактиран успешно</string>
     <string name="deleted">Изтрит успешно</string>
+    <string name="new_assignment">Публикува ново задание</string>
 </resources>
