@@ -21,6 +21,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.data.PostResponseData
+import com.mobile.tuesplace.ui.AssignmentItem
 import com.mobile.tuesplace.ui.PostItem
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetPostsUiState
@@ -45,7 +46,7 @@ fun ClassroomUserScreen(
         }
     }
 
-    when(getPostsUiState){
+    when (getPostsUiState) {
         GetPostsUiState.Empty -> {}
         is GetPostsUiState.Error -> {}
         GetPostsUiState.Loading -> {}
@@ -54,7 +55,8 @@ fun ClassroomUserScreen(
                 posts = getPostsUiState.groups,
                 onCreatePostClick,
                 onEditPostClick,
-                onPostClick)
+                onPostClick,
+            )
         }
     }
 }
@@ -65,7 +67,7 @@ fun ClassroomUserUi(
     posts: List<PostResponseData>,
     onAddClick: () -> Unit,
     onEditPostClick: () -> Unit,
-    onPostClick: (String) -> Unit,
+    onPostClick: (String) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -98,9 +100,11 @@ fun ClassroomUserUi(
                 }
         ) {
             itemsIndexed(posts) { _, data ->
-                PostItem(
-                    post = data,
-                    onPostClick = onPostClick)
+                if (data.assignmentInfo.isAssignment) {
+                    AssignmentItem(post = data, modifier = null, onAssignmentClick = onPostClick)
+                } else {
+                    PostItem(post = data, onPostClick = onPostClick)
+                }
             }
         }
 

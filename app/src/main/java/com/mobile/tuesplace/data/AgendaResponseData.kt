@@ -47,9 +47,8 @@ data class AgendaProfileData(
     var className: String,
     var role: String,
     var updatedAt: String,
-    var assets: ProfileAssets
+    var assets: ProfileAssets,
 )
-
 
 
 data class RoomData(

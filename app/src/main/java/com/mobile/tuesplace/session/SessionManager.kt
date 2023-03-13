@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.session
 
 import androidx.datastore.core.DataStore
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.data.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -9,8 +10,8 @@ object SessionManager {
     private var currentDataStore: DataStore<AppSettings>? = null
     private var appSettings: Flow<AppSettings>? = null
 
-    private var currentToken: String = ""
-    private var currentRefreshToken: String = ""
+    private var currentToken: String = EMPTY_STRING
+    private var currentRefreshToken: String = EMPTY_STRING
 
     private var sessionManager: SessionManager? = null
 
@@ -34,24 +35,12 @@ object SessionManager {
         currentRefreshToken = refreshToken
     }
 
-    suspend fun fetchAuthToken(): String {
-        return appSettings?.first()?.token ?: ""
+    private suspend fun fetchAuthToken(): String {
+        return appSettings?.first()?.token ?: EMPTY_STRING
     }
 
-    suspend fun fetchAuthRefreshToken(): String {
-        return appSettings?.first()?.refreshToken ?: ""
-    }
-
-    suspend fun setUser(user: String) {
-        currentDataStore?.updateData {
-            it.copy(
-                user = user
-            )
-        }
-    }
-
-    suspend fun getUser(): String {
-        return appSettings?.first()?.user ?: ""
+    private suspend fun fetchAuthRefreshToken(): String {
+        return appSettings?.first()?.refreshToken ?: EMPTY_STRING
     }
 
     suspend fun setTokens() {

@@ -83,4 +83,6 @@
     <string name="edited">Редактиран успешно</string>
     <string name="deleted">Изтрит успешно</string>
     <string name="new_assignment">Публикува ново задание</string>
+    <string name="no_mark">Неоценено</string>
+    <string name="mark_input">/6</string>
 </resources>

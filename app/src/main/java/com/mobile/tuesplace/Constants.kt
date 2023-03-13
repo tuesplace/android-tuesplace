@@ -18,7 +18,6 @@ const val POST_COMMENTS = "v1/groups/{groupId}/posts/{postId}/comments"
 const val POST_COMMENT = "v1/groups/{groupId}/posts/{postId}/comments/{commentId}"
 const val ACTIVITIES = "v1/activities"
 const val MY_ACTIVITIES = "v1/activities/me"
-const val ACTIVITY = "v1/activities/{activityId}"
 const val SPECIFICATION = "v1/specification"
 const val SPECIFICATION_ASSETS = "v1/specification/{specificationId}/assets"
 

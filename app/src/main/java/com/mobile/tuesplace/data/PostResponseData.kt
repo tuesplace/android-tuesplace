@@ -10,8 +10,14 @@ data class PostResponseData(
     var reactions: ArrayList<ReactionsData>,
     var createdAt: String,
     var updatedAt: String,
+    var assignmentInfo: AssignmentInfo
 )
 
 data class GroupAssociations(
     var group: ShouldResolveData
+)
+
+data class AssignmentInfo(
+    var isAssignment: Boolean,
+    var deadline: Int
 )

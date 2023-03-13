@@ -1102,15 +1102,24 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
 }
 
 @Composable
-fun AssignmentItem(post: PostResponseData, modifier: Modifier?){
-    val currentModifier = modifier?: Modifier
+fun AssignmentItem(
+    post: PostResponseData,
+    modifier: Modifier?,
+    onAssignmentClick: (String) -> Unit,
+) {
+    val currentModifier = modifier ?: Modifier
     Row(
         modifier = currentModifier
-            .padding(6.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(4.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
+            .padding(4.dp)
+            .clickable { onAssignmentClick(post._id) },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
     ) {
-        Row{
+        Row {
             Image(
                 painter = painterResource(id = R.drawable.assigment_icon),
                 contentDescription = stringResource(id = R.string.empty),
@@ -1148,26 +1157,67 @@ fun AssignmentItem(post: PostResponseData, modifier: Modifier?){
 }
 
 @Composable
+fun SubmissionItem(submissionData: SubmissionData, mark: String, setDialogVisibility: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.assigment_icon),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .size(30.dp)
+        )
+
+        Column {
+            submissionData.owner.data?.fullName?.let {
+                Text(
+                    text = it,
+                    color = colorResource(id = R.color.darker_sea_blue),
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(top = 6.dp, start = 6.dp)
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .clickable { setDialogVisibility(true) }
+        ) {
+
+            Text(
+                text = mark,
+                fontSize = 12.sp,
+                color = colorResource(id = R.color.darker_sea_blue)
+            )
+
+            Text(
+                text = stringResource(id = R.string.mark_input),
+                fontSize = 12.sp,
+                color = colorResource(id = R.color.darker_sea_blue)
+            )
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.download_icon),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}
+
+
+
+@Composable
 @Preview
 fun Preview() {
-    // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
-//    GroupClassItem(GroupResponseData("",
-//        "Bulgarian Language and Literature",
-//        "",
-//        arrayListOf("9B"),
-//        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
-//    PostItem(post = PostData("",
-//        "",
-//        listOf(),
-//        "12:30",
-//        "",
-//        "This is a test post. I am testing the UI."), {}, {}, {}, "") {}
-//    CommentItem(profilePic = painterResource(id = R.drawable.tues_webview),
-//        onSendClick = {},
-//        modifier = Modifier,
-//        commentInput = "",
-//        onCommentChange = {},
-//        postId = "")
+
     UserMessage(profile = ProfileData("Kalina Valeva", "", "", "", ""),
         createTime = "12:30",
         message = "Hello, there!")

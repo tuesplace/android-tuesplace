@@ -82,7 +82,6 @@ val TuesplaceModules = module {
     factory { DeletePostUseCase(get()) }
     factory { EditCommentUseCase(get()) }
     factory { DeleteCommentUseCase(get()) }
-//    factory { AuthenticationManager(androidContext(), Intent()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }
