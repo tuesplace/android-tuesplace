@@ -20,6 +20,8 @@ const val ACTIVITIES = "v1/activities"
 const val MY_ACTIVITIES = "v1/activities/me"
 const val SPECIFICATION = "v1/specification"
 const val SPECIFICATION_ASSETS = "v1/specification/{specificationId}/assets"
+const val SUBMISSIONS = "v1/groups/{groupId}/posts/{postId}/submissions"
+const val SUBMISSIONS_MARKS = "v1/groups/{groupId}/posts/{postId}/submissions/marks"
 
 var ACCESS_TOKEN = ""
 var USER_ID = ""

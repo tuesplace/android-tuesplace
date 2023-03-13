@@ -106,4 +106,13 @@ interface ApiServices {
     @Multipart
     @PUT(SPECIFICATION_ASSETS)
     fun editSpecificationAssets(@Path("specificationId") specificationId: String, @Part specification: MultipartBody.Part): Call<Unit>
+
+    @GET(SUBMISSIONS)
+    fun getPostSubmissions(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<List<SubmissionData>>>
+
+    @POST(SUBMISSIONS)
+    fun createSubmission(@Path("groupId") groupId: String, @Path("postId") postId: String,  @Body assets: SubmissionAssets): Call<BaseResponse<SubmissionData>>
+
+    @POST(SUBMISSIONS_MARKS)
+    fun createSubmissionMark(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("submissionId") submissionId: String): Call<BaseResponse<Unit>>
 }

@@ -1,7 +1,6 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.data.BaseResponse
-import com.mobile.tuesplace.data.MarkData
+import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -136,6 +135,34 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { markCallback.onSuccess(it) }
+                    } else {
+                        markCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
+                    t.localizedMessage?.let { markCallback.onError(it) }
+                }
+
+            }
+        )
+    }
+
+    override suspend fun createSubmissionMark(
+        markCallback: MarkService.MarkCallback<Unit>,
+        groupId: String,
+        postId: String,
+        submissionId: String,
+        mark: MarkRequestData
+    ) {
+        retrofit.createSubmissionMark(groupId, postId, submissionId).enqueue(
+            object : Callback<BaseResponse<Unit>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
+                ) {
+                    if (response.isSuccessful) {
+                        markCallback.onSuccess(Unit)
                     } else {
                         markCallback.onError(response.message())
                     }
