@@ -9,17 +9,49 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.SettingsMenuItem
+import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
-fun SettingsScreen(onEditClick: () -> Unit, onSignOutClick: () -> Unit, onForgottenPasswordClick: () -> Unit) {
+fun SettingsScreen(
+    onEditClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onForgottenPasswordClick: () -> Unit,
+    getProfileUiState: GetProfileUiState,
+) {
+    when (getProfileUiState) {
+        GetProfileUiState.Empty -> {}
+        is GetProfileUiState.Error -> {}
+        GetProfileUiState.Loading -> {}
+        is GetProfileUiState.Success -> {
+            SettingsUi(
+                onEditClick = onEditClick,
+                onSignOutClick = onSignOutClick,
+                onForgottenPasswordClick = onForgottenPasswordClick,
+                profile = getProfileUiState.profile
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsUi(
+    onEditClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onForgottenPasswordClick: () -> Unit,
+    profile: ProfileResponseData,
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -29,7 +61,15 @@ fun SettingsScreen(onEditClick: () -> Unit, onSignOutClick: () -> Unit, onForgot
 
 
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = if (profile.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
+                painterResource(id = R.drawable.ic_launcher_background)
+            } else {
+                rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                    .data(data = profile.assets?.profilePic?.get(0)?.data?.src)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                    }).build())
+            },
             contentDescription = stringResource(id = R.string.email),
             contentScale = ContentScale.Crop,
             modifier = Modifier

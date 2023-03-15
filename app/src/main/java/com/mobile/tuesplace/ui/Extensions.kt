@@ -109,4 +109,30 @@ fun getFileWithFileDescriptor(context: Context, uri: Uri): ByteArray? {
     return null
 }
 
+fun listAllGrades(): List<String> {
+    return listOf(
+        EIGHT_A_GRADE,
+        EIGHT_B_GRADE,
+        EIGHT_C_GRADE,
+        EIGHT_D_GRADE,
+        NINTH_A_GRADE,
+        NINTH_B_GRADE,
+        NINTH_C_GRADE,
+        NINTH_D_GRADE,
+        TENTH_A_GRADE,
+        TENTH_B_GRADE,
+        TENTH_C_GRADE,
+        TENTH_D_GRADE,
+        ELEVENTH_A_GRADE,
+        ELEVENTH_B_GRADE,
+        ELEVENTH_C_GRADE,
+        ELEVENTH_D_GRADE,
+        TWELFTH_A_GRADE,
+        TWELFTH_B_GRADE,
+        TWELFTH_C_GRADE,
+        TWELFTH_D_GRADE,
+        EMPTY_GRADE
+    )
+}
+
 

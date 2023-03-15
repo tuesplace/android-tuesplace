@@ -13,10 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.mobile.tuesplace.ADMIN_ROLE
-import com.mobile.tuesplace.ROLE
-import com.mobile.tuesplace.STUDENT_ROLE
-import com.mobile.tuesplace.TEACHER_ROLE
+import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.CommentRequestData
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.GroupData
@@ -94,9 +91,11 @@ fun NavHost(navController: NavHostController) {
                     when (((profileUiState as GetProfileUiState.Success).profile.role)) {
                         ADMIN_ROLE -> navController.navigate(WELCOME_ADMIN_SCREEN)
                         STUDENT_ROLE -> navController.navigate(WELCOME_SCREEN,
-                            bundleOf(ROLE to STUDENT_ROLE))
+                            bundleOf(ROLE to STUDENT_ROLE,
+                                BLOCKED to (profileUiState as GetProfileUiState.Success).profile.blocked))
                         TEACHER_ROLE -> navController.navigate(WELCOME_SCREEN,
-                            bundleOf(ROLE to TEACHER_ROLE))
+                            bundleOf(ROLE to TEACHER_ROLE,
+                                BLOCKED to (profileUiState as GetProfileUiState.Success).profile.blocked))
                         else -> {}
                     }
                     viewModel.resetProfileState()
@@ -109,22 +108,25 @@ fun NavHost(navController: NavHostController) {
             LaunchedEffect(null) {
                 viewModel.getProfile()
             }
-            WelcomeScreen(
-                onMessageClick = {
-                    navController.navigate(CHATS_SCREEN)
-                },
-                onEnterClassClick = {
-                    navController.navigate(CLASSES_SCREEN,
-                        bundleOf(ROLE to backStackEntry.arguments?.getString(ROLE)))
-                },
-                onEnterVideoroomClick = { navController.navigate(VIDEOROOM_SCREEN) },
-                onLinkClick = {
-                    ContextCompat.startActivity(context,
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
-                        null)
-                },
-                onAgendaClick = { navController.navigate(MY_ACTIVITIES_SCREEN) }
-            )
+            backStackEntry.arguments?.getBoolean(BLOCKED)?.let {
+                WelcomeScreen(
+                    onMessageClick = {
+                        navController.navigate(CHATS_SCREEN)
+                    },
+                    onEnterClassClick = {
+                        navController.navigate(CLASSES_SCREEN,
+                            bundleOf(ROLE to backStackEntry.arguments?.getString(ROLE)))
+                    },
+                    onEnterVideoroomClick = { navController.navigate(VIDEOROOM_SCREEN) },
+                    onLinkClick = {
+                        ContextCompat.startActivity(context,
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://tues.bg")),
+                            null)
+                    },
+                    onAgendaClick = { navController.navigate(MY_ACTIVITIES_SCREEN) },
+                    blocked = it
+                )
+            }
         }
         composable(FORGOTTEN_PASSWORD_SCREEN) {
             ForgottenPasswordScreen()
@@ -180,7 +182,12 @@ fun NavHost(navController: NavHostController) {
             val teachers by viewModel.teachers.collectAsState()
             val classes by viewModel.classes.collectAsState()
             val groupType by viewModel.groupsTypeStateFlow.collectAsState()
-            val query by viewModel.search.collectAsState()
+            val classListVisibility by viewModel.classListVisibility.collectAsState()
+            val teachersListVisibility by viewModel.teacherListVisibility.collectAsState()
+            val createGroupUiState by viewModel.uiState.collectAsState()
+            LaunchedEffect(null) {
+                viewModel.getAllProfiles()
+            }
             CreateGroupScreen(
                 groupName = groupName,
                 setGroupName = { viewModel.groupName(it) },
@@ -189,16 +196,26 @@ fun NavHost(navController: NavHostController) {
                 onCreateGroupClick = {
                     viewModel.createGroup(GroupData(
                         name = groupName,
-                        type = if (groupType) "chat" else "subject",
-                        classes = arrayListOf(classes)
+                        type = if (groupType) CHAT_TYPE else SUBJECT_TYPE,
+                        classes = viewModel.classesList
                     ))
                 },
                 teacher = teachers,
                 setTeacher = { viewModel.teachers(it) },
                 groupsType = groupType,
                 setGroupsType = { viewModel.groupsType(it) },
-                query = query,
-                setQuery = { viewModel.search(it) }
+                onTeacherClick = { viewModel.addTeacher(it) },
+                classListVisibility = classListVisibility,
+                teacherListVisibility = teachersListVisibility,
+                setClassVisibility = { viewModel.classListVisibility(it) },
+                setTeacherListVisibility = { viewModel.teacherListVisibility(it) },
+                onClassClick = { viewModel.addClass(it) },
+                teachers = viewModel.profiles,
+                createGroupUiState = createGroupUiState,
+                onCreateGroupSuccess = {
+                    navController.navigate(ALL_GROUPS_SCREEN)
+                    viewModel.resetState()
+                }
             )
         }
         composable(ALL_GROUPS_SCREEN) {
@@ -297,13 +314,16 @@ fun NavHost(navController: NavHostController) {
         }
         composable(SETTINGS_SCREEN) {
             val viewModel = getViewModel<SettingsViewModel>()
+            val getProfileUiState by viewModel.getProfileStateFlow.collectAsState()
+            viewModel.getProfile()
             SettingsScreen(
                 onEditClick = { navController.navigate(PROFILE_SCREEN) },
                 onSignOutClick = {
                     viewModel.deleteTokensData()
                     navController.navigate(LOGIN_SCREEN)
                 },
-                onForgottenPasswordClick = {}
+                onForgottenPasswordClick = {},
+                getProfileUiState = getProfileUiState
             )
         }
         composable(CLASSROOM_USER_SCREEN) { backStackEntry ->
@@ -389,7 +409,7 @@ fun NavHost(navController: NavHostController) {
             AllStudentsScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
                 onStudentClick = { id ->
-                    navController.navigate(PROFILE_SCREEN)
+                    navController.navigate(PROFILE_SCREEN, bundleOf(ID_STRING to id))
                 },
                 onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
             )
@@ -522,6 +542,7 @@ fun NavHost(navController: NavHostController) {
             val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
             val dialogVisibility by viewModel.dialogVisibility.collectAsState()
             val createSubmissionUiState by viewModel.createSubmissionStateFlow.collectAsState()
+            val getProfileUiState by viewModel.getProfileStateFlow.collectAsState()
 
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let {
@@ -543,12 +564,7 @@ fun NavHost(navController: NavHostController) {
                 },
                 getPostCommentsUiState = getPostCommentsUiState,
                 onPostSuccess = {
-                    backStackEntry.arguments?.getString("groupId")
-                        ?.let {
-                            backStackEntry.arguments?.getString("postId")
-                                ?.let { it1 -> viewModel.getPostComments(it, it1) }
-                        }
-                    viewModel.setPostStateAsLoaded()
+                    viewModel.getProfile()
                 },
                 onEditClick = { postInfo ->
                     navController.navigate(EDIT_POST_SCREEN,
@@ -601,10 +617,21 @@ fun NavHost(navController: NavHostController) {
                         ?.let { groupId ->
                             backStackEntry.arguments?.getString("postId")?.let { postId ->
                                 viewModel.createSubmission(it, groupId = groupId, postId = postId)
-                            }}
+                            }
+                        }
                 },
                 createSubmissionUiState = createSubmissionUiState,
-                onSubmissionSuccess = { viewModel.resetSubmissionState() }
+                onSubmissionSuccess = { viewModel.resetSubmissionState() },
+                getProfileUiState = getProfileUiState,
+                onGetProfileSuccess = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let {
+                            backStackEntry.arguments?.getString("postId")
+                                ?.let { it1 -> viewModel.getPostComments(it, it1) }
+                        }
+                    viewModel.setPostStateAsLoaded()
+                },
+                myProfile = viewModel.profile
             )
         }
         composable(EDIT_POST_SCREEN) { backStackEntry ->

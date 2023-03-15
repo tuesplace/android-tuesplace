@@ -28,14 +28,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.mobile.tuesplace.ALL_TYPES
 import com.mobile.tuesplace.MULTIPART_NAME_SUBMISSION
 import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.CommentData
-import com.mobile.tuesplace.data.CreateCommentData
-import com.mobile.tuesplace.data.PostResponseData
-import com.mobile.tuesplace.data.SubmissionData
+import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.CommentItem
 import com.mobile.tuesplace.ui.CreateCommentItem
 import com.mobile.tuesplace.ui.ResultLauncher
@@ -70,7 +69,10 @@ fun PostScreen(
     onCreateCommentSuccess: () -> Unit,
     onUploadAssignmentClick: (MultipartBody.Part) -> Unit,
     createSubmissionUiState: CreateSubmissionUiState,
-    onSubmissionSuccess: () -> Unit
+    onSubmissionSuccess: () -> Unit,
+    getProfileUiState: GetProfileUiState,
+    onGetProfileSuccess: () -> Unit,
+    myProfile: ProfileResponseData?
 ) {
     when (getPostUiState) {
         GetPostUiState.Empty -> {}
@@ -82,12 +84,21 @@ fun PostScreen(
         is GetPostUiState.Loaded -> {}
     }
 
+    when (getProfileUiState) {
+        GetProfileUiState.Empty -> {}
+        is GetProfileUiState.Error -> {}
+        GetProfileUiState.Loading -> {}
+        is GetProfileUiState.Success -> {
+            onGetProfileSuccess()
+        }
+    }
+
     when (getPostCommentsUiState) {
         GetPostCommentsUiState.Empty -> {}
         is GetPostCommentsUiState.Error -> {}
         GetPostCommentsUiState.Loading -> {}
         is GetPostCommentsUiState.Success -> {
-            if (post != null) {
+            if (post != null && myProfile != null) {
                 if (post.assignmentInfo.isAssignment) {
                     AssignmentUserScreenUi(
                         postResponseData = post,
@@ -122,7 +133,8 @@ fun PostScreen(
                         setEnabled = setEnabled,
                         setEditCommentBody = setEditCommentBody,
                         dialogVisibility = dialogVisibility,
-                        setDialogVisibility = setDialogVisibility
+                        setDialogVisibility = setDialogVisibility,
+                        myProfile = myProfile
                     )
                 }
             }
@@ -171,7 +183,7 @@ fun PostScreen(
         }
     }
 
-    when(createSubmissionUiState) {
+    when (createSubmissionUiState) {
         CreateSubmissionUiState.Empty -> {
 
         }
@@ -208,7 +220,8 @@ fun PostUi(
     setEnabled: (Int) -> Unit,
     setEditCommentBody: (Pair<String, Int>) -> Unit,
     dialogVisibility: Boolean,
-    setDialogVisibility: (Boolean) -> Unit
+    setDialogVisibility: (Boolean) -> Unit,
+    myProfile: ProfileResponseData,
 ) {
 
     ConstraintLayout(
@@ -286,7 +299,15 @@ fun PostUi(
         )
 
         CreateCommentItem(
-            profilePic = painterResource(id = R.drawable.tues_webview),
+            profilePic = if (myProfile.assets?.profilePic?.isNotEmpty() == true) {
+                rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                    .data(data = myProfile.assets?.profilePic?.get(0)?.data?.src)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                    }).build())
+            } else {
+                null
+            },
             onSendClick = onSendClick,
             modifier = Modifier
                 .padding(top = 16.dp)
@@ -405,7 +426,7 @@ fun AssignmentUserScreenUi(
     setEnabled: (Int) -> Unit,
     setEditCommentBody: (Pair<String, Int>) -> Unit,
     onEditCommentClick: (Pair<String, String>) -> Unit,
-    onUploadAssignmentClick: (MultipartBody.Part) -> Unit
+    onUploadAssignmentClick: (MultipartBody.Part) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -511,7 +532,10 @@ fun AssignmentUserScreenUi(
                     .fillMaxWidth()
             )
 
-            ResultLauncher(type = ALL_TYPES, onUploadClick = onUploadAssignmentClick, modifier = Modifier.size(50.dp), multipartName = MULTIPART_NAME_SUBMISSION)
+            ResultLauncher(type = ALL_TYPES,
+                onUploadClick = onUploadAssignmentClick,
+                modifier = Modifier.size(50.dp),
+                multipartName = MULTIPART_NAME_SUBMISSION)
 
             CreateCommentItem(
                 profilePic = painterResource(id = R.drawable.tues_webview),
@@ -613,6 +637,6 @@ fun AssignmentUserScreenUi(
 }
 
 @Composable
-fun AssignmentTeacherScreen(submissions: List<SubmissionData>){
+fun AssignmentTeacherScreen(submissions: List<SubmissionData>) {
 
 }

@@ -11,7 +11,7 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
 
     override suspend fun createGroup(
         createGroupData: GroupData,
-        createGroupCallback: GroupService.GroupCallback<GroupData>,
+        createGroupCallback: GroupService.GroupCallback<Unit>,
     ) {
         retrofit.createGroup(createGroupData).enqueue(
             object : Callback<BaseResponse<GroupData>> {
@@ -24,7 +24,7 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
                     response: Response<BaseResponse<GroupData>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { createGroupCallback.onSuccess(it) }
+                        createGroupCallback.onSuccess(Unit)
                     } else {
                         createGroupCallback.onError(response.message())
                     }

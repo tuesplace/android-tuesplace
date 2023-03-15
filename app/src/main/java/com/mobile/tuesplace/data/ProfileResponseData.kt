@@ -9,5 +9,6 @@ data class ProfileResponseData(
     var role: String,
     @SerializedName("class")
     var className: String?,
-    var assets: ProfileAssets?
+    var assets: ProfileAssets?,
+    var blocked: Boolean
 )

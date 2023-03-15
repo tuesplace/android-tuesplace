@@ -12,12 +12,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImagePainter.State.Empty.painter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.data.ProfileResponseData
@@ -71,7 +75,15 @@ fun ProfileUi(profileData: ProfileResponseData, onEditClick: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = if (profileData.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
+                    painterResource(id = R.drawable.ic_launcher_background)
+                } else {
+                    rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                        .data(data = profileData.assets?.profilePic?.get(0)?.data?.src)
+                        .apply(block = fun ImageRequest.Builder.() {
+                            crossfade(true)
+                        }).build())
+                },
                 contentDescription = stringResource(id = R.string.email),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
