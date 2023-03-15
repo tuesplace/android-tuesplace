@@ -45,7 +45,10 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<ProfileResponseData>>, t: Throwable) {
+                override fun onFailure(
+                    call: Call<BaseResponse<ProfileResponseData>>,
+                    t: Throwable,
+                ) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 
@@ -70,7 +73,10 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<ProfileResponseData>>, t: Throwable) {
+                override fun onFailure(
+                    call: Call<BaseResponse<ProfileResponseData>>,
+                    t: Throwable,
+                ) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
             }
@@ -145,6 +151,31 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                 }
 
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    t.localizedMessage?.let { getProfileCallback.onError(it) }
+                }
+
+            }
+        )
+    }
+
+    override suspend fun createProfile(
+        getProfileCallback: ProfileService.GetProfileCallback<Unit>,
+        profileData: ProfileData,
+    ) {
+        retrofit.createProfile(profileData).enqueue(
+            object : Callback<BaseResponse<Unit>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
+                ) {
+                    if (response.isSuccessful) {
+                        getProfileCallback.onSuccess(Unit)
+                    } else {
+                        getProfileCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 

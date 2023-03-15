@@ -14,10 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.*
-import com.mobile.tuesplace.data.CommentRequestData
-import com.mobile.tuesplace.data.EditProfileData
-import com.mobile.tuesplace.data.GroupData
-import com.mobile.tuesplace.data.MarkRequestData
+import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
@@ -34,9 +31,7 @@ import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.navigate
 import com.mobile.tuesplace.ui.post.*
-import com.mobile.tuesplace.ui.profile.EditProfileScreen
-import com.mobile.tuesplace.ui.profile.EditProfileViewModel
-import com.mobile.tuesplace.ui.profile.ProfileScreen
+import com.mobile.tuesplace.ui.profile.*
 import com.mobile.tuesplace.ui.settings.SettingsScreen
 import com.mobile.tuesplace.ui.settings.SettingsViewModel
 import com.mobile.tuesplace.ui.states.GetProfileUiState
@@ -411,7 +406,7 @@ fun NavHost(navController: NavHostController) {
                 onStudentClick = { id ->
                     navController.navigate(PROFILE_SCREEN, bundleOf(ID_STRING to id))
                 },
-                onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
+                onCreateNewClick = { navController.navigate(CREATE_PROFILE) }
             )
         }
         composable(ALL_TEACHERS_SCREEN) {
@@ -421,7 +416,7 @@ fun NavHost(navController: NavHostController) {
             AllTeachersScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
                 onTeacherClick = { },
-                onCreateNewClick = { }
+                onCreateNewClick = { navController.navigate(CREATE_PROFILE) }
             )
         }
         composable(MY_ACTIVITIES_SCREEN) {
@@ -731,6 +726,40 @@ fun NavHost(navController: NavHostController) {
                 submissionIndex = submissionIndex,
                 setSubmissionIndex = { viewModel.setSubmissionIndex(it) },
                 createSubmissionMarkUiState = createSubmissionMarkUiState
+            )
+        }
+        composable(CREATE_PROFILE) {
+            val viewModel = getViewModel<CreateProfileViewModel>()
+            val name by viewModel.name.collectAsState()
+            val email by viewModel.email.collectAsState()
+            val role by viewModel.role.collectAsState()
+            val grade by viewModel.classString.collectAsState()
+            val createProfileUiState by viewModel.createProfileStateFlow.collectAsState()
+            CreateProfileScreen(
+                name = name,
+                setName = { viewModel.name(it) },
+                email = email,
+                setEmail = { viewModel.email(it) },
+                role = role,
+                setRole = { viewModel.role(it) },
+                grade = grade,
+                setGrade = { viewModel.changeClass(it) },
+                onCreateClick = {
+                    viewModel.createProfile(
+                        ProfileData(
+                            fullName = name,
+                            email = email,
+                            role = role,
+                            className = grade.ifEmpty { null }
+                        )
+                    )
+                },
+                onImageUpload = { viewModel.imageUpload(it) },
+                onAddPhotoClick = { },
+                createProfileUiState = createProfileUiState,
+                onCreateSuccess = {
+                    navController.navigateUp()
+                }
             )
         }
     }

@@ -1338,8 +1338,8 @@ fun ClassSearchItem(
 @Preview
 fun Preview() {
 
-    UserMessage(profile = ProfileData("Kalina Valeva", "", "", "", ""),
-        createTime = "12:30",
-        message = "Hello, there!")
+//    UserMessage(profile = ProfileData("Kalina Valeva", "", "", "", ""),
+//        createTime = "12:30",
+//        message = "Hello, there!")
 }
 

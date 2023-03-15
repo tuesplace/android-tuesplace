@@ -40,6 +40,9 @@ interface ApiServices {
     @GET(ALL_PROFILES)
     fun getAllProfiles(): Call<BaseResponse<List<ProfileResponseData>>>
 
+    @POST(ALL_PROFILES)
+    fun createProfile(@Body profileData: ProfileData): Call<BaseResponse<Unit>>
+
     @GET(PROFILE)
     fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileResponseData>>
 

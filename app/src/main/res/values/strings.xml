@@ -7,6 +7,7 @@
     <string name="selected_language">БГ</string>
     <string name="messages">Съобщения</string>
     <string name="enter_class">Влез в час</string>
+    <string name="enter">Въведи…</string>
     <string name="enter_classroom">Към класната стая</string>
     <string name="link_to_website">Влез в сайта</string>
     <string name="create_group">Създай група</string>
@@ -36,6 +37,8 @@
     <string name="teacher">Преподавател</string>
     <string name="class_string">Клас</string>
     <string name="create_new">Създай нова</string>
+    <string name="create">Създай</string>
+    <string name="account_created">Акаунтът е създаден успешно</string>
     <string name="create_new_profile">Създай нов</string>
     <string name="classes">Класове</string>
     <string name="chats">Чатове</string>
