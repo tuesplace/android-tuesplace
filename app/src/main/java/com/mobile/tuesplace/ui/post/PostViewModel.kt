@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.services.CommentService
 import com.mobile.tuesplace.services.PostService
+import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.services.SubmissionsService
 import com.mobile.tuesplace.ui.states.*
 import com.mobile.tuesplace.usecase.*
@@ -23,6 +24,7 @@ class PostViewModel(
     private val editCommentsUseCase: EditCommentUseCase,
     private val deleteCommentsUseCase: DeleteCommentUseCase,
     private val createSubmissionUseCase: CreateSubmissionUseCase,
+    private val profileUseCase: GetProfileUseCase
 ) : ViewModel() {
 
     private val _enabled = MutableStateFlow(-1)
@@ -255,6 +257,31 @@ class PostViewModel(
     fun resetSubmissionState(){
         viewModelScope.launch {
             _createSubmissionStateFlow.emit(CreateSubmissionUiState.Empty)
+        }
+    }
+
+    var profile: ProfileResponseData? = null
+
+    private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
+    val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
+
+    fun getProfile() {
+        viewModelScope.launch {
+            profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                override fun onSuccess(profileGeneric: ProfileResponseData) {
+                    viewModelScope.launch {
+                        profile = profileGeneric
+                        _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _getProfileStateFlow.emit(GetProfileUiState.Error(error))
+                    }
+                }
+
+            })
         }
     }
 }

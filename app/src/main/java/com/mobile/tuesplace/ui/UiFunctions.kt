@@ -1,8 +1,10 @@
 package com.mobile.tuesplace.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -44,7 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
-import coil.compose.AsyncImagePainter.State.Empty.painter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ZERO_STRING
@@ -208,7 +211,7 @@ fun PostItem(
 
 @Composable
 fun CreateCommentItem(
-    profilePic: Painter,
+    profilePic: Painter?,
     onSendClick: (CreateCommentData) -> Unit,
     modifier: Modifier?,
     commentInput: String,
@@ -226,7 +229,7 @@ fun CreateCommentItem(
         verticalAlignment = CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.tues_webview),
+            painter = (profilePic ?: painterResource(id = R.drawable.ic_launcher_background)),
             contentDescription = stringResource(id = R.string.empty),
             modifier = Modifier
                 .padding(2.dp)
@@ -707,11 +710,12 @@ fun TextFieldWithTitle(
     enabled: Boolean?,
     isError: Boolean?,
     modifier: Modifier?,
+    setClassVisibility: ((Boolean) -> Unit)?,
 ) {
     val currentModifier = modifier ?: Modifier
     Column(
         modifier = currentModifier
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             .fillMaxWidth()
             .background(colorResource(id = R.color.dark_blue)),
         horizontalAlignment = Start
@@ -727,6 +731,7 @@ fun TextFieldWithTitle(
             onValueChange = { onValueChange(it) },
             enabled = enabled ?: true,
             isError = isError ?: false,
+//            singleLine = true,
             placeholder = {
                 Text(text = placeholder,
                     color = colorResource(id = R.color.baby_blue))
@@ -734,6 +739,7 @@ fun TextFieldWithTitle(
             modifier = Modifier
                 .background(colorResource(id = R.color.dark_blue))
                 .border(2.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+                .clickable { setClassVisibility?.let { it -> it(true) } }
         )
     }
 }
@@ -932,7 +938,7 @@ fun ResultLauncher(
     type: String,
     onUploadClick: (MultipartBody.Part) -> Unit,
     modifier: Modifier?,
-    multipartName: String
+    multipartName: String,
 ) {
     val currentModifier = modifier ?: Modifier
     val selectedFileUri = remember { mutableStateOf<Uri?>(null) }
@@ -1157,7 +1163,7 @@ fun SubmissionItem(
     submissionData: SubmissionData,
     setDialogVisibility: (Boolean) -> Unit,
     setSubmissionIndex: (Int) -> Unit,
-    index: Int
+    index: Int,
 ) {
     Row(
         modifier = Modifier
@@ -1191,7 +1197,11 @@ fun SubmissionItem(
         Row(verticalAlignment = CenterVertically) {
 
             Text(
-                text = if (submissionData.marks.isEmpty()) { ZERO_STRING } else {submissionData.marks[0].mark.toString() } ,
+                text = if (submissionData.marks.isEmpty()) {
+                    ZERO_STRING
+                } else {
+                    submissionData.marks[0].mark.toString()
+                },
                 fontSize = 12.sp,
                 color = colorResource(id = R.color.darker_sea_blue),
                 modifier = Modifier.clickable {
@@ -1215,6 +1225,114 @@ fun SubmissionItem(
     }
 }
 
+@Composable
+fun BlockedProfile() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_blue)),
+        contentAlignment = Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.blocked_alert),
+            color = colorResource(id = R.color.white),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(16.dp)
+        )
+    }
+}
+
+@Composable
+fun TeacherSearchItem(
+    profileResponseData: ProfileResponseData,
+    onTeacherClick: (String) -> Unit,
+    setTeacherListVisibility: (Boolean) -> Unit,
+    context: Context,
+) {
+    val teacherAdded = stringResource(id = R.string.teacher_added)
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
+            .clickable {
+                onTeacherClick(profileResponseData._id)
+                setTeacherListVisibility(false)
+                Toast
+                    .makeText(
+                        context,
+                        teacherAdded,
+                        Toast.LENGTH_LONG
+                    )
+                    .show()
+            }
+    ) {
+        Image(
+            painter = if (profileResponseData.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
+                painterResource(id = R.drawable.ic_launcher_background)
+            } else {
+                rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                    .data(data = profileResponseData.assets?.profilePic?.get(0)?.data?.src)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                    }).build())
+            },
+            contentDescription = stringResource(id = R.string.email),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(50.dp)
+                .padding(6.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .border(1.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+
+        )
+
+        Text(
+            text = profileResponseData.fullName,
+            color = colorResource(id = R.color.white),
+            fontSize = 14.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Composable
+fun ClassSearchItem(
+    className: String,
+    onClassClick: (String) -> Unit,
+    setClassVisibility: ((Boolean) -> Unit)?,
+    context: Context
+) {
+    val classAdded = stringResource(id = R.string.class_added)
+    Row(
+        modifier = Modifier
+            .padding(start = 25.dp, end = 25.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.dark_blue))
+            .border(1.dp, colorResource(id = R.color.baby_blue))
+            .clickable {
+                setClassVisibility?.let { it(false) }
+                onClassClick(className)
+                Toast
+                    .makeText(
+                        context,
+                        classAdded,
+                        Toast.LENGTH_LONG
+                    )
+                    .show()
+            }
+    ) {
+        Text(
+            text = className,
+            color = colorResource(id = R.color.white),
+            fontSize = 14.sp,
+            modifier = Modifier
+                .padding(16.dp)
+        )
+    }
+}
 
 @Composable
 @Preview

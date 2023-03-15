@@ -17,21 +17,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.mobile.tuesplace.IMAGE_FILE_TYPE
 import com.mobile.tuesplace.MULTIPART_NAME_IMAGE
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.ProfileAssets
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
-import kotlinx.coroutines.NonDisposableHandle.parent
 import okhttp3.MultipartBody
 
 @Composable
@@ -161,7 +157,8 @@ fun EditProfileUi(
                         placeholder = profileData.fullName,
                         enabled = true,
                         isError = null,
-                        modifier = Modifier.clickable { }
+                        modifier = Modifier.clickable { },
+                        setClassVisibility = null
                     )
 
                     TextFieldWithTitle(
@@ -171,7 +168,8 @@ fun EditProfileUi(
                         placeholder = profileData.email,
                         enabled = true,
                         isError = null,
-                        modifier = Modifier.clickable { }
+                        modifier = Modifier.clickable { },
+                        setClassVisibility = null
                     )
 
                     if (profileData.role == stringResource(id = R.string.student_role)) {
@@ -183,7 +181,8 @@ fun EditProfileUi(
                                 placeholder = it,
                                 enabled = true,
                                 isError = null,
-                                modifier = Modifier.clickable { }
+                                modifier = Modifier.clickable { },
+                                setClassVisibility = null
                             )
                         }
                     }

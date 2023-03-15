@@ -89,4 +89,8 @@
     <string name="mark_input">/6</string>
     <string name="handed_in">Предали:</string>
     <string name="submitted_successfully">Предаването е успешно</string>
+    <string name="blocked_alert">Профилът ви е временно блокиран. Свържете се с администратор</string>
+    <string name="teacher_added">Учителят е добавен успешно</string>
+    <string name="class_added">Класът е добавен успешно</string>
+    <string name="group_created">Групата е създадена успешно</string>
 </resources>

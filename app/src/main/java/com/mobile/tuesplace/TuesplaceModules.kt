@@ -30,14 +30,13 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
 import java.util.concurrent.TimeUnit
 
 val TuesplaceModules = module {
 
     viewModel { LoginViewModel(get(), get(), androidContext()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { CreateGroupViewModel(get()) }
+    viewModel { CreateGroupViewModel(get(), get()) }
     viewModel { WelcomeAdminViewModel() }
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
@@ -56,10 +55,10 @@ val TuesplaceModules = module {
     viewModel { AllMyActivitiesViewModel(get()) }
     viewModel { UploadActivityViewModel(get(), get()) }
     viewModel { CreatePostViewModel(get()) }
-    viewModel { PostViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { PostViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { EditPostViewModel(get(), get()) }
     viewModel { SubmissionsViewModel(get(), get(), get()) }
-    viewModel { SettingsViewModel(androidContext()) }
+    viewModel { SettingsViewModel(androidContext(), get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 

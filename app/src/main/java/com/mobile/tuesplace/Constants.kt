@@ -29,6 +29,7 @@ var ACCESS_TOKEN = ""
 var USER_ID = ""
 
 var ROLE = "role"
+const val BLOCKED = "blocked"
 
 const val HEADER_PREFIX_TOKEN = "token"
 
@@ -65,4 +66,30 @@ const val STUDENT_ROLE = "student"
 const val TEACHER_ROLE = "teacher"
 const val ADMIN_ROLE = "admin"
 
+const val CHAT_TYPE = "chat"
+const val SUBJECT_TYPE = "subject"
+
 const val ID_STRING = "id"
+
+const val EIGHT_A_GRADE = "8А"
+const val NINTH_A_GRADE = "9А"
+const val TENTH_A_GRADE = "10А"
+const val ELEVENTH_A_GRADE = "11А"
+const val TWELFTH_A_GRADE = "12А"
+const val EIGHT_B_GRADE = "8Б"
+const val NINTH_B_GRADE = "9Б"
+const val TENTH_B_GRADE = "10Б"
+const val ELEVENTH_B_GRADE = "11Б"
+const val TWELFTH_B_GRADE = "12Б"
+const val EIGHT_C_GRADE = "8В"
+const val NINTH_C_GRADE = "9В"
+const val TENTH_C_GRADE = "10В"
+const val ELEVENTH_C_GRADE = "11В"
+const val TWELFTH_C_GRADE = "12В"
+const val EIGHT_D_GRADE = "8Г"
+const val NINTH_D_GRADE = "9Г"
+const val TENTH_D_GRADE = "10Г"
+const val ELEVENTH_D_GRADE = "11Г"
+const val TWELFTH_D_GRADE = "12Г"
+const val EMPTY_GRADE = "-"
+

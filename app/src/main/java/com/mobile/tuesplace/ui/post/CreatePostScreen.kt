@@ -89,7 +89,8 @@ fun CreatePostTeacherUi(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
-            }
+            },
+            setClassVisibility = null
         )
 
         TextFieldWithTitle(
@@ -105,7 +106,8 @@ fun CreatePostTeacherUi(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(postNameItem.bottom)
-                }
+                },
+            setClassVisibility = null
         )
 
         Column(
@@ -160,7 +162,8 @@ fun CreatePostTeacherUi(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         top.linkTo(postTypeItem.bottom)
-                    }
+                    },
+                setClassVisibility = null
             )
         }
 
@@ -215,7 +218,8 @@ fun CreatePostStudentUi(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
-                }
+                },
+            setClassVisibility = null
         )
 
         TextFieldWithTitle(
@@ -231,7 +235,8 @@ fun CreatePostStudentUi(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(postNameItem.bottom)
-                }
+                },
+            setClassVisibility = null
         )
 
         GradientBorderButtonRound(
