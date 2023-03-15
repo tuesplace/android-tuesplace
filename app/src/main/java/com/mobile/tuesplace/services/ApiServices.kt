@@ -51,7 +51,7 @@ interface ApiServices {
 
     @Multipart
     @PUT(MY_PROFILE_ASSETS)
-    fun putMyProfileAssets(@Part profilePic: MultipartBody.Part): Call<BaseResponse<Unit>>
+    fun putMyProfileAssets(@Part profilePic: MultipartBody.Part): Call<Unit>
 
 
     @GET(GET_POSTS)
@@ -115,9 +115,11 @@ interface ApiServices {
     @GET(SUBMISSIONS)
     fun getPostSubmissions(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<SnapshotStateList<SubmissionData>>>
 
+    @Multipart
     @POST(SUBMISSIONS)
-    fun createSubmission(@Path("groupId") groupId: String, @Path("postId") postId: String,  @Body assets: SubmissionAssets): Call<BaseResponse<SubmissionData>>
+    fun createSubmission(@Path("groupId") groupId: String, @Path("postId") postId: String,  @Part assets: MultipartBody.Part): Call<BaseResponse<SubmissionData>>
 
     @POST(SUBMISSIONS_MARKS)
     fun createSubmissionMark(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("submissionId") submissionId: String, @Body markRequestData: MarkRequestData): Call<BaseResponse<Unit>>
+    //@Query("responseBehavior") responseBehavior: String
 }

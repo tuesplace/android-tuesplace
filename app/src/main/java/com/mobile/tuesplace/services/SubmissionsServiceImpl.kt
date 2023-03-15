@@ -2,8 +2,8 @@ package com.mobile.tuesplace.services
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.mobile.tuesplace.data.BaseResponse
-import com.mobile.tuesplace.data.SubmissionAssets
 import com.mobile.tuesplace.data.SubmissionData
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,8 +41,8 @@ class SubmissionsServiceImpl(private val retrofit: ApiServices): SubmissionsServ
     override suspend fun createSubmission(
         groupId: String,
         postId: String,
-        assets: SubmissionAssets,
-        submissionCallback: SubmissionsService.SubmissionCallback<SubmissionData>,
+        assets: MultipartBody.Part,
+        submissionCallback: SubmissionsService.SubmissionCallback<Unit>,
     ) {
         retrofit.createSubmission(groupId, postId, assets).enqueue(
             object : Callback<BaseResponse<SubmissionData>> {
@@ -51,7 +51,7 @@ class SubmissionsServiceImpl(private val retrofit: ApiServices): SubmissionsServ
                     response: Response<BaseResponse<SubmissionData>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { submissionCallback.onSuccess(it) }
+                         submissionCallback.onSuccess(Unit)
                     } else {
                         submissionCallback.onError(response.message())
                     }

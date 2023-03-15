@@ -56,9 +56,13 @@ const val FRIDAY = "Fri"
 const val APP_SETTINGS_FILENAME = "app-settings.json"
 const val XLSX_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 const val IMAGE_FILE_TYPE = "image/*"
+const val ALL_TYPES = "*/*"
 const val MULTIPART_NAME_XLSX = "specification"
 const val MULTIPART_NAME_IMAGE = "profilePic"
+const val MULTIPART_NAME_SUBMISSION = "assets"
 
 const val STUDENT_ROLE = "student"
 const val TEACHER_ROLE = "teacher"
 const val ADMIN_ROLE = "admin"
+
+const val ID_STRING = "id"

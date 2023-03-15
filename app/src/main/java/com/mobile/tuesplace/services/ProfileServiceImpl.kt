@@ -132,10 +132,10 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
         profilePic: MultipartBody.Part,
     ) {
         retrofit.putMyProfileAssets(profilePic).enqueue(
-            object : Callback<BaseResponse<Unit>> {
+            object : Callback<Unit> {
                 override fun onResponse(
-                    call: Call<BaseResponse<Unit>>,
-                    response: Response<BaseResponse<Unit>>,
+                    call: Call<Unit>,
+                    response: Response<Unit>,
                 ) {
                     if (response.isSuccessful) {
                         getProfileCallback.onSuccess(Unit)
@@ -144,7 +144,7 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 

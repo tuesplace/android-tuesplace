@@ -88,4 +88,5 @@
     <string name="no_mark">Неоценено</string>
     <string name="mark_input">/6</string>
     <string name="handed_in">Предали:</string>
+    <string name="submitted_successfully">Предаването е успешно</string>
 </resources>

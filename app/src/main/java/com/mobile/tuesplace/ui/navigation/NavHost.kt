@@ -521,6 +521,7 @@ fun NavHost(navController: NavHostController) {
             val deleteCommentUiState by viewModel.deletePostCommentsStateFlow.collectAsState()
             val createCommentUiState by viewModel.createCommentStateFlow.collectAsState()
             val dialogVisibility by viewModel.dialogVisibility.collectAsState()
+            val createSubmissionUiState by viewModel.createSubmissionStateFlow.collectAsState()
 
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString("groupId")?.let {
@@ -594,7 +595,16 @@ fun NavHost(navController: NavHostController) {
                 deleteCommentUiState = deleteCommentUiState,
                 onDeleteCommentSuccess = { viewModel.resetDeleteComment() },
                 createCommentUiState = createCommentUiState,
-                onCreateCommentSuccess = { viewModel.resetCreateComment() }
+                onCreateCommentSuccess = { viewModel.resetCreateComment() },
+                onUploadAssignmentClick = {
+                    backStackEntry.arguments?.getString("groupId")
+                        ?.let { groupId ->
+                            backStackEntry.arguments?.getString("postId")?.let { postId ->
+                                viewModel.createSubmission(it, groupId = groupId, postId = postId)
+                            }}
+                },
+                createSubmissionUiState = createSubmissionUiState,
+                onSubmissionSuccess = { viewModel.resetSubmissionState() }
             )
         }
         composable(EDIT_POST_SCREEN) { backStackEntry ->

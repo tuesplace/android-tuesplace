@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.services
 
+import com.mobile.tuesplace.ID_STRING
 import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback

@@ -56,7 +56,7 @@ val TuesplaceModules = module {
     viewModel { AllMyActivitiesViewModel(get()) }
     viewModel { UploadActivityViewModel(get(), get()) }
     viewModel { CreatePostViewModel(get()) }
-    viewModel { PostViewModel(get(), get(), get(), get(), get()) }
+    viewModel { PostViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { EditPostViewModel(get(), get()) }
     viewModel { SubmissionsViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(androidContext()) }
@@ -89,6 +89,7 @@ val TuesplaceModules = module {
     factory { GetPostSubmissionsUseCase(get()) }
     factory { PutMyProfileAssetsUseCase(get()) }
     factory { CreateSubmissionMarkUseCase(get()) }
+    factory { CreateSubmissionUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }

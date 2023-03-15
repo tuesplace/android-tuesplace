@@ -16,6 +16,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.mobile.tuesplace.ALL_TYPES
+import com.mobile.tuesplace.MULTIPART_NAME_SUBMISSION
 import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.CommentData
@@ -35,7 +38,9 @@ import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.data.SubmissionData
 import com.mobile.tuesplace.ui.CommentItem
 import com.mobile.tuesplace.ui.CreateCommentItem
+import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.states.*
+import okhttp3.MultipartBody
 
 @Composable
 fun PostScreen(
@@ -62,7 +67,10 @@ fun PostScreen(
     deleteCommentUiState: DeleteCommentUiState,
     onDeleteCommentSuccess: () -> Unit,
     createCommentUiState: CreateCommentUiState,
-    onCreateCommentSuccess: () -> Unit
+    onCreateCommentSuccess: () -> Unit,
+    onUploadAssignmentClick: (MultipartBody.Part) -> Unit,
+    createSubmissionUiState: CreateSubmissionUiState,
+    onSubmissionSuccess: () -> Unit
 ) {
     when (getPostUiState) {
         GetPostUiState.Empty -> {}
@@ -96,7 +104,8 @@ fun PostScreen(
                         enabled = enabled,
                         setEnabled = setEnabled,
                         setEditCommentBody = setEditCommentBody,
-                        onEditCommentClick = onEditCommentClick)
+                        onEditCommentClick = onEditCommentClick,
+                        onUploadAssignmentClick = onUploadAssignmentClick)
                 } else {
                     PostUi(
                         postResponseData = post,
@@ -159,6 +168,26 @@ fun PostScreen(
                 Toast.LENGTH_LONG
             ).show()
             onCreateCommentSuccess()
+        }
+    }
+
+    when(createSubmissionUiState) {
+        CreateSubmissionUiState.Empty -> {
+
+        }
+        is CreateSubmissionUiState.Error -> {
+
+        }
+        CreateSubmissionUiState.Loading -> {
+
+        }
+        CreateSubmissionUiState.Success -> {
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.submitted_successfully),
+                Toast.LENGTH_LONG
+            ).show()
+            onSubmissionSuccess()
         }
     }
 }
@@ -376,6 +405,7 @@ fun AssignmentUserScreenUi(
     setEnabled: (Int) -> Unit,
     setEditCommentBody: (Pair<String, Int>) -> Unit,
     onEditCommentClick: (Pair<String, String>) -> Unit,
+    onUploadAssignmentClick: (MultipartBody.Part) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -459,8 +489,30 @@ fun AssignmentUserScreenUi(
                 .background(colorResource(id = R.color.white))
                 .constrainAs(commentsItem) {
                     top.linkTo(markItem.bottom)
-                }
+                },
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = postResponseData.body,
+                color = Color.Black,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .fillMaxWidth()
+            )
+
+            Text(
+                text = postResponseData.body,
+                color = colorResource(id = R.color.darker_sea_blue),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .fillMaxWidth()
+            )
+
+            ResultLauncher(type = ALL_TYPES, onUploadClick = onUploadAssignmentClick, modifier = Modifier.size(50.dp), multipartName = MULTIPART_NAME_SUBMISSION)
+
             CreateCommentItem(
                 profilePic = painterResource(id = R.drawable.tues_webview),
                 onSendClick = onSendClick,
