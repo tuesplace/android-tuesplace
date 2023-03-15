@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -45,12 +44,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.ZERO_STRING
 import com.mobile.tuesplace.data.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import java.io.File
 
 
 @Composable
@@ -124,14 +126,14 @@ fun GradientBorderButtonRound(
 @Composable
 fun PostItem(
     post: PostResponseData,
-    onPostClick: (String) -> Unit,
+    onPostClick: (Pair<String, Boolean>) -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
             .padding(3.dp)
             .fillMaxWidth()
             .heightIn(100.dp, 9999.dp)
-            .clickable { onPostClick(post._id) }
+            .clickable { onPostClick(Pair(post._id, post.assignmentInfo.isAssignment)) }
             .background(White, RoundedCornerShape(8.dp))
             .border(2.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
     ) {
@@ -796,16 +798,16 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?, placeho
         },
         placeholder = { Text(text = placeholder) },
         trailingIcon = {
-            if (state.value != TextFieldValue("")) {
+            if (state.value != TextFieldValue(EMPTY_STRING)) {
                 IconButton(
                     onClick = {
                         state.value =
-                            TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                            TextFieldValue(EMPTY_STRING)
                     }
                 ) {
                     Icon(
                         Icons.Default.Close,
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.empty),
                         modifier = Modifier
                             .padding(15.dp)
                             .size(24.dp)
@@ -814,7 +816,7 @@ fun SearchView(state: MutableState<TextFieldValue>, modifier: Modifier?, placeho
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(8.dp), // The TextFiled has rounded corners top left and right by default
+        shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.textFieldColors(
             textColor = colorResource(id = R.color.baby_blue),
             cursorColor = colorResource(id = R.color.baby_blue),
@@ -926,7 +928,13 @@ fun SettingsMenuItem(text: String, onClick: () -> Unit, modifier: Modifier?) {
 }
 
 @Composable
-fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
+fun ResultLauncher(
+    type: String,
+    onUploadClick: (MultipartBody.Part) -> Unit,
+    modifier: Modifier?,
+    multipartName: String
+) {
+    val currentModifier = modifier ?: Modifier
     val selectedFileUri = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val getContentLauncher =
@@ -942,48 +950,36 @@ fun resultLauncher(type: String, onUploadClick: (MultipartBody.Part) -> Unit) {
             }
         }
 
-    Column(modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Select a file to upload")
-        Button(
-            onClick = {
-
+    Image(
+        painter = painterResource(id = R.drawable.add_icon),
+        contentDescription = EMPTY_STRING,
+        modifier = currentModifier
+            .clickable {
                 if (ContextCompat.checkSelfPermission(context,
                         Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                 ) {
-
                     getContentLauncher.launch(type)
                 } else {
                     requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
-            },
-            enabled = selectedFileUri.value == null
-        ) {
-            Text(text = "Select file")
-        }
-
-
-        selectedFileUri.value?.let { uri ->
-            Text(text = "Selected file: ${uri.path}")
-            Button(
-                onClick = {
-                    val file = getFileWithFileDescriptor(context, uri)
-                    val requestFile =
-                        file?.let {
-                            RequestBody.create("application/xls".toMediaTypeOrNull(), it)
-                        }
-                    if (requestFile != null) {
-                        val filePart = MultipartBody.Part.createFormData("specification",
-                            "filename.xlsx",
-                            requestFile)
-                        onUploadClick(filePart)
-                    }
-                },
-                enabled = true
-            ) {
-                Text(text = "Upload file")
             }
+    )
+
+    selectedFileUri.value?.let { uri ->
+        val file = getFileWithFileDescriptor(context, uri)
+        val fileName = uri.path?.let { File(it) }
+
+        val requestFile =
+            file?.let {
+                RequestBody.create(type.toMediaTypeOrNull(), it)
+            }
+        if (requestFile != null) {
+            val filePart = MultipartBody.Part.createFormData(
+                multipartName,
+                fileName?.name,
+                requestFile)
+            onUploadClick(filePart)
+            selectedFileUri.value = null
         }
     }
 }
@@ -1101,28 +1097,129 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
     }
 }
 
+@Composable
+fun AssignmentItem(
+    post: PostResponseData,
+    modifier: Modifier?,
+    onAssignmentClick: (Pair<String, Boolean>) -> Unit,
+) {
+    val currentModifier = modifier ?: Modifier
+    Row(
+        modifier = currentModifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
+            .padding(4.dp)
+            .clickable { onAssignmentClick(Pair(post._id, post.assignmentInfo.isAssignment)) },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
+    ) {
+        Row {
+            Image(
+                painter = painterResource(id = R.drawable.assigment_icon),
+                contentDescription = stringResource(id = R.string.empty),
+                modifier = Modifier
+                    .size(30.dp)
+            )
+
+            Column {
+                post.owner.data?.fullName?.let {
+                    Text(
+                        text = it,
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(top = 6.dp, start = 6.dp)
+                    )
+                }
+
+                Text(
+                    text = post.createdAt,
+                    color = colorResource(id = R.color.black),
+                    fontSize = 10.sp,
+                    modifier = Modifier
+                        .padding(start = 6.dp)
+                )
+            }
+        }
+
+        Text(
+            text = stringResource(id = R.string.new_assignment),
+            fontSize = 12.sp,
+            color = colorResource(id = R.color.black),
+        )
+    }
+}
+
+@Composable
+fun SubmissionItem(
+    submissionData: SubmissionData,
+    setDialogVisibility: (Boolean) -> Unit,
+    setSubmissionIndex: (Int) -> Unit,
+    index: Int
+) {
+    Row(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+            .border(1.dp, colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
+            .padding(6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.assigment_icon),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .size(30.dp)
+        )
+
+        Column {
+            submissionData.owner.data?.fullName?.let {
+                Text(
+                    text = it,
+                    color = colorResource(id = R.color.darker_sea_blue),
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(top = 6.dp, start = 6.dp)
+                )
+            }
+        }
+
+        Row(verticalAlignment = CenterVertically) {
+
+            Text(
+                text = if (submissionData.marks.isEmpty()) { ZERO_STRING } else {submissionData.marks[0].mark.toString() } ,
+                fontSize = 12.sp,
+                color = colorResource(id = R.color.darker_sea_blue),
+                modifier = Modifier.clickable {
+                    setDialogVisibility(true)
+                    setSubmissionIndex(index)
+                }
+            )
+
+            Text(
+                text = stringResource(id = R.string.mark_input),
+                fontSize = 12.sp,
+                color = colorResource(id = R.color.darker_sea_blue)
+            )
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.download_icon),
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}
+
 
 @Composable
 @Preview
 fun Preview() {
-    // MenuItem(image = painterResource(id = R.drawable.teacher_icon), string = "Учители", null) {}
-//    GroupClassItem(GroupResponseData("",
-//        "Bulgarian Language and Literature",
-//        "",
-//        arrayListOf("9B"),
-//        arrayListOf(ProfileData("Dora Tsvetanova", "", "", "", "")))) {}
-//    PostItem(post = PostData("",
-//        "",
-//        listOf(),
-//        "12:30",
-//        "",
-//        "This is a test post. I am testing the UI."), {}, {}, {}, "") {}
-//    CommentItem(profilePic = painterResource(id = R.drawable.tues_webview),
-//        onSendClick = {},
-//        modifier = Modifier,
-//        commentInput = "",
-//        onCommentChange = {},
-//        postId = "")
+
     UserMessage(profile = ProfileData("Kalina Valeva", "", "", "", ""),
         createTime = "12:30",
         message = "Hello, there!")

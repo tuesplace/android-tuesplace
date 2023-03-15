@@ -6,8 +6,8 @@ data class ProfileResponseData(
     var _id: String,
     var fullName: String,
     var email: String,
-    var password: String,
     var role: String,
     @SerializedName("class")
-    var className: String?
+    var className: String?,
+    var assets: ProfileAssets?
 )

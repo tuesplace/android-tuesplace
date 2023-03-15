@@ -1,9 +1,7 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.data.BaseResponse
-import com.mobile.tuesplace.data.EditProfileData
-import com.mobile.tuesplace.data.ProfileData
-import com.mobile.tuesplace.data.ProfileResponseData
+import com.mobile.tuesplace.data.*
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -122,6 +120,31 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                 }
 
                 override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
+                    t.localizedMessage?.let { getProfileCallback.onError(it) }
+                }
+
+            }
+        )
+    }
+
+    override suspend fun putMyProfileAssets(
+        getProfileCallback: ProfileService.GetProfileCallback<Unit>,
+        profilePic: MultipartBody.Part,
+    ) {
+        retrofit.putMyProfileAssets(profilePic).enqueue(
+            object : Callback<Unit> {
+                override fun onResponse(
+                    call: Call<Unit>,
+                    response: Response<Unit>,
+                ) {
+                    if (response.isSuccessful) {
+                        getProfileCallback.onSuccess(Unit)
+                    } else {
+                        getProfileCallback.onError(response.message())
+                    }
+                }
+
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
                     t.localizedMessage?.let { getProfileCallback.onError(it) }
                 }
 

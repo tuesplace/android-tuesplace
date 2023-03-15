@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.mobile.tuesplace.*
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
@@ -18,7 +19,6 @@ import com.mobile.tuesplace.ui.buttonChangeColorOnClick
 import com.mobile.tuesplace.ui.indexToLetter
 import com.mobile.tuesplace.ui.numToDay
 import com.mobile.tuesplace.ui.states.GetActivitiesUiState
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 fun ActivitiesStudentsScreen(
@@ -122,7 +122,7 @@ fun ActivitiesStudentsUi(
             }
         ) {
             DailyAgendaItem(
-                day = stringResource(id = numToDay(1)),
+                day = stringResource(id = numToDay(ONE)),
                 agendaList = agendaList
                     .filter { agenda ->
                         agenda.associations.group.data.name.contains(
@@ -132,7 +132,7 @@ fun ActivitiesStudentsUi(
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(2)),
+                day = stringResource(id = numToDay(TWO)),
                 agendaList = agendaList
                     .filter { agenda ->
                         agenda.associations.group.data.name.contains(
@@ -142,7 +142,7 @@ fun ActivitiesStudentsUi(
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(3)),
+                day = stringResource(id = numToDay(THREE)),
                 agendaList = agendaList
                     .filter { agenda ->
                         agenda.associations.group.data.name.contains(
@@ -152,7 +152,7 @@ fun ActivitiesStudentsUi(
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(4)),
+                day = stringResource(id = numToDay(FOUR)),
                 agendaList = agendaList
                     .filter { agenda ->
                         agenda.associations.group.data.name.contains(
@@ -162,7 +162,7 @@ fun ActivitiesStudentsUi(
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(5)),
+                day = stringResource(id = numToDay(FIVE)),
                 agendaList = agendaList
                     .filter { agenda ->
                         agenda.associations.group.data.name.contains(

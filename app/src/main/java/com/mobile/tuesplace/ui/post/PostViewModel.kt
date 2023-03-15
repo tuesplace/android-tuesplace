@@ -4,24 +4,25 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobile.tuesplace.data.CommentData
-import com.mobile.tuesplace.data.CommentRequestData
-import com.mobile.tuesplace.data.PostResponseData
+import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.services.CommentService
 import com.mobile.tuesplace.services.PostService
+import com.mobile.tuesplace.services.SubmissionsService
 import com.mobile.tuesplace.ui.states.*
 import com.mobile.tuesplace.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class PostViewModel(
     private val createCommentUseCase: CreateCommentUseCase,
     private val getPostUseCase: GetPostUseCase,
     private val getPostCommentsUseCase: GetPostCommentsUseCase,
     private val editCommentsUseCase: EditCommentUseCase,
-    private val deleteCommentsUseCase: DeleteCommentUseCase
+    private val deleteCommentsUseCase: DeleteCommentUseCase,
+    private val createSubmissionUseCase: CreateSubmissionUseCase,
 ) : ViewModel() {
 
     private val _enabled = MutableStateFlow(-1)
@@ -49,7 +50,7 @@ class PostViewModel(
         MutableStateFlow<SnapshotStateList<CommentData>>(mutableStateListOf())
     val commentList: StateFlow<SnapshotStateList<CommentData>> = _commentList.asStateFlow()
 
-    fun setCommentMenuIndex(index: Int){
+    fun setCommentMenuIndex(index: Int) {
         _commentMenuIndex.value = index
     }
 
@@ -79,19 +80,19 @@ class PostViewModel(
         }
     }
 
-    fun resetCreateComment(){
+    fun resetCreateComment() {
         viewModelScope.launch {
             _createCommentStateFlow.emit(CreateCommentUiState.Empty)
         }
     }
 
-    fun resetEditComment(){
+    fun resetEditComment() {
         viewModelScope.launch {
             _editPostCommentsStateFlow.emit(EditCommentsUiState.Empty)
         }
     }
 
-    fun resetDeleteComment(){
+    fun resetDeleteComment() {
         viewModelScope.launch {
             _deletePostCommentsStateFlow.emit(DeleteCommentUiState.Empty)
         }
@@ -145,7 +146,7 @@ class PostViewModel(
         }
     }
 
-    fun setPostStateAsLoaded(){
+    fun setPostStateAsLoaded() {
         viewModelScope.launch {
             postData?.let { GetPostUiState.Loaded(it) }?.let { _getPostStateFlow.emit(it) }
         }
@@ -162,32 +163,41 @@ class PostViewModel(
         MutableStateFlow<EditCommentsUiState>(EditCommentsUiState.Empty)
     val editPostCommentsStateFlow: StateFlow<EditCommentsUiState> = _editPostCommentsStateFlow
 
-    fun editComment(commentRequestData: CommentRequestData, groupId: String, postId: String, commentId: String){
-       viewModelScope.launch {
-           editCommentsUseCase.invoke(
-               object : CommentService.CommentCallback<Unit> {
-                   override fun onSuccess(generic: Unit) {
-                       viewModelScope.launch {
-                           _editPostCommentsStateFlow.emit(EditCommentsUiState.Success)
-                       }
-                   }
+    fun editComment(
+        commentRequestData: CommentRequestData,
+        groupId: String,
+        postId: String,
+        commentId: String,
+    ) {
+        viewModelScope.launch {
+            editCommentsUseCase.invoke(
+                object : CommentService.CommentCallback<Unit> {
+                    override fun onSuccess(generic: Unit) {
+                        viewModelScope.launch {
+                            _editPostCommentsStateFlow.emit(EditCommentsUiState.Success)
+                        }
+                    }
 
-                   override fun onError(error: String) {
-                       viewModelScope.launch {
-                           _editPostCommentsStateFlow.emit(EditCommentsUiState.Error(error))
-                       }
-                   }
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _editPostCommentsStateFlow.emit(EditCommentsUiState.Error(error))
+                        }
+                    }
 
-               }, groupId = groupId, postId = postId, commentId = commentId, comment = commentRequestData
-           )
-       }
+                },
+                groupId = groupId,
+                postId = postId,
+                commentId = commentId,
+                comment = commentRequestData
+            )
+        }
     }
 
     private val _deletePostCommentsStateFlow =
         MutableStateFlow<DeleteCommentUiState>(DeleteCommentUiState.Empty)
     val deletePostCommentsStateFlow: StateFlow<DeleteCommentUiState> = _deletePostCommentsStateFlow
 
-    fun deleteComment(commentId: String, groupId: String, postId: String){
+    fun deleteComment(commentId: String, groupId: String, postId: String) {
         viewModelScope.launch {
             deleteCommentsUseCase.invoke(
                 object : CommentService.CommentCallback<Unit> {
@@ -213,5 +223,38 @@ class PostViewModel(
 
     fun dialogVisibility(dialogVisibility: Boolean) {
         _dialogVisibility.value = dialogVisibility
+    }
+
+    private val _createSubmissionStateFlow =
+        MutableStateFlow<CreateSubmissionUiState>(CreateSubmissionUiState.Empty)
+    val createSubmissionStateFlow: StateFlow<CreateSubmissionUiState> = _createSubmissionStateFlow
+
+    fun createSubmission(assets: MultipartBody.Part, groupId: String, postId: String) {
+        viewModelScope.launch {
+            createSubmissionUseCase.invoke(groupId = groupId,
+                postId = postId,
+                assets = assets,
+                submissionCallback = object :
+                    SubmissionsService.SubmissionCallback<Unit> {
+                    override fun onSuccess(data: Unit) {
+                        viewModelScope.launch {
+                            _createSubmissionStateFlow.emit(CreateSubmissionUiState.Success)
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _createSubmissionStateFlow.emit(CreateSubmissionUiState.Error(error))
+                        }
+                    }
+
+                })
+        }
+    }
+
+    fun resetSubmissionState(){
+        viewModelScope.launch {
+            _createSubmissionStateFlow.emit(CreateSubmissionUiState.Empty)
+        }
     }
 }

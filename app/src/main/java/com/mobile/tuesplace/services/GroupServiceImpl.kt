@@ -4,7 +4,6 @@ import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
 
@@ -79,24 +78,24 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
     }
 
     override suspend fun editGroup(
-        groupCallback: GroupService.GroupCallback<EditGroupData>,
+        groupCallback: GroupService.GroupCallback<Unit>,
         groupId: String,
         editGroupData: EditGroupData,
     ) {
         retrofit.editGroup(groupId, editGroupData).enqueue(
-            object : Callback<BaseResponse<EditGroupData>> {
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<EditGroupData>>,
-                    response: Response<BaseResponse<EditGroupData>>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { groupCallback.onSuccess(it) }
+                       groupCallback.onSuccess(Unit)
                     } else {
                         groupCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<EditGroupData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
             }

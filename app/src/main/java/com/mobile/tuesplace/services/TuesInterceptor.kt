@@ -11,7 +11,7 @@ import java.util.*
 class TuesInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        //Check if a request has header "token: none" we should not add authorization to the request.
+
         val noTokenHeader = chain.request().headers[HEADER_PREFIX_TOKEN]
 
         val newRequest: Request.Builder = chain.request().newBuilder()

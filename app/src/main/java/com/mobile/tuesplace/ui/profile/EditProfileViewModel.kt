@@ -7,13 +7,20 @@ import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.EditProfileUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
+import com.mobile.tuesplace.ui.states.PutMyProfileAssetsUiState
 import com.mobile.tuesplace.usecase.EditProfileUseCase
 import com.mobile.tuesplace.usecase.GetProfileUseCase
+import com.mobile.tuesplace.usecase.PutMyProfileAssetsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
-class EditProfileViewModel(private val profileUseCase: GetProfileUseCase, private val editProfileUseCase: EditProfileUseCase): ViewModel() {
+class EditProfileViewModel(
+    private val profileUseCase: GetProfileUseCase,
+    private val editProfileUseCase: EditProfileUseCase,
+    private val putMyProfileAssetsUseCase: PutMyProfileAssetsUseCase
+    ): ViewModel() {
     private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
     val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
 
@@ -80,6 +87,37 @@ class EditProfileViewModel(private val profileUseCase: GetProfileUseCase, privat
 
     fun changeClass(classInput: String) {
         _changeClass.value = classInput
+    }
+
+    private val _imageUpload = MutableStateFlow<MultipartBody.Part?>(null)
+    val imageUpload: MutableStateFlow<MultipartBody.Part?> = _imageUpload
+
+    fun imageUpload(image: MultipartBody.Part) {
+        _imageUpload.value = image
+    }
+
+    private val _putMyProfileAssetsStateFlow = MutableStateFlow<PutMyProfileAssetsUiState>(PutMyProfileAssetsUiState.Empty)
+    val putMyProfileAssetsStateFlow: StateFlow<PutMyProfileAssetsUiState> = _putMyProfileAssetsStateFlow
+
+    fun putMyProfileAssets(profilePic: MultipartBody.Part) {
+        viewModelScope.launch {
+            putMyProfileAssetsUseCase.invoke(
+                object : ProfileService.GetProfileCallback<Unit> {
+                    override fun onSuccess(profileGeneric: Unit) {
+                        viewModelScope.launch {
+                            _putMyProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Success)
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _putMyProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Error(error))
+                        }
+                    }
+
+                }, profilePic
+            )
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.services.GroupService
 import com.mobile.tuesplace.services.PostService
 import com.mobile.tuesplace.ui.states.GetGroupUiState
+import com.mobile.tuesplace.ui.states.GetPostUiState
 import com.mobile.tuesplace.ui.states.GetPostsUiState
 import com.mobile.tuesplace.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +21,14 @@ class ClassroomUserViewModel(
     private val _getGroupStateFlow = MutableStateFlow<GetGroupUiState>(GetGroupUiState.Empty)
     val getGroupStateFlow: StateFlow<GetGroupUiState> = _getGroupStateFlow
 
+    var group: GroupData? = null
+
     fun getGroup(groupId: String) {
         viewModelScope.launch {
             getGroupUseCase.invoke(object : GroupService.GroupCallback<GroupData> {
                 override fun onSuccess(groupGeneric: GroupData) {
                     viewModelScope.launch {
+                        group = groupGeneric
                         _getGroupStateFlow.emit(GetGroupUiState.Success(groupGeneric))
                     }
                 }
@@ -57,6 +61,12 @@ class ClassroomUserViewModel(
                         }
                     }
                 })
+        }
+    }
+
+    fun setGroupStateAsLoaded(){
+        viewModelScope.launch {
+            group?.let { GetGroupUiState.Loaded(it) }?.let { _getGroupStateFlow.emit(it) }
         }
     }
 }

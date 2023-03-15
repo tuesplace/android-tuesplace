@@ -1,6 +1,7 @@
 package com.mobile.tuesplace.ui.login
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.ProfileData
@@ -25,6 +26,8 @@ class LoginViewModel(
     private val context: Context
 ) : ViewModel() {
 
+    private val sessionManager = SessionManager.getInstance(dataStore = context.dataStore)
+
     private val _email =
         MutableStateFlow("")
     val email: StateFlow<String> = _email
@@ -44,20 +47,33 @@ class LoginViewModel(
     private val _passwordVisibility = MutableStateFlow(false)
     val passwordVisibility: StateFlow<Boolean> = _passwordVisibility
 
+    private val _uiStateFlow = MutableStateFlow<SignInUiState>(SignInUiState.Empty)
+    val uiStateFlow: StateFlow<SignInUiState> = _uiStateFlow
+
     fun passwordVisibility(passwordVisibility: Boolean) {
         _passwordVisibility.value = !passwordVisibility
     }
 
-    private val _uiStateFlow = MutableStateFlow<SignInUiState>(SignInUiState.Empty)
-    val uiStateFlow: StateFlow<SignInUiState> = _uiStateFlow
+    init {
+        checkIfUserIsLoggedIn()
+    }
+
+    private fun checkIfUserIsLoggedIn() {
+        viewModelScope.launch {
+            val token = sessionManager.fetchAuthToken()
+            Log.d("savedToken", token)
+            if (token.isNotEmpty()) {
+                sessionManager.setTokens()
+                _uiStateFlow.emit(SignInUiState.Success)
+            }
+        }
+    }
 
     private val _isCorrectPassword = MutableStateFlow(false)
     val isCorrectPassword: StateFlow<Boolean> = _isCorrectPassword
 
     private val _isCorrectEmail = MutableStateFlow(false)
     val isCorrectEmail: StateFlow<Boolean> = _isCorrectEmail
-
-    private val sessionManager = SessionManager.getInstance(dataStore = context.dataStore)
 
     fun signIn(email: String, password: String) {
         if (ValidateFields.isValidEmail(email)) {

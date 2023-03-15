@@ -129,5 +129,5 @@ fun ProfileUi(profileData: ProfileResponseData, onEditClick: () -> Unit) {
 @Composable
 @Preview
 fun ProfilePreview() {
-    ProfileUi(ProfileResponseData( "", "Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", "")) {}
+    //ProfileUi(ProfileResponseData( "", "Kalina Valeva", "kalina.valevaa@gmail.com", "kalina2w3", "admin", "", )) {}
 }
