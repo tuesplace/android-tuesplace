@@ -7,6 +7,7 @@ const val CREATE_GROUP = "v1/groups/"
 const val PROFILE_ME = "v1/profiles/me"
 const val ALL_PROFILES = "v1/profiles"
 const val PROFILE = "v1/profiles/{profileId}"
+const val MY_PROFILE_ASSETS = "v1/profiles/me/assets"
 const val GET_GROUP = "v1/groups/{groupId}"
 const val GET_MY_GROUPS = "v1/groups/me"
 const val GET_POSTS = "v1/groups/{groupId}/posts"
@@ -21,18 +22,20 @@ const val MY_ACTIVITIES = "v1/activities/me"
 const val SPECIFICATION = "v1/specification"
 const val SPECIFICATION_ASSETS = "v1/specification/{specificationId}/assets"
 const val SUBMISSIONS = "v1/groups/{groupId}/posts/{postId}/submissions"
-const val SUBMISSIONS_MARKS = "v1/groups/{groupId}/posts/{postId}/submissions/marks"
+const val SUBMISSIONS_MARKS = "v1/groups/{groupId}/posts/{postId}/submissions/{submissionId}/marks"
+const val EDIT_MARK = "v1/groups/{groupsId}/posts/{postId}/marks/{markId}"
 
 var ACCESS_TOKEN = ""
 var USER_ID = ""
 
-var ROLE = ""
+var ROLE = "role"
 
 const val HEADER_PREFIX_TOKEN = "token"
 
 const val UPLOAD_CODE = 1
 const val DOCUMENTS_DIR = "documents"
 const val EMPTY_STRING = ""
+const val ZERO_STRING = "0"
 
 const val ZERO = 0
 const val ONE = 1
@@ -49,3 +52,13 @@ const val TUESDAY = "Tue"
 const val WEDNESDAY = "Wed"
 const val THURSDAY = "Thu"
 const val FRIDAY = "Fri"
+
+const val APP_SETTINGS_FILENAME = "app-settings.json"
+const val XLSX_FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+const val IMAGE_FILE_TYPE = "image/*"
+const val MULTIPART_NAME_XLSX = "specification"
+const val MULTIPART_NAME_IMAGE = "profilePic"
+
+const val STUDENT_ROLE = "student"
+const val TEACHER_ROLE = "teacher"
+const val ADMIN_ROLE = "admin"

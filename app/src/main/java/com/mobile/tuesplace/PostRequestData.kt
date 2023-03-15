@@ -8,5 +8,5 @@ data class PostRequestData(
 
 data class AssignmentInfo(
     var isAssignment: Boolean,
-    var deadline: String,
+    var deadline: Number,
 )

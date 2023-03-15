@@ -2,16 +2,20 @@ package com.mobile.tuesplace.ui.activities
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import com.mobile.tuesplace.MULTIPART_NAME_XLSX
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.ui.resultLauncher
+import com.mobile.tuesplace.XLSX_FILE_TYPE
+import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.states.EditSpecificationUiState
 import com.mobile.tuesplace.ui.states.GetSpecificationUiState
 import okhttp3.MultipartBody
@@ -60,7 +64,12 @@ fun UploadActivityUi(onUploadClick: (MultipartBody.Part) -> Unit) {
         .background(color = colorResource(id = R.color.dark_blue)),
         contentAlignment = Alignment.Center
     ) {
-        resultLauncher("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", onUploadClick)
-        //
+
+        Column(modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Select a file to upload")
+            ResultLauncher(XLSX_FILE_TYPE, onUploadClick, modifier = null, MULTIPART_NAME_XLSX)
+        }
     }
 }

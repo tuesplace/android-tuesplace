@@ -35,7 +35,7 @@ object SessionManager {
         currentRefreshToken = refreshToken
     }
 
-    private suspend fun fetchAuthToken(): String {
+    suspend fun fetchAuthToken(): String {
         return appSettings?.first()?.token ?: EMPTY_STRING
     }
 
@@ -55,4 +55,5 @@ object SessionManager {
     fun getRefreshToken(): String {
         return currentRefreshToken
     }
+
 }

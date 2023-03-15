@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -16,10 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.dataStore
@@ -31,7 +30,7 @@ import com.mobile.tuesplace.ui.navigation.NavHost
 import com.mobile.tuesplace.ui.navigation.SETTINGS_SCREEN
 import com.mobile.tuesplace.ui.theme.TuesplaceTheme
 
-val Context.dataStore by dataStore("app-settings.json", AppSettingSerializer)
+val Context.dataStore by dataStore(APP_SETTINGS_FILENAME, AppSettingSerializer)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,9 +50,15 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 var visibility: Boolean
-                (currentDestination != navController.findDestination(LOGIN_SCREEN)).also { visibility = it }
+                (currentDestination != navController.findDestination(LOGIN_SCREEN)).also {
+                    visibility = it
+                }
                 Scaffold(
-                    topBar = { if (visibility) { topBar(onMenuClick = { navController.navigate(SETTINGS_SCREEN) })} },
+                    topBar = {
+                        if (visibility) {
+                            topBar(onMenuClick = { navController.navigate(SETTINGS_SCREEN) })
+                        }
+                    },
                     content = { padding ->
 
                         Box(modifier = Modifier.padding(padding)) {
@@ -80,22 +85,35 @@ fun topBar(onMenuClick: () -> Unit) {
         ) {
             val (text, menu) = createRefs()
 
-            Text(
-                text = stringResource(id = R.string.app_name),
-                color = Color.White,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.constrainAs(text) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-            )
+//
+//            Text(
+//                text = stringResource(id = R.string.app_name),
+//                color = Color.White,
+//                fontSize = 20.sp,
+//                textAlign = TextAlign.Start,
+//                modifier = Modifier
+//                    .padding(start = 6.dp)
+//                    .constrainAs(text) {
+//                        start.linkTo(parent.start)
+//                        top.linkTo(parent.top)
+//                        bottom.linkTo(parent.bottom)
+//                    }
+//            )
 
+            Image(
+                painter = painterResource(id = R.drawable.logo_2),
+                contentDescription = stringResource(id = R.drawable.logo_2),
+                modifier = Modifier
+                    .size(100.dp)
+                    .constrainAs(text) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
             Icon(
                 painter = painterResource(id = R.drawable.menu),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.empty),
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .size(20.dp)

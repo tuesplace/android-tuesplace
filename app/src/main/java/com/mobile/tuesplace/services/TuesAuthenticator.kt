@@ -1,21 +1,17 @@
 package com.mobile.tuesplace.services
 
-import android.util.Log
 import com.mobile.tuesplace.TuesplaceApplication
-import com.mobile.tuesplace.data.BaseResponse
 import com.mobile.tuesplace.data.SignInData
 import com.mobile.tuesplace.dataStore
 import com.mobile.tuesplace.session.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import retrofit2.Call
 
 class TuesAuthenticator(): okhttp3.Authenticator, KoinComponent {
     private val authService: AuthService by inject()

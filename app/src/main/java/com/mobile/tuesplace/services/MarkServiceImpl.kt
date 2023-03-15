@@ -8,14 +8,14 @@ import retrofit2.Response
 class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
 
     override fun getGroupMarks(
-        markCallback: MarkService.MarkCallback<List<MarkData>>,
+        markCallback: MarkService.MarkCallback<List<SubmissionMarkData>>,
         groupId: String,
     ) {
         retrofit.getGroupMarks(groupId = groupId).enqueue(
-            object : Callback<BaseResponse<List<MarkData>>> {
+            object : Callback<BaseResponse<List<SubmissionMarkData>>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<List<MarkData>>>,
-                    response: Response<BaseResponse<List<MarkData>>>,
+                    call: Call<BaseResponse<List<SubmissionMarkData>>>,
+                    response: Response<BaseResponse<List<SubmissionMarkData>>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { markCallback.onSuccess(it) }
@@ -24,7 +24,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<List<MarkData>>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<List<SubmissionMarkData>>>, t: Throwable) {
                     t.localizedMessage?.let { markCallback.onError(it) }
                 }
 
@@ -33,16 +33,16 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
     }
 
     override fun getStudentMarks(
-        markCallback: MarkService.MarkCallback<List<MarkData>>,
+        markCallback: MarkService.MarkCallback<List<SubmissionMarkData>>,
         groupId: String,
         studentId: String,
     ) {
         retrofit.getStudentMarks(groupId = groupId, studentId = studentId)
             .enqueue(
-                object : Callback<BaseResponse<List<MarkData>>> {
+                object : Callback<BaseResponse<List<SubmissionMarkData>>> {
                     override fun onResponse(
-                        call: Call<BaseResponse<List<MarkData>>>,
-                        response: Response<BaseResponse<List<MarkData>>>,
+                        call: Call<BaseResponse<List<SubmissionMarkData>>>,
+                        response: Response<BaseResponse<List<SubmissionMarkData>>>,
                     ) {
                         if (response.isSuccessful) {
                             response.body()?.response?.let { markCallback.onSuccess(it) }
@@ -51,7 +51,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                         }
                     }
 
-                    override fun onFailure(call: Call<BaseResponse<List<MarkData>>>, t: Throwable) {
+                    override fun onFailure(call: Call<BaseResponse<List<SubmissionMarkData>>>, t: Throwable) {
                         t.localizedMessage?.let { markCallback.onError(it) }
                     }
 
@@ -60,17 +60,17 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
     }
 
     override fun addStudentMark(
-        markCallback: MarkService.MarkCallback<MarkData>,
+        markCallback: MarkService.MarkCallback<SubmissionMarkData>,
         groupId: String,
         studentId: String,
         mark: Double
     ) {
         retrofit.addStudentMark(groupId = groupId, studentId = studentId, mark = mark)
             .enqueue(
-                object : Callback<BaseResponse<MarkData>> {
+                object : Callback<BaseResponse<SubmissionMarkData>> {
                     override fun onResponse(
-                        call: Call<BaseResponse<MarkData>>,
-                        response: Response<BaseResponse<MarkData>>,
+                        call: Call<BaseResponse<SubmissionMarkData>>,
+                        response: Response<BaseResponse<SubmissionMarkData>>,
                     ) {
                         if (response.isSuccessful) {
                             response.body()?.response?.let { markCallback.onSuccess(it) }
@@ -79,7 +79,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                         }
                     }
 
-                    override fun onFailure(call: Call<BaseResponse<MarkData>>, t: Throwable) {
+                    override fun onFailure(call: Call<BaseResponse<SubmissionMarkData>>, t: Throwable) {
                         t.localizedMessage?.let { markCallback.onError(it) }
                     }
 
@@ -88,7 +88,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
     }
 
     override fun editStudentMark(
-        markCallback: MarkService.MarkCallback<MarkData>,
+        markCallback: MarkService.MarkCallback<SubmissionMarkData>,
         groupId: String,
         studentId: String,
         markId: String,
@@ -99,10 +99,10 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
             studentId = studentId,
             markId = markId,
             mark = mark).enqueue(
-            object : Callback<BaseResponse<MarkData>> {
+            object : Callback<BaseResponse<SubmissionMarkData>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<MarkData>>,
-                    response: Response<BaseResponse<MarkData>>,
+                    call: Call<BaseResponse<SubmissionMarkData>>,
+                    response: Response<BaseResponse<SubmissionMarkData>>,
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { markCallback.onSuccess(it) }
@@ -111,7 +111,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<MarkData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<SubmissionMarkData>>, t: Throwable) {
                     t.localizedMessage?.let { markCallback.onError(it) }
                 }
             })
@@ -155,7 +155,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
         submissionId: String,
         mark: MarkRequestData
     ) {
-        retrofit.createSubmissionMark(groupId, postId, submissionId).enqueue(
+        retrofit.createSubmissionMark(groupId, postId, submissionId, mark).enqueue(
             object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
                     call: Call<BaseResponse<Unit>>,

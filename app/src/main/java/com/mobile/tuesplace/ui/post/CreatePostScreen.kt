@@ -146,7 +146,7 @@ fun CreatePostTeacherUi(
             }
         }
 
-        if (!postType) {
+        if (postType) {
             TextFieldWithTitle(
                 title = stringResource(id = R.string.deadline),
                 placeholder = stringResource(id = R.string.deadline_placeholder),
@@ -155,7 +155,7 @@ fun CreatePostTeacherUi(
                 enabled = true,
                 isError = false,
                 modifier = Modifier
-                    .padding(top = 6.dp)
+                    .padding(top = 6.dp, start = 6.dp)
                     .constrainAs(deadlineItem) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
@@ -173,7 +173,7 @@ fun CreatePostTeacherUi(
                 onCreateClick(
                     PostRequestData(title = postName,
                         body = postDescription,
-                        assignmentInfo = AssignmentInfo(false, ""))
+                        assignmentInfo = AssignmentInfo(postType, deadline.toFloat()))
                 )
             },
             buttonPadding = PaddingValues(16.dp),

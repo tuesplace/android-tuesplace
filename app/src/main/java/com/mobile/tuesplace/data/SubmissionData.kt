@@ -4,7 +4,8 @@ data class SubmissionData(
     var _id: String,
     var owner: ResolvedAssociation<ProfileData>,
     var assets: SubmissionAssets,
-    var associations: SubmissionAssociations
+    var associations: SubmissionAssociations,
+    var marks: ArrayList<SubmissionMarkData>
 )
 
 data class SubmissionAssociations(

@@ -49,6 +49,11 @@ interface ApiServices {
     @DELETE(PROFILE)
     fun deleteProfile(@Path("profileId") profileId: String): Call<BaseResponse<Unit>>
 
+    @Multipart
+    @PUT(MY_PROFILE_ASSETS)
+    fun putMyProfileAssets(@Part profilePic: MultipartBody.Part): Call<BaseResponse<Unit>>
+
+
     @GET(GET_POSTS)
     fun getPosts(@Path("groupId") groupId: String): Call<BaseResponse<List<PostResponseData>>>
 
@@ -65,16 +70,16 @@ interface ApiServices {
     fun deletePost(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<Unit>>
 
     @GET(GET_MARKS)
-    fun getGroupMarks(@Path("groupId") groupId: String): Call<BaseResponse<List<MarkData>>>
+    fun getGroupMarks(@Path("groupId") groupId: String): Call<BaseResponse<List<SubmissionMarkData>>>
 
     @GET(STUDENT_MARKS)
-    fun getStudentMarks(@Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<List<MarkData>>>
+    fun getStudentMarks(@Path("groupId") groupId: String, @Path("studentId") studentId: String): Call<BaseResponse<List<SubmissionMarkData>>>
 
     @POST(STUDENT_MARKS)
-    fun addStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Body mark: Double): Call<BaseResponse<MarkData>>
+    fun addStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Body mark: Double): Call<BaseResponse<SubmissionMarkData>>
 
     @PUT(STUDENT_MARK)
-    fun editStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String, @Body mark: Double): Call<BaseResponse<MarkData>>
+    fun editStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String, @Body mark: Double): Call<BaseResponse<SubmissionMarkData>>
 
     @DELETE(STUDENT_MARK)
     fun deleteStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<BaseResponse<Unit>>
@@ -108,11 +113,11 @@ interface ApiServices {
     fun editSpecificationAssets(@Path("specificationId") specificationId: String, @Part specification: MultipartBody.Part): Call<Unit>
 
     @GET(SUBMISSIONS)
-    fun getPostSubmissions(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<List<SubmissionData>>>
+    fun getPostSubmissions(@Path("groupId") groupId: String, @Path("postId") postId: String): Call<BaseResponse<SnapshotStateList<SubmissionData>>>
 
     @POST(SUBMISSIONS)
     fun createSubmission(@Path("groupId") groupId: String, @Path("postId") postId: String,  @Body assets: SubmissionAssets): Call<BaseResponse<SubmissionData>>
 
     @POST(SUBMISSIONS_MARKS)
-    fun createSubmissionMark(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("submissionId") submissionId: String): Call<BaseResponse<Unit>>
+    fun createSubmissionMark(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("submissionId") submissionId: String, @Body markRequestData: MarkRequestData): Call<BaseResponse<Unit>>
 }

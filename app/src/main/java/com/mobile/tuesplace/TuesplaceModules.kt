@@ -17,7 +17,9 @@ import com.mobile.tuesplace.ui.post.EditPostViewModel
 import com.mobile.tuesplace.ui.post.PostViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileViewModel
+import com.mobile.tuesplace.ui.settings.SettingsViewModel
 import com.mobile.tuesplace.ui.students.AllStudentsViewModel
+import com.mobile.tuesplace.ui.submissions.SubmissionsViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeAdminViewModel
 import com.mobile.tuesplace.ui.welcome.WelcomeViewModel
 import com.mobile.tuesplace.usecase.*
@@ -40,7 +42,7 @@ val TuesplaceModules = module {
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { EditProfileViewModel(get(), get()) }
+    viewModel { EditProfileViewModel(get(), get(), get()) }
     viewModel { VideoroomViewModel(get()) }
     viewModel { ClassroomUserViewModel(get(), get()) }
     viewModel { ClassesViewModel(get()) }
@@ -56,6 +58,8 @@ val TuesplaceModules = module {
     viewModel { CreatePostViewModel(get()) }
     viewModel { PostViewModel(get(), get(), get(), get(), get()) }
     viewModel { EditPostViewModel(get(), get()) }
+    viewModel { SubmissionsViewModel(get(), get(), get()) }
+    viewModel { SettingsViewModel(androidContext()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -82,6 +86,9 @@ val TuesplaceModules = module {
     factory { DeletePostUseCase(get()) }
     factory { EditCommentUseCase(get()) }
     factory { DeleteCommentUseCase(get()) }
+    factory { GetPostSubmissionsUseCase(get()) }
+    factory { PutMyProfileAssetsUseCase(get()) }
+    factory { CreateSubmissionMarkUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }
@@ -91,6 +98,7 @@ val TuesplaceModules = module {
     factory<PostService> { PostServiceImpl(get()) }
     factory<ActivitiesService> { ActivitiesImpl(get()) }
     factory<SpecificationService> { SpecificationImpl(get()) }
+    factory<SubmissionsService> { SubmissionsServiceImpl(get()) }
 
     factory { TuesAuthenticator() }
     factory { TuesInterceptor(androidContext()) }

@@ -19,5 +19,5 @@ data class GroupAssociations(
 
 data class AssignmentInfo(
     var isAssignment: Boolean,
-    var deadline: Int
+    var deadline: Number
 )

@@ -77,7 +77,9 @@
     <string name="deadline">Срок</string>
     <string name="deadline_placeholder">Краен срок</string>
     <string name="delete_comment_popup_alert">Сигурен/на ли сте, че искате да изтриете този коментар?</string>
+    <string name="enter_mark">Въведи оценка</string>
     <string name="yes">Да</string>
+    <string name="save">Запази</string>
     <string name="cancel">Отказ</string>
     <string name="added">Добавен успешно</string>
     <string name="edited">Редактиран успешно</string>
@@ -85,4 +87,5 @@
     <string name="new_assignment">Публикува ново задание</string>
     <string name="no_mark">Неоценено</string>
     <string name="mark_input">/6</string>
+    <string name="handed_in">Предали:</string>
 </resources>
