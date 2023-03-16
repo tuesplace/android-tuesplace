@@ -35,7 +35,7 @@ fun ClassroomUserScreen(
     onCreatePostClick: () -> Unit,
     onEditPostClick: () -> Unit,
     onPostClick: (Pair<String, Boolean>) -> Unit,
-    group: GroupData?
+    group: GroupResponseData?
 ) {
     when (getGroupUiState) {
         GetGroupUiState.Empty -> {}
@@ -67,7 +67,7 @@ fun ClassroomUserScreen(
 
 @Composable
 fun ClassroomUserUi(
-    group: GroupData,
+    group: GroupResponseData,
     posts: List<PostResponseData>,
     onAddClick: () -> Unit,
     onEditPostClick: () -> Unit,

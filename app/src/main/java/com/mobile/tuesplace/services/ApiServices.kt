@@ -23,7 +23,7 @@ interface ApiServices {
     fun getGroups(): Call<BaseResponse<List<GroupResponseData>>>
 
     @GET(GET_GROUP)
-    fun getGroup(@Path("groupId") groupId: String): Call<BaseResponse<GroupData>>
+    fun getGroup(@Path("groupId") groupId: String): Call<BaseResponse<GroupResponseData>>
 
     @GET(GET_MY_GROUPS)
     fun getMyGroups(): Call<BaseResponse<List<GroupResponseData>>>

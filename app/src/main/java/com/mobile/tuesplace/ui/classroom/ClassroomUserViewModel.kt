@@ -21,12 +21,12 @@ class ClassroomUserViewModel(
     private val _getGroupStateFlow = MutableStateFlow<GetGroupUiState>(GetGroupUiState.Empty)
     val getGroupStateFlow: StateFlow<GetGroupUiState> = _getGroupStateFlow
 
-    var group: GroupData? = null
+    var group: GroupResponseData? = null
 
     fun getGroup(groupId: String) {
         viewModelScope.launch {
-            getGroupUseCase.invoke(object : GroupService.GroupCallback<GroupData> {
-                override fun onSuccess(groupGeneric: GroupData) {
+            getGroupUseCase.invoke(object : GroupService.GroupCallback<GroupResponseData> {
+                override fun onSuccess(groupGeneric: GroupResponseData) {
                     viewModelScope.launch {
                         group = groupGeneric
                         _getGroupStateFlow.emit(GetGroupUiState.Success(groupGeneric))

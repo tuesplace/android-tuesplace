@@ -7,8 +7,6 @@ import retrofit2.Response
 
 class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
 
-//    private val retrofit = RetrofitHelper.getInstance().create(ApiServices::class.java)
-
     override suspend fun createGroup(
         createGroupData: GroupData,
         createGroupCallback: GroupService.GroupCallback<Unit>,
@@ -56,12 +54,12 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
     }
 
     override suspend fun getGroup(
-        groupCallback: GroupService.GroupCallback<GroupData>,
+        groupCallback: GroupService.GroupCallback<GroupResponseData>,
         groupId: String,
     ) {
         retrofit.getGroup(groupId).enqueue(
-            object : Callback<BaseResponse<GroupData>> {
-                override fun onResponse(call: Call<BaseResponse<GroupData>>, response: Response<BaseResponse<GroupData>>) {
+            object : Callback<BaseResponse<GroupResponseData>> {
+                override fun onResponse(call: Call<BaseResponse<GroupResponseData>>, response: Response<BaseResponse<GroupResponseData>>) {
                     if (response.isSuccessful) {
                         response.body()?.response?.let { groupCallback.onSuccess(it) }
                     } else {
@@ -69,7 +67,7 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<GroupData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<GroupResponseData>>, t: Throwable) {
                     t.localizedMessage?.let { groupCallback.onError(it) }
                 }
 
@@ -113,7 +111,7 @@ class GroupServiceImpl(private val retrofit: ApiServices) : GroupService {
                     response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { groupCallback.onSuccess(it) }
+                        groupCallback.onSuccess(Unit)
                     } else {
                         groupCallback.onError(response.message())
                     }

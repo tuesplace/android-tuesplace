@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.theme.BabyBlue
 
@@ -20,11 +21,12 @@ fun ChatroomScreen(getGroupUiState: GetGroupUiState) {
         is GetGroupUiState.Success -> {
             ChatroomUi(group = getGroupUiState.groupData)
         }
+        is GetGroupUiState.Loaded -> {}
     }
 }
 
 @Composable
-fun ChatroomUi(group: GroupData){
+fun ChatroomUi(group: GroupResponseData){
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
         .background(BabyBlue)

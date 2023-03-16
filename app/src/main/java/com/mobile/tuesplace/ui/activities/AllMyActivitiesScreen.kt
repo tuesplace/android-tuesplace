@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.mobile.tuesplace.R
+import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
 import com.mobile.tuesplace.ui.numToDay
@@ -66,33 +66,33 @@ fun AllMyActivitiesUi(list: List<AgendaResponseData>) {
         ) {
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(1)),
+                day = stringResource(id = numToDay(ONE)),
                 agendaList = list
-                    .filter { classes -> classes.day == 1 }
+                    .filter { classes -> classes.day == ONE }
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(2)),
+                day = stringResource(id = numToDay(TWO)),
                 agendaList = list
-                    .filter { classes -> classes.day == 2 }
+                    .filter { classes -> classes.day == TWO }
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(3)),
+                day = stringResource(id = numToDay(THREE)),
                 agendaList = list
-                    .filter { classes -> classes.day == 3 }
+                    .filter { classes -> classes.day == THREE }
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(4)),
+                day = stringResource(id = numToDay(FOUR)),
                 agendaList = list
-                    .filter { classes -> classes.day == 4 }
+                    .filter { classes -> classes.day == FOUR }
             )
 
             DailyAgendaItem(
-                day = stringResource(id = numToDay(5)),
+                day = stringResource(id = numToDay(FIVE)),
                 agendaList = list
-                    .filter { classes -> classes.day == 5 }
+                    .filter { classes -> classes.day == FIVE }
             )
         }
     }

@@ -21,7 +21,26 @@ fun WelcomeScreen(
     onEnterVideoroomClick: () -> Unit,
     onAgendaClick: () -> Unit,
     onLinkClick: () -> Unit,
-    blocked: Boolean
+    blocked: Boolean,
+) {
+    WelcomeUi(
+        onMessageClick = onMessageClick,
+        onEnterClassClick = onEnterClassClick,
+        onEnterVideoroomClick = onEnterVideoroomClick,
+        onAgendaClick = onAgendaClick,
+        onLinkClick = onLinkClick,
+        blocked = blocked
+    )
+}
+
+@Composable
+fun WelcomeUi(
+    onMessageClick: () -> Unit,
+    onEnterClassClick: () -> Unit,
+    onEnterVideoroomClick: () -> Unit,
+    onAgendaClick: () -> Unit,
+    onLinkClick: () -> Unit,
+    blocked: Boolean,
 ) {
     if (blocked) {
         BlockedProfile()

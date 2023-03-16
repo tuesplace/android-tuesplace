@@ -3,6 +3,7 @@ package com.mobile.tuesplace.ui.groups
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.services.GroupService
 import com.mobile.tuesplace.ui.states.DeleteGroupUiState
 import com.mobile.tuesplace.ui.states.GetGroupUiState
@@ -42,8 +43,8 @@ class EditGroupViewModel(private val groupUseCase: GetGroupUseCase, private val 
 
     fun getGroup(groupId: String){
         viewModelScope.launch {
-            groupUseCase.invoke(object : GroupService.GroupCallback<GroupData>{
-                override fun onSuccess(groupGeneric: GroupData) {
+            groupUseCase.invoke(object : GroupService.GroupCallback<GroupResponseData>{
+                override fun onSuccess(groupGeneric: GroupResponseData) {
                     viewModelScope.launch {
                         _getGroupStateFlow.emit(GetGroupUiState.Success(groupGeneric))
                     }

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupData
+import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFieldFunction
 import com.mobile.tuesplace.ui.states.DeleteGroupUiState
@@ -52,6 +53,7 @@ fun EditGroupScreen(
                 onDeleteClick = onDeleteClick
             )
         }
+        is GetGroupUiState.Loaded -> {}
     }
 
     when (deleteUiState) {
@@ -67,7 +69,7 @@ fun EditGroupScreen(
 
 @Composable
 fun EditGroupUi(
-    group: GroupData,
+    group: GroupResponseData,
     groupName: String,
     setGroupName: (String) -> Unit,
     groupType: String,
@@ -134,7 +136,7 @@ fun EditGroupUi(
                 colorResource(id = R.color.bright_red)),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.delete_group),
-            onClick = { onDeleteClick("63ce4efd8bd8e60aefbc5839") },
+            onClick = { onDeleteClick(group._id) },
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier.constrainAs(deleteBtn) {
                 bottom.linkTo(parent.bottom)

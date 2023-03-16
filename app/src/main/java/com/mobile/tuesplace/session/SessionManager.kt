@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.session
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.data.AppSettings
@@ -31,6 +32,8 @@ object SessionManager {
                 refreshToken = refreshToken
             )
         }
+        Log.d("testToken", "set auth entities $token")
+
         currentToken = token
         currentRefreshToken = refreshToken
     }
@@ -44,6 +47,7 @@ object SessionManager {
     }
 
     suspend fun setTokens() {
+        Log.d("testToken", "set tokens session")
         currentToken = fetchAuthToken()
         currentRefreshToken = fetchAuthRefreshToken()
     }

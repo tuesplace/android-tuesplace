@@ -140,12 +140,12 @@ class LoginViewModel(
     }
 
     fun continueAfterLogin(token: String?, refreshToken: String?) {
-        //We should check if we are already logged in
-        //Go to next screen, currently it requirs some login model that if we are logged in we wont have
         viewModelScope
             .launch {
                 if (token != null && refreshToken != null) {
+                    Log.d("testToken", "continue after login $token")
                     sessionManager.setAuthEntities(token, refreshToken)
+                    getProfile()
                 }
             }
     }

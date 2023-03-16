@@ -1,5 +1,7 @@
 package com.mobile.tuesplace
 
+import com.mobile.tuesplace.ui.navigation.LOGIN_SCREEN
+
 const val BASE_URL = "https://server-tuesplace-97zq3.ondigitalocean.app/api/"
 const val SIGN_IN = "v1/auth/sign-in"
 const val GENERATE_TOKEN_PAIR = "v1/auth/generate-token-pair"
@@ -31,6 +33,12 @@ var USER_ID = ""
 
 var ROLE = "role"
 const val BLOCKED = "blocked"
+const val GROUP_ID = "groupId"
+const val POST_ID = "postId"
+
+const val DATE_PATTERN = "EEE"
+
+const val WEB_VIEW_LINK = "https://tues.bg"
 
 const val HEADER_PREFIX_TOKEN = "token"
 

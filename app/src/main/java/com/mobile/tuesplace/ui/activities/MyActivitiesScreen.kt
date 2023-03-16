@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.mobile.tuesplace.DATE_PATTERN
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.AgendaItem
@@ -25,14 +26,20 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MyActivitiesScreen(getMyActivitiesUiState: GetMyActivitiesUiState, onFullAgendaClick: () -> Unit) {
-    when(getMyActivitiesUiState){
+fun MyActivitiesScreen(
+    getMyActivitiesUiState: GetMyActivitiesUiState,
+    onFullAgendaClick: () -> Unit,
+) {
+    when (getMyActivitiesUiState) {
         GetMyActivitiesUiState.Empty -> {}
         is GetMyActivitiesUiState.Error -> {}
         GetMyActivitiesUiState.Loading -> {}
         is GetMyActivitiesUiState.Success -> {
             MyActivitiesUi(
-                list = getMyActivitiesUiState.activities.filter { activity -> activity.day == dayToNum(LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE"))) },
+                list = getMyActivitiesUiState.activities.filter { activity ->
+                    activity.day == dayToNum(LocalDateTime.now()
+                        .format(DateTimeFormatter.ofPattern(DATE_PATTERN)))
+                },
                 onFullAgendaClick = onFullAgendaClick
             )
         }
@@ -40,7 +47,7 @@ fun MyActivitiesScreen(getMyActivitiesUiState: GetMyActivitiesUiState, onFullAge
 }
 
 @Composable
-fun MyActivitiesUi(list: List<AgendaResponseData>, onFullAgendaClick: () -> Unit){
+fun MyActivitiesUi(list: List<AgendaResponseData>, onFullAgendaClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -82,9 +89,9 @@ fun MyActivitiesUi(list: List<AgendaResponseData>, onFullAgendaClick: () -> Unit
             .constrainAs(currentAgenda) {
                 top.linkTo(currentDate.bottom)
             }) {
-                itemsIndexed(list) { _, data ->
-                    AgendaItem(agendaData = data)
-                }
+            itemsIndexed(list) { _, data ->
+                AgendaItem(agendaData = data)
+            }
         }
     }
 }
