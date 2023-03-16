@@ -14,10 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.*
-import com.mobile.tuesplace.data.CommentRequestData
-import com.mobile.tuesplace.data.EditProfileData
-import com.mobile.tuesplace.data.GroupData
-import com.mobile.tuesplace.data.MarkRequestData
+import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
@@ -34,9 +31,7 @@ import com.mobile.tuesplace.ui.chats.ChatsScreen
 import com.mobile.tuesplace.ui.chats.ChatsViewModel
 import com.mobile.tuesplace.ui.navigate
 import com.mobile.tuesplace.ui.post.*
-import com.mobile.tuesplace.ui.profile.EditProfileScreen
-import com.mobile.tuesplace.ui.profile.EditProfileViewModel
-import com.mobile.tuesplace.ui.profile.ProfileScreen
+import com.mobile.tuesplace.ui.profile.*
 import com.mobile.tuesplace.ui.settings.SettingsScreen
 import com.mobile.tuesplace.ui.settings.SettingsViewModel
 import com.mobile.tuesplace.ui.states.GetProfileUiState
@@ -265,16 +260,27 @@ fun NavHost(navController: NavHostController) {
                 deleteUiState = deleteGroupUiStateFlow,
                 onBackPressed = { navController.navigateUp() })
         }
-        composable(PROFILE_SCREEN) {
+        composable(PROFILE_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<EditProfileViewModel>()
+            val myProfileUiState by viewModel.getMyProfileStateFlow.collectAsState()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
-                viewModel.getProfile()
+                viewModel.getMyProfile()
+                backStackEntry.arguments?.getString(ID_STRING)?.let { viewModel.getProfile(it) }
             }
-            ProfileScreen(profileUiState = profileUiState,
-                onEditClick = { navController.navigate(EDIT_PROFILE_SCREEN) })
+            ProfileScreen(
+                profileUiState = profileUiState,
+                onEditClick = {
+                    navController.navigate(EDIT_PROFILE_SCREEN,
+                        bundleOf(ID_STRING to it,
+                            IS_ADMIN to (backStackEntry.arguments?.getString(ID_STRING) == EMPTY_STRING)))
+                },
+                myProfile = viewModel.myProfile,
+                isAdmin = backStackEntry.arguments?.getString(ID_STRING) == EMPTY_STRING,
+                myProfileUiState = myProfileUiState
+            )
         }
-        composable(EDIT_PROFILE_SCREEN) {
+        composable(EDIT_PROFILE_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<EditProfileViewModel>()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             val changeName by viewModel.changeName.collectAsState()
@@ -282,21 +288,43 @@ fun NavHost(navController: NavHostController) {
             val changeClass by viewModel.changeClass.collectAsState()
             val editProfileStateFlow by viewModel.editProfileStateFlow.collectAsState()
             val imageUpload by viewModel.imageUpload.collectAsState()
+            val getMyProfileUiState by viewModel.getMyProfileStateFlow.collectAsState()
+            val profileAssetsUiState by viewModel.putProfileAssetsStateFlow.collectAsState()
             LaunchedEffect(null) {
-                viewModel.getProfile()
+                if (backStackEntry.arguments?.getBoolean(IS_ADMIN) == true) {
+                    viewModel.getMyProfile()
+                } else {
+                    backStackEntry.arguments?.getString(ID_STRING)?.let { viewModel.getProfile(it) }
+                }
             }
             EditProfileScreen(
                 profileUiState = profileUiState,
                 onSaveChanges = {
-                    viewModel.editProfile(EditProfileData(
-                        fullName = changeName.ifEmpty { null },
-                        email = changeEmail.ifEmpty { null },
-                        password = null,
-                        role = null,
-                        className = changeClass.ifEmpty { null }
-                    ))
-                    imageUpload?.let {
-                        viewModel.putMyProfileAssets(it)
+                    if (backStackEntry.arguments?.getBoolean(IS_ADMIN) == true) {
+                        viewModel.editMyProfile(EditProfileData(
+                            fullName = changeName.ifEmpty { null },
+                            email = changeEmail.ifEmpty { null },
+                            password = null,
+                            role = null,
+                            className = changeClass.ifEmpty { null }
+                        ))
+                        imageUpload?.let {
+                            viewModel.putMyProfileAssets(it)
+                        }
+                    } else {
+                        backStackEntry.arguments?.getString(ID_STRING)?.let {
+                            viewModel.editProfile(EditProfileData(
+                                fullName = changeName.ifEmpty { null },
+                                email = changeEmail.ifEmpty { null },
+                                password = null,
+                                role = null,
+                                className = changeClass.ifEmpty { null }
+                            ), it)
+                        }
+                        imageUpload?.let {
+                            backStackEntry.arguments?.getString(ID_STRING)
+                                ?.let { it1 -> viewModel.putProfileAssets(it, it1) }
+                        }
                     }
                 },
                 onAddPhotoClick = {},
@@ -309,7 +337,10 @@ fun NavHost(navController: NavHostController) {
                 editProfileStateFlow = editProfileStateFlow,
                 onImageUpload = { viewModel.imageUpload(it) },
                 imageUpload = imageUpload,
-                setImageUpload = { viewModel.imageUpload(it) }
+                setImageUpload = { viewModel.imageUpload(it) },
+                onEditProfileSuccess = { navController.navigateUp() },
+                getProfileUiState = getMyProfileUiState,
+                profileAssetsUiState = profileAssetsUiState
             )
         }
         composable(SETTINGS_SCREEN) {
@@ -317,7 +348,10 @@ fun NavHost(navController: NavHostController) {
             val getProfileUiState by viewModel.getProfileStateFlow.collectAsState()
             viewModel.getProfile()
             SettingsScreen(
-                onEditClick = { navController.navigate(PROFILE_SCREEN) },
+                onEditClick = {
+                    navController.navigate(PROFILE_SCREEN,
+                        bundleOf(ID_STRING to EMPTY_STRING))
+                },
                 onSignOutClick = {
                     viewModel.deleteTokensData()
                     navController.navigate(LOGIN_SCREEN)
@@ -411,7 +445,7 @@ fun NavHost(navController: NavHostController) {
                 onStudentClick = { id ->
                     navController.navigate(PROFILE_SCREEN, bundleOf(ID_STRING to id))
                 },
-                onCreateNewClick = { navController.navigate(PROFILE_SCREEN) }
+                onCreateNewClick = { navController.navigate(CREATE_PROFILE) }
             )
         }
         composable(ALL_TEACHERS_SCREEN) {
@@ -420,8 +454,8 @@ fun NavHost(navController: NavHostController) {
             viewModel.getAllProfiles()
             AllTeachersScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
-                onTeacherClick = { },
-                onCreateNewClick = { }
+                onTeacherClick = { navController.navigate(PROFILE_SCREEN, bundleOf(ID_STRING to it)) },
+                onCreateNewClick = { navController.navigate(CREATE_PROFILE) }
             )
         }
         composable(MY_ACTIVITIES_SCREEN) {
@@ -731,6 +765,40 @@ fun NavHost(navController: NavHostController) {
                 submissionIndex = submissionIndex,
                 setSubmissionIndex = { viewModel.setSubmissionIndex(it) },
                 createSubmissionMarkUiState = createSubmissionMarkUiState
+            )
+        }
+        composable(CREATE_PROFILE) {
+            val viewModel = getViewModel<CreateProfileViewModel>()
+            val name by viewModel.name.collectAsState()
+            val email by viewModel.email.collectAsState()
+            val role by viewModel.role.collectAsState()
+            val grade by viewModel.classString.collectAsState()
+            val createProfileUiState by viewModel.createProfileStateFlow.collectAsState()
+            CreateProfileScreen(
+                name = name,
+                setName = { viewModel.name(it) },
+                email = email,
+                setEmail = { viewModel.email(it) },
+                role = role,
+                setRole = { viewModel.role(it) },
+                grade = grade,
+                setGrade = { viewModel.changeClass(it) },
+                onCreateClick = {
+                    viewModel.createProfile(
+                        ProfileData(
+                            fullName = name,
+                            email = email,
+                            role = role,
+                            className = grade.ifEmpty { null }
+                        )
+                    )
+                },
+                onImageUpload = { viewModel.imageUpload(it) },
+                onAddPhotoClick = { },
+                createProfileUiState = createProfileUiState,
+                onCreateSuccess = {
+                    navController.navigateUp()
+                }
             )
         }
     }

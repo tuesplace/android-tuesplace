@@ -25,7 +25,7 @@ import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
 fun SettingsScreen(
-    onEditClick: () -> Unit,
+    onEditClick: (String) -> Unit,
     onSignOutClick: () -> Unit,
     onForgottenPasswordClick: () -> Unit,
     getProfileUiState: GetProfileUiState,
@@ -47,7 +47,7 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsUi(
-    onEditClick: () -> Unit,
+    onEditClick: (String) -> Unit,
     onSignOutClick: () -> Unit,
     onForgottenPasswordClick: () -> Unit,
     profile: ProfileResponseData,
@@ -85,7 +85,7 @@ fun SettingsUi(
 
         SettingsMenuItem(
             text = stringResource(id = R.string.my_profile),
-            onClick = { onEditClick() },
+            onClick = { onEditClick(profile._id) },
             modifier = Modifier
                 .constrainAs(editProfile) {
                     top.linkTo(profilePicture.bottom)

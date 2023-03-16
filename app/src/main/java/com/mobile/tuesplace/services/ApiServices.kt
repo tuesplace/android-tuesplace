@@ -40,8 +40,18 @@ interface ApiServices {
     @GET(ALL_PROFILES)
     fun getAllProfiles(): Call<BaseResponse<List<ProfileResponseData>>>
 
+    @POST(ALL_PROFILES)
+    fun createProfile(@Body profileData: ProfileData): Call<BaseResponse<Unit>>
+
     @GET(PROFILE)
     fun getProfiles(@Path("profileId") profileId: String): Call<BaseResponse<ProfileResponseData>>
+
+    @PUT(PROFILE)
+    fun putProfile(@Path("profileId") profileId: String, @Body editProfileData: EditProfileData): Call<BaseResponse<Unit>>
+
+    @Multipart
+    @PUT(PROFILE_ASSETS)
+    fun putProfileAssets(@Path("profileId") profileId: String, @Part profilePic: MultipartBody.Part): Call<BaseResponse<Unit>>
 
     @PUT(PROFILE_ME)
     fun editProfile(@Body editProfileData: EditProfileData): Call<BaseResponse<Unit>>

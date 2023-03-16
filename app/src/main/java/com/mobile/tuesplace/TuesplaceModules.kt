@@ -15,6 +15,7 @@ import com.mobile.tuesplace.ui.login.LoginViewModel
 import com.mobile.tuesplace.ui.post.CreatePostViewModel
 import com.mobile.tuesplace.ui.post.EditPostViewModel
 import com.mobile.tuesplace.ui.post.PostViewModel
+import com.mobile.tuesplace.ui.profile.CreateProfileViewModel
 import com.mobile.tuesplace.ui.profile.EditProfileViewModel
 import com.mobile.tuesplace.ui.profile.ProfileViewModel
 import com.mobile.tuesplace.ui.settings.SettingsViewModel
@@ -41,7 +42,7 @@ val TuesplaceModules = module {
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { EditProfileViewModel(get(), get(), get()) }
+    viewModel { EditProfileViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { VideoroomViewModel(get()) }
     viewModel { ClassroomUserViewModel(get(), get()) }
     viewModel { ClassesViewModel(get()) }
@@ -59,6 +60,7 @@ val TuesplaceModules = module {
     viewModel { EditPostViewModel(get(), get()) }
     viewModel { SubmissionsViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(androidContext(), get()) }
+    viewModel { CreateProfileViewModel(get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
@@ -86,9 +88,12 @@ val TuesplaceModules = module {
     factory { EditCommentUseCase(get()) }
     factory { DeleteCommentUseCase(get()) }
     factory { GetPostSubmissionsUseCase(get()) }
-    factory { PutMyProfileAssetsUseCase(get()) }
+    factory { PutProfileAssetsUseCase(get()) }
     factory { CreateSubmissionMarkUseCase(get()) }
     factory { CreateSubmissionUseCase(get()) }
+    factory { CreateProfileUseCase(get()) }
+    factory { EditMyProfileUseCase(get()) }
+    factory { PutMyProfileAssetsUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }

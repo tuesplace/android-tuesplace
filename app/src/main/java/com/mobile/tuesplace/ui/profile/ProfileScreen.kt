@@ -28,22 +28,49 @@ import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.InfoItem
 import com.mobile.tuesplace.ui.states.EditProfileUiState
+import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
-fun ProfileScreen(profileUiState: GetProfileUiState, onEditClick: () -> Unit) {
+fun ProfileScreen(
+    profileUiState: GetProfileByIdUiState,
+    myProfileUiState: GetProfileUiState,
+    onEditClick: (String) -> Unit,
+    myProfile: ProfileResponseData?,
+    isAdmin: Boolean,
+) {
     when (profileUiState) {
+        GetProfileByIdUiState.Empty -> {}
+        is GetProfileByIdUiState.Error -> {}
+        GetProfileByIdUiState.Loading -> {}
+        is GetProfileByIdUiState.Success -> {
+            myProfile?.let {
+                ProfileUi(profileData = profileUiState.profile,
+                    onEditClick,
+                    myProfile = it)
+            }
+        }
+    }
+
+    when (myProfileUiState) {
         GetProfileUiState.Empty -> {}
         is GetProfileUiState.Error -> {}
         GetProfileUiState.Loading -> {}
         is GetProfileUiState.Success -> {
-            ProfileUi(profileData = profileUiState.profile, onEditClick)
+            if (isAdmin) {
+                ProfileUi(profileData = myProfileUiState.profile, onEditClick, myProfile = myProfileUiState.profile)
+            }
         }
     }
+
 }
 
 @Composable
-fun ProfileUi(profileData: ProfileResponseData, onEditClick: () -> Unit) {
+fun ProfileUi(
+    profileData: ProfileResponseData,
+    onEditClick: (String) -> Unit,
+    myProfile: ProfileResponseData,
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -120,12 +147,13 @@ fun ProfileUi(profileData: ProfileResponseData, onEditClick: () -> Unit) {
         }
 
 
-        if(profileData.role == stringResource(id = R.string.admin_role)){
+        if (myProfile.role == stringResource(id = R.string.admin_role)) {
             GradientBorderButtonRound(
-                colors = listOf(colorResource(id = R.color.baby_blue), colorResource(id = R.color.lighter_dark_blue)),
+                colors = listOf(colorResource(id = R.color.baby_blue),
+                    colorResource(id = R.color.lighter_dark_blue)),
                 paddingValues = PaddingValues(16.dp),
                 buttonText = stringResource(id = R.string.edit),
-                onClick = { onEditClick() },
+                onClick = { onEditClick(profileData._id) },
                 buttonPadding = PaddingValues(16.dp),
                 modifier = Modifier
                     .constrainAs(editButton) {

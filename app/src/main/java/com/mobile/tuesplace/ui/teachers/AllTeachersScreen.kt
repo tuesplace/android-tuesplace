@@ -44,7 +44,7 @@ fun AllTeachersScreen(
             EmptyScreen()
         }
         is GetAllProfilesUiState.Error -> {
-            //val error = getAllProfilesUiState.exception
+
         }
         GetAllProfilesUiState.Loading -> {}
         is GetAllProfilesUiState.Success -> {
