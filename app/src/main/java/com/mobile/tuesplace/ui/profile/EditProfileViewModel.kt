@@ -6,49 +6,96 @@ import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.ProfileService
 import com.mobile.tuesplace.ui.states.EditProfileUiState
+import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 import com.mobile.tuesplace.ui.states.PutMyProfileAssetsUiState
-import com.mobile.tuesplace.usecase.EditProfileUseCase
-import com.mobile.tuesplace.usecase.GetProfileUseCase
-import com.mobile.tuesplace.usecase.PutMyProfileAssetsUseCase
+import com.mobile.tuesplace.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
 class EditProfileViewModel(
-    private val profileUseCase: GetProfileUseCase,
+    private val profileUseCase: GetProfileByIdUseCase,
+    private val myProfileUseCase: GetProfileUseCase,
     private val editProfileUseCase: EditProfileUseCase,
-    private val putMyProfileAssetsUseCase: PutMyProfileAssetsUseCase
+    private val putProfileAssetsUseCase: PutProfileAssetsUseCase,
+    private val putMyProfileAssetsUseCase: PutMyProfileAssetsUseCase,
+    private val editMyProfileUseCase: EditMyProfileUseCase
     ): ViewModel() {
-    private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
-    val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
+    private val _getProfileStateFlow = MutableStateFlow<GetProfileByIdUiState>(GetProfileByIdUiState.Empty)
+    val getProfileStateFlow: StateFlow<GetProfileByIdUiState> = _getProfileStateFlow
 
-    fun getProfile() {
+    fun getProfile(profileId: String) {
         viewModelScope.launch {
             profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
                 override fun onSuccess(profileGeneric: ProfileResponseData) {
                     viewModelScope.launch {
-                        _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
+                        _getProfileStateFlow.emit(GetProfileByIdUiState.Success(profileGeneric))
                     }
                 }
 
                 override fun onError(error: String) {
                     viewModelScope.launch {
-                        _getProfileStateFlow.emit(GetProfileUiState.Error(error))
+                        _getProfileStateFlow.emit(GetProfileByIdUiState.Error(error))
                     }
                 }
 
-            })
+            }, profileId = profileId)
         }
     }
 
+    private val _getMyProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
+    val getMyProfileStateFlow: StateFlow<GetProfileUiState> = _getMyProfileStateFlow
+
+    var myProfile: ProfileResponseData? = null
+
+    fun getMyProfile(){
+        viewModelScope.launch {
+            myProfileUseCase.invoke(
+                object : ProfileService.GetProfileCallback<ProfileResponseData> {
+                    override fun onSuccess(profileGeneric: ProfileResponseData) {
+                        viewModelScope.launch {
+                            myProfile = profileGeneric
+                            _getMyProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _getMyProfileStateFlow.emit(GetProfileUiState.Error(error))
+                        }
+                    }
+
+                }
+            )
+        }
+    }
     private val _editProfileStateFlow = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Empty)
     val editProfileStateFlow: StateFlow<EditProfileUiState> = _editProfileStateFlow
 
-    fun editProfile(editProfileData: EditProfileData){
+    fun editProfile(editProfileData: EditProfileData, profileId: String){
         viewModelScope.launch {
             editProfileUseCase.invoke(object : ProfileService.GetProfileCallback<Unit> {
+                override fun onSuccess(profileGeneric: Unit) {
+                    viewModelScope.launch {
+                        _editProfileStateFlow.emit(EditProfileUiState.Success)
+                    }
+                }
+
+                override fun onError(error: String) {
+                    viewModelScope.launch {
+                        _editProfileStateFlow.emit(EditProfileUiState.Error(error))
+                    }
+                }
+
+            }, editProfileData = editProfileData, profileId = profileId)
+        }
+    }
+
+    fun editMyProfile(editProfileData: EditProfileData){
+        viewModelScope.launch {
+            editMyProfileUseCase.invoke(object : ProfileService.GetProfileCallback<Unit> {
                 override fun onSuccess(profileGeneric: Unit) {
                     viewModelScope.launch {
                         _editProfileStateFlow.emit(EditProfileUiState.Success)
@@ -96,22 +143,43 @@ class EditProfileViewModel(
         _imageUpload.value = image
     }
 
-    private val _putMyProfileAssetsStateFlow = MutableStateFlow<PutMyProfileAssetsUiState>(PutMyProfileAssetsUiState.Empty)
-    val putMyProfileAssetsStateFlow: StateFlow<PutMyProfileAssetsUiState> = _putMyProfileAssetsStateFlow
+    private val _putProfileAssetsStateFlow = MutableStateFlow<PutMyProfileAssetsUiState>(PutMyProfileAssetsUiState.Empty)
+    val putProfileAssetsStateFlow: StateFlow<PutMyProfileAssetsUiState> = _putProfileAssetsStateFlow
 
-    fun putMyProfileAssets(profilePic: MultipartBody.Part) {
+    fun putProfileAssets(profilePic: MultipartBody.Part, profileId: String) {
         viewModelScope.launch {
-            putMyProfileAssetsUseCase.invoke(
+            putProfileAssetsUseCase.invoke(
                 object : ProfileService.GetProfileCallback<Unit> {
                     override fun onSuccess(profileGeneric: Unit) {
                         viewModelScope.launch {
-                            _putMyProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Success)
+                            _putProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Success)
                         }
                     }
 
                     override fun onError(error: String) {
                         viewModelScope.launch {
-                            _putMyProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Error(error))
+                            _putProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Error(error))
+                        }
+                    }
+
+                }, profilePic, profileId = profileId
+            )
+        }
+    }
+
+    fun putMyProfileAssets(profilePic: MultipartBody.Part){
+        viewModelScope.launch {
+            putMyProfileAssetsUseCase.invoke(
+                object : ProfileService.GetProfileCallback<Unit> {
+                    override fun onSuccess(profileGeneric: Unit) {
+                        viewModelScope.launch {
+                            _putProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Success)
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _putProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Error(error))
                         }
                     }
 

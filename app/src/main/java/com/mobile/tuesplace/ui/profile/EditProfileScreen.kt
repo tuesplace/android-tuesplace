@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.ui.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,12 +28,14 @@ import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.states.EditProfileUiState
+import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
 import com.mobile.tuesplace.ui.states.GetProfileUiState
+import com.mobile.tuesplace.ui.states.PutMyProfileAssetsUiState
 import okhttp3.MultipartBody
 
 @Composable
 fun EditProfileScreen(
-    profileUiState: GetProfileUiState,
+    profileUiState: GetProfileByIdUiState,
     editProfileStateFlow: EditProfileUiState,
     onSaveChanges: () -> Unit,
     onAddPhotoClick: () -> Unit,
@@ -45,16 +48,38 @@ fun EditProfileScreen(
     onImageUpload: (MultipartBody.Part) -> Unit,
     imageUpload: MultipartBody.Part?,
     setImageUpload: (MultipartBody.Part) -> Unit,
+    getProfileUiState: GetProfileUiState,
+    onEditProfileSuccess: () -> Unit,
+    profileAssetsUiState: PutMyProfileAssetsUiState
 ) {
     when (profileUiState) {
-        GetProfileUiState.Empty -> {}
-        is GetProfileUiState.Error -> {
-            // val error = profileUiState.exception
+        GetProfileByIdUiState.Empty -> {}
+        is GetProfileByIdUiState.Error -> {}
+        GetProfileByIdUiState.Loading -> {}
+        is GetProfileByIdUiState.Success -> {
+            EditProfileUi(
+                profileData = profileUiState.profile,
+                onSaveChanges = onSaveChanges,
+                onAddPhotoClick = onAddPhotoClick,
+                changeName = changeName,
+                setChangedName = setChangedName,
+                changeClass = changeClass,
+                setChangedClass = setChangedClass,
+                changeEmail = changeEmail,
+                setChangedEmail = setChangedEmail,
+                onImageUpload = onImageUpload,
+                imageUpload = imageUpload,
+                setImageUpload = setImageUpload
+            )
         }
+    }
+    when (getProfileUiState) {
+        GetProfileUiState.Empty -> {}
+        is GetProfileUiState.Error -> {}
         GetProfileUiState.Loading -> {}
         is GetProfileUiState.Success -> {
             EditProfileUi(
-                profileData = profileUiState.profile,
+                profileData = getProfileUiState.profile,
                 onSaveChanges = onSaveChanges,
                 onAddPhotoClick = onAddPhotoClick,
                 changeName = changeName,
@@ -72,12 +97,31 @@ fun EditProfileScreen(
     when (editProfileStateFlow) {
         EditProfileUiState.Empty -> {}
         is EditProfileUiState.Error -> {
-            val error = editProfileStateFlow.exception
+
         }
         EditProfileUiState.Success -> {
-            val success = "da"
+            onEditProfileSuccess()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.profile_edited),
+                Toast.LENGTH_LONG
+            ).show()
         }
         EditProfileUiState.Loading -> {}
+    }
+
+    when(profileAssetsUiState) {
+        PutMyProfileAssetsUiState.Empty -> {}
+        is PutMyProfileAssetsUiState.Error -> {}
+        PutMyProfileAssetsUiState.Loading -> {}
+        PutMyProfileAssetsUiState.Success -> {
+            onEditProfileSuccess()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.profile_edited),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 }
 
@@ -113,97 +157,97 @@ fun EditProfileUi(
                         crossfade(true)
                     }).build())
             },
-                contentDescription = stringResource(id = R.string.email),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(top = 50.dp)
-                    .size(130.dp)
-                    .border(2.dp, colorResource(id = R.color.baby_blue), CircleShape)
-                    .clip(CircleShape)
-                    .constrainAs(photo) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-
-                ResultLauncher(
-                    type = IMAGE_FILE_TYPE,
-                    onUploadClick = onImageUpload,
-                    modifier = Modifier
-                        .padding(top = 150.dp)
-                        .clickable { onAddPhotoClick() }
-                        .size(35.dp)
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.darker_sea_blue))
-                        .constrainAs(addPhoto) {
-                            top.linkTo(photo.top)
-                            end.linkTo(photo.end)
-                        },
-                    multipartName = MULTIPART_NAME_IMAGE
-                )
-
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .constrainAs(fields) {
-                        top.linkTo(addPhoto.bottom)
-                        bottom.linkTo(saveChanges.top)
-                    }) {
-                    TextFieldWithTitle(
-                        title = stringResource(id = R.string.name),
-                        value = changeName,
-                        onValueChange = setChangedName,
-                        placeholder = profileData.fullName,
-                        enabled = true,
-                        isError = null,
-                        modifier = Modifier.clickable { },
-                        setClassVisibility = null
-                    )
-
-                    TextFieldWithTitle(
-                        title = stringResource(id = R.string.email),
-                        value = changeEmail,
-                        onValueChange = setChangedEmail,
-                        placeholder = profileData.email,
-                        enabled = true,
-                        isError = null,
-                        modifier = Modifier.clickable { },
-                        setClassVisibility = null
-                    )
-
-                    if (profileData.role == stringResource(id = R.string.student_role)) {
-                        profileData.className?.let {
-                            TextFieldWithTitle(
-                                title = stringResource(id = R.string.class_string),
-                                value = changeClass,
-                                onValueChange = setChangedClass,
-                                placeholder = it,
-                                enabled = true,
-                                isError = null,
-                                modifier = Modifier.clickable { },
-                                setClassVisibility = null
-                            )
-                        }
-                    }
+            contentDescription = stringResource(id = R.string.email),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .padding(top = 50.dp)
+                .size(130.dp)
+                .border(2.dp, colorResource(id = R.color.baby_blue), CircleShape)
+                .clip(CircleShape)
+                .constrainAs(photo) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
                 }
+        )
 
-                GradientBorderButtonRound(
-                    colors = listOf(colorResource(id = R.color.baby_blue),
-                        colorResource(id = R.color.lighter_dark_blue)),
-                    paddingValues = PaddingValues(16.dp),
-                    buttonText = stringResource(id = R.string.save_changes),
-                    onClick = { onSaveChanges() },
-                    buttonPadding = PaddingValues(16.dp),
-                    modifier = Modifier
-                        .constrainAs(saveChanges) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                )
+        ResultLauncher(
+            type = IMAGE_FILE_TYPE,
+            onUploadClick = onImageUpload,
+            modifier = Modifier
+                .padding(top = 150.dp)
+                .clickable { onAddPhotoClick() }
+                .size(35.dp)
+                .clip(CircleShape)
+                .background(colorResource(id = R.color.darker_sea_blue))
+                .constrainAs(addPhoto) {
+                    top.linkTo(photo.top)
+                    end.linkTo(photo.end)
+                },
+            multipartName = MULTIPART_NAME_IMAGE
+        )
 
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .constrainAs(fields) {
+                top.linkTo(addPhoto.bottom)
+                bottom.linkTo(saveChanges.top)
+            }) {
+            TextFieldWithTitle(
+                title = stringResource(id = R.string.name),
+                value = changeName,
+                onValueChange = setChangedName,
+                placeholder = profileData.fullName,
+                enabled = true,
+                isError = null,
+                modifier = Modifier.clickable { },
+                setClassVisibility = null
+            )
+
+            TextFieldWithTitle(
+                title = stringResource(id = R.string.email),
+                value = changeEmail,
+                onValueChange = setChangedEmail,
+                placeholder = profileData.email,
+                enabled = true,
+                isError = null,
+                modifier = Modifier.clickable { },
+                setClassVisibility = null
+            )
+
+            if (profileData.role == stringResource(id = R.string.student_role)) {
+                profileData.className?.let {
+                    TextFieldWithTitle(
+                        title = stringResource(id = R.string.class_string),
+                        value = changeClass,
+                        onValueChange = setChangedClass,
+                        placeholder = it,
+                        enabled = true,
+                        isError = null,
+                        modifier = Modifier.clickable { },
+                        setClassVisibility = null
+                    )
+                }
             }
+        }
+
+        GradientBorderButtonRound(
+            colors = listOf(colorResource(id = R.color.baby_blue),
+                colorResource(id = R.color.lighter_dark_blue)),
+            paddingValues = PaddingValues(16.dp),
+            buttonText = stringResource(id = R.string.save_changes),
+            onClick = { onSaveChanges() },
+            buttonPadding = PaddingValues(16.dp),
+            modifier = Modifier
+                .constrainAs(saveChanges) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+
+    }
 }
 
 @Composable

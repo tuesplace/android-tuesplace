@@ -14,6 +14,8 @@ interface ProfileService {
     suspend fun deleteProfile(getProfileCallback: GetProfileCallback<Unit>, profileId: String)
     suspend fun putMyProfileAssets(getProfileCallback: GetProfileCallback<Unit>, profilePic: MultipartBody.Part)
     suspend fun createProfile(getProfileCallback: GetProfileCallback<Unit>, profileData: ProfileData)
+    suspend fun putProfile(getProfileCallback: GetProfileCallback<Unit>, editProfileData: EditProfileData, profileId: String)
+    suspend fun putProfileAssets(getProfileCallback: GetProfileCallback<Unit>, profilePic: MultipartBody.Part, profileId: String)
 
     interface GetProfileCallback<ProfileGeneric>{
         fun onSuccess(profileGeneric: ProfileGeneric)

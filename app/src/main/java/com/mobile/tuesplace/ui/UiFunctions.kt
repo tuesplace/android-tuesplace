@@ -753,7 +753,20 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
             .size(150.dp)
             .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
     ) {
-        //Image(painter = , contentDescription = )
+        Image(
+            painter = student.assets?.profilePic.let {
+                rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                    .data(data = it?.get(0)?.data?.src)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                    }).build())
+            },
+            contentDescription = stringResource(id = R.string.empty),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp))
+        )
         val (classString, nameString) = createRefs()
         student.className?.let {
             Text(
@@ -1303,7 +1316,7 @@ fun ClassSearchItem(
     className: String,
     onClassClick: (String) -> Unit,
     setClassVisibility: ((Boolean) -> Unit)?,
-    context: Context
+    context: Context,
 ) {
     val classAdded = stringResource(id = R.string.class_added)
     Row(
