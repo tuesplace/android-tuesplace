@@ -42,7 +42,7 @@ val TuesplaceModules = module {
     viewModel { EditGroupViewModel(get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { EditProfileViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { EditProfileViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { VideoroomViewModel(get()) }
     viewModel { ClassroomUserViewModel(get(), get()) }
     viewModel { ClassesViewModel(get()) }
@@ -94,6 +94,7 @@ val TuesplaceModules = module {
     factory { CreateProfileUseCase(get()) }
     factory { EditMyProfileUseCase(get()) }
     factory { PutMyProfileAssetsUseCase(get()) }
+    factory { DeleteProfileUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }

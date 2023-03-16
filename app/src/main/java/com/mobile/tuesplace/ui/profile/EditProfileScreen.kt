@@ -7,6 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,8 +17,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -27,10 +34,7 @@ import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.TextFieldWithTitle
-import com.mobile.tuesplace.ui.states.EditProfileUiState
-import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
-import com.mobile.tuesplace.ui.states.GetProfileUiState
-import com.mobile.tuesplace.ui.states.PutMyProfileAssetsUiState
+import com.mobile.tuesplace.ui.states.*
 import okhttp3.MultipartBody
 
 @Composable
@@ -46,11 +50,14 @@ fun EditProfileScreen(
     changeEmail: String,
     setChangedEmail: (String) -> Unit,
     onImageUpload: (MultipartBody.Part) -> Unit,
-    imageUpload: MultipartBody.Part?,
-    setImageUpload: (MultipartBody.Part) -> Unit,
     getProfileUiState: GetProfileUiState,
     onEditProfileSuccess: () -> Unit,
-    profileAssetsUiState: PutMyProfileAssetsUiState
+    profileAssetsUiState: PutMyProfileAssetsUiState,
+    onDeleteClick: (String) -> Unit,
+    dialogVisibility: Boolean,
+    setDialogVisibility: (Boolean) -> Unit,
+    deleteProfileUiState: DeleteProfileUiState,
+    onDeleteSuccess: () -> Unit
 ) {
     when (profileUiState) {
         GetProfileByIdUiState.Empty -> {}
@@ -68,8 +75,9 @@ fun EditProfileScreen(
                 changeEmail = changeEmail,
                 setChangedEmail = setChangedEmail,
                 onImageUpload = onImageUpload,
-                imageUpload = imageUpload,
-                setImageUpload = setImageUpload
+                onDeleteClick = onDeleteClick,
+                dialogVisibility = dialogVisibility,
+                setDialogVisibility = setDialogVisibility
             )
         }
     }
@@ -89,8 +97,9 @@ fun EditProfileScreen(
                 changeEmail = changeEmail,
                 setChangedEmail = setChangedEmail,
                 onImageUpload = onImageUpload,
-                imageUpload = imageUpload,
-                setImageUpload = setImageUpload
+                onDeleteClick = onDeleteClick,
+                dialogVisibility = dialogVisibility,
+                setDialogVisibility = setDialogVisibility
             )
         }
     }
@@ -123,6 +132,21 @@ fun EditProfileScreen(
             ).show()
         }
     }
+
+    when (deleteProfileUiState) {
+        DeleteProfileUiState.Empty -> {}
+        is DeleteProfileUiState.Error -> {}
+        DeleteProfileUiState.Loading -> {}
+        DeleteProfileUiState.Success -> {
+            onEditProfileSuccess()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.deleted),
+                Toast.LENGTH_LONG
+            ).show()
+            onDeleteSuccess()
+        }
+    }
 }
 
 @Composable
@@ -137,15 +161,16 @@ fun EditProfileUi(
     changeEmail: String,
     setChangedEmail: (String) -> Unit,
     onImageUpload: (MultipartBody.Part) -> Unit,
-    imageUpload: MultipartBody.Part?,
-    setImageUpload: (MultipartBody.Part) -> Unit,
+    onDeleteClick: (String) -> Unit,
+    dialogVisibility: Boolean,
+    setDialogVisibility: (Boolean) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-        val (photo, addPhoto, fields, saveChanges) = createRefs()
+        val (photo, addPhoto, fields, saveChanges, delete) = createRefs()
 
         Image(
             painter = if (profileData.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
@@ -241,12 +266,90 @@ fun EditProfileUi(
             buttonPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .constrainAs(saveChanges) {
-                    bottom.linkTo(parent.bottom)
+                    bottom.linkTo(delete.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
         )
 
+        Text(
+            text = stringResource(id = R.string.delete_account),
+            color = colorResource(id = R.color.baby_blue),
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .constrainAs(delete) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .clickable {
+                    setDialogVisibility(true)
+                }
+        )
+
+        if (dialogVisibility) {
+            Dialog(
+                onDismissRequest = { setDialogVisibility(false) },
+                properties = DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true
+                )
+            ) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .size(300.dp)
+                        .background(colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+                ) {
+                    val (alert, answers) = createRefs()
+
+                    Text(
+                        text = stringResource(id = R.string.delete_comment_popup_alert),
+                        color = colorResource(id = R.color.darker_sea_blue),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(alert) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(answers.top)
+                            }
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                            .constrainAs(answers) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.yes),
+                            modifier = Modifier
+                                .clickable {
+                                    onDeleteClick(profileData._id)
+                                    setDialogVisibility(false)
+                                },
+                            color = colorResource(id = R.color.darker_sea_blue),
+                            fontSize = 22.sp
+                        )
+                        Text(
+                            text = stringResource(id = R.string.cancel),
+                            modifier = Modifier
+                                .padding(start = 6.dp, bottom = 6.dp)
+                                .clickable { setDialogVisibility(false) },
+                            color = colorResource(id = R.color.darker_sea_blue),
+                            textAlign = TextAlign.Center,
+                            fontSize = 22.sp
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

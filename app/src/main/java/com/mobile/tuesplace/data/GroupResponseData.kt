@@ -5,5 +5,5 @@ data class GroupResponseData(
     var name: String,
     var type: String,
     var classes: ArrayList<String>? = null,
-    var teachers: ArrayList<ProfileData>?
+    var teachers: ArrayList<ProfileResponseData>?
 )

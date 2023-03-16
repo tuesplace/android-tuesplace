@@ -23,6 +23,7 @@
     <string name="save_changes">Запази промените</string>
     <string name="delete_group">Изтрий групата</string>
     <string name="delete">Изтрий</string>
+    <string name="delete_account">Изтрий този акаунт</string>
     <string name="edit">Редактирай</string>
     <string name="profile_edited">Профилът е редактиран успешно</string>
     <string name="name">Име</string>

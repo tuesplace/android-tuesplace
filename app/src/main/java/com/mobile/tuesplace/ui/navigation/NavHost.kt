@@ -290,6 +290,8 @@ fun NavHost(navController: NavHostController) {
             val imageUpload by viewModel.imageUpload.collectAsState()
             val getMyProfileUiState by viewModel.getMyProfileStateFlow.collectAsState()
             val profileAssetsUiState by viewModel.putProfileAssetsStateFlow.collectAsState()
+            val dialogVisibility by viewModel.dialogVisibility.collectAsState()
+            val deleteProfileUiState by viewModel.deleteProfileUiState.collectAsState()
             LaunchedEffect(null) {
                 if (backStackEntry.arguments?.getBoolean(IS_ADMIN) == true) {
                     viewModel.getMyProfile()
@@ -336,11 +338,20 @@ fun NavHost(navController: NavHostController) {
                 setChangedClass = { viewModel.changeClass(it) },
                 editProfileStateFlow = editProfileStateFlow,
                 onImageUpload = { viewModel.imageUpload(it) },
-                imageUpload = imageUpload,
-                setImageUpload = { viewModel.imageUpload(it) },
-                onEditProfileSuccess = { navController.navigateUp() },
+                onEditProfileSuccess = {
+                    navController.navigateUp()
+                    viewModel.resetEditStates()
+                },
                 getProfileUiState = getMyProfileUiState,
-                profileAssetsUiState = profileAssetsUiState
+                profileAssetsUiState = profileAssetsUiState,
+                onDeleteClick = { viewModel.deleteProfile(it) },
+                dialogVisibility = dialogVisibility,
+                setDialogVisibility = { viewModel.dialogVisibility(it) },
+                deleteProfileUiState = deleteProfileUiState,
+                onDeleteSuccess = {
+                    viewModel.resetDeleteState()
+                    navController.navigateUp()
+                }
             )
         }
         composable(SETTINGS_SCREEN) {
@@ -454,7 +465,10 @@ fun NavHost(navController: NavHostController) {
             viewModel.getAllProfiles()
             AllTeachersScreen(
                 getAllProfilesUiState = getAllProfilesStateFlow,
-                onTeacherClick = { navController.navigate(PROFILE_SCREEN, bundleOf(ID_STRING to it)) },
+                onTeacherClick = {
+                    navController.navigate(PROFILE_SCREEN,
+                        bundleOf(ID_STRING to it))
+                },
                 onCreateNewClick = { navController.navigate(CREATE_PROFILE) }
             )
         }

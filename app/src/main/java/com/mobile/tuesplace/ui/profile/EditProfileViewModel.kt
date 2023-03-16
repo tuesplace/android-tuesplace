@@ -5,10 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.data.EditProfileData
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.services.ProfileService
-import com.mobile.tuesplace.ui.states.EditProfileUiState
-import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
-import com.mobile.tuesplace.ui.states.GetProfileUiState
-import com.mobile.tuesplace.ui.states.PutMyProfileAssetsUiState
+import com.mobile.tuesplace.ui.states.*
 import com.mobile.tuesplace.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +18,8 @@ class EditProfileViewModel(
     private val editProfileUseCase: EditProfileUseCase,
     private val putProfileAssetsUseCase: PutProfileAssetsUseCase,
     private val putMyProfileAssetsUseCase: PutMyProfileAssetsUseCase,
-    private val editMyProfileUseCase: EditMyProfileUseCase
+    private val editMyProfileUseCase: EditMyProfileUseCase,
+    private val deleteProfileUseCase: DeleteProfileUseCase
     ): ViewModel() {
     private val _getProfileStateFlow = MutableStateFlow<GetProfileByIdUiState>(GetProfileByIdUiState.Empty)
     val getProfileStateFlow: StateFlow<GetProfileByIdUiState> = _getProfileStateFlow
@@ -185,6 +183,50 @@ class EditProfileViewModel(
 
                 }, profilePic
             )
+        }
+    }
+
+    fun resetEditStates(){
+        viewModelScope.launch {
+            _putProfileAssetsStateFlow.emit(PutMyProfileAssetsUiState.Empty)
+            _getMyProfileStateFlow.emit(GetProfileUiState.Empty)
+        }
+    }
+
+    private val _dialogVisibility = MutableStateFlow(false)
+    val dialogVisibility: StateFlow<Boolean> = _dialogVisibility
+
+    fun dialogVisibility(dialogVisibility: Boolean) {
+        _dialogVisibility.value = dialogVisibility
+    }
+
+    private val _deleteProfileUiState = MutableStateFlow<DeleteProfileUiState>(DeleteProfileUiState.Empty)
+    val deleteProfileUiState: StateFlow<DeleteProfileUiState> = _deleteProfileUiState
+
+    fun deleteProfile(profileId: String) {
+        viewModelScope.launch {
+            deleteProfileUseCase.invoke(
+                object : ProfileService.GetProfileCallback<Unit> {
+                    override fun onSuccess(profileGeneric: Unit) {
+                        viewModelScope.launch {
+                            _deleteProfileUiState.emit(DeleteProfileUiState.Success)
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _deleteProfileUiState.emit(DeleteProfileUiState.Error(error))
+                        }
+                    }
+
+                }, profileId
+            )
+        }
+    }
+
+    fun resetDeleteState() {
+        viewModelScope.launch {
+            _deleteProfileUiState.emit(DeleteProfileUiState.Empty)
         }
     }
 

@@ -119,7 +119,7 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
                     response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { getProfileCallback.onSuccess(it) }
+                        getProfileCallback.onSuccess(Unit)
                     } else {
                         getProfileCallback.onError(response.message())
                     }
@@ -234,6 +234,7 @@ class ProfileServiceImpl(private val retrofit: ApiServices) : ProfileService {
             }
         )
     }
+
 
 
 }

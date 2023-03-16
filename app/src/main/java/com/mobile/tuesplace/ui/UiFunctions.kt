@@ -492,7 +492,7 @@ fun WebViewImage(onImageClick: () -> Unit, image: Painter, text: String, modifie
 
         Image(
             painter = image,
-            contentDescription = "",
+            contentDescription = stringResource(id = R.string.empty),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
@@ -518,7 +518,18 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
         .clickable { onGroupClick(groupData._id) }
         .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
     ) {
-        //AsyncImage(model = groupData.teachers?.get(0)., contentDescription = null)
+        Image(
+            painter = groupData.teachers?.get(0)?.assets?.profilePic.let {
+                rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
+                    .data(data = it?.get(0)?.data?.src)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                    }).build())},
+            contentDescription = stringResource(id = R.string.empty),
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp))
+        )
         ConstraintLayout(modifier = Modifier
             .width(344.dp)
             .height(110.dp)
