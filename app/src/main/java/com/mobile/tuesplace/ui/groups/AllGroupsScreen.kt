@@ -17,7 +17,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.mobile.tuesplace.CHAT_TYPE
 import com.mobile.tuesplace.R
+import com.mobile.tuesplace.SUBJECT_TYPE
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.GroupChatItem
 import com.mobile.tuesplace.ui.GroupClassItem
@@ -39,7 +42,7 @@ fun AllGroupsScreen(
         is GetGroupsUiState.Success -> {
             if (groupsType){
                 AllGroupsUi(
-                    groups = allGroupsUiState.groups.filter { group ->  group.type == "chat" },
+                    groups = allGroupsUiState.groups.filter { group ->  group.type == CHAT_TYPE },
                     onGroupClick = onGroupClick,
                     onAddClick = onAddClick,
                     groupsType = true,
@@ -47,7 +50,7 @@ fun AllGroupsScreen(
                 )
             }else{
                 AllGroupsUi(
-                    groups = allGroupsUiState.groups.filter { group ->  group.type == "subject" },
+                    groups = allGroupsUiState.groups.filter { group ->  group.type == SUBJECT_TYPE },
                     onGroupClick = onGroupClick,
                     onAddClick = onAddClick,
                     groupsType = false,
@@ -89,7 +92,7 @@ fun AllGroupsUi(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .constrainAs(groupTypes){
+                .constrainAs(groupTypes) {
                     top.linkTo(allGroups.bottom)
                 },
             horizontalArrangement = Arrangement.SpaceAround
@@ -127,6 +130,8 @@ fun AllGroupsUi(
                 top.linkTo(addGroup.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
             }
         ) {
             itemsIndexed(groups) { _, group ->

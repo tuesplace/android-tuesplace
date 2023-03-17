@@ -22,6 +22,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.*
 import com.mobile.tuesplace.ui.states.CreateGroupUiState
+import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
 
 @Composable
 fun CreateGroupScreen(
@@ -42,28 +43,37 @@ fun CreateGroupScreen(
     setTeacherListVisibility: (Boolean) -> Unit,
     teachers: List<ProfileResponseData>?,
     createGroupUiState: CreateGroupUiState,
-    onCreateGroupSuccess: () -> Unit
+    onCreateGroupSuccess: () -> Unit,
+    getAllProfilesUiState: GetAllProfilesUiState
 ) {
-    teachers?.let {
-        CreateGroupUi(
-            groupName = groupName,
-            setGroupName = setGroupName,
-            classes = classes,
-            setClasses = setClasses,
-            onCreateGroupClick = onCreateGroupClick,
-            teacher = teacher,
-            setTeacher = setTeacher,
-            groupsType = groupsType,
-            setGroupsType = setGroupsType,
-            onClassClick = onClassClick,
-            onTeacherClick = onTeacherClick,
-            classListVisibility = classListVisibility,
-            setClassVisibility = setClassVisibility,
-            teacherListVisibility = teacherListVisibility,
-            setTeacherListVisibility = setTeacherListVisibility,
-            teachers = it
-        )
+    when (getAllProfilesUiState) {
+        GetAllProfilesUiState.Empty -> {}
+        is GetAllProfilesUiState.Error -> {}
+        GetAllProfilesUiState.Loading -> {}
+        is GetAllProfilesUiState.Success -> {
+            teachers?.let {
+                CreateGroupUi(
+                    groupName = groupName,
+                    setGroupName = setGroupName,
+                    classes = classes,
+                    setClasses = setClasses,
+                    onCreateGroupClick = onCreateGroupClick,
+                    teacher = teacher,
+                    setTeacher = setTeacher,
+                    groupsType = groupsType,
+                    setGroupsType = setGroupsType,
+                    onClassClick = onClassClick,
+                    onTeacherClick = onTeacherClick,
+                    classListVisibility = classListVisibility,
+                    setClassVisibility = setClassVisibility,
+                    teacherListVisibility = teacherListVisibility,
+                    setTeacherListVisibility = setTeacherListVisibility,
+                    teachers = it
+                )
+            }
+        }
     }
+
 
     when (createGroupUiState) {
         CreateGroupUiState.Empty -> {}

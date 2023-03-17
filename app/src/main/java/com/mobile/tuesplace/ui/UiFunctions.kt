@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -519,13 +520,14 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
         .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
     ) {
         Image(
-            painter = groupData.teachers?.get(0)?.assets?.profilePic.let {
+            painter = groupData.owners?.get(0)?.data?.assets?.profilePic.let {
                 rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
                     .data(data = it?.get(0)?.data?.src)
                     .apply(block = fun ImageRequest.Builder.() {
                         crossfade(true)
                     }).build())},
             contentDescription = stringResource(id = R.string.empty),
+            contentScale = Crop,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
@@ -574,19 +576,21 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
                     }
             )
 
-            groupData.teachers?.get(0)?.let {
-                Text(
-                    text = it.fullName,
-                    color = White,
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .padding(bottom = 6.dp)
-                        .constrainAs(teacher) {
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
-                        }
-                )
+            groupData.owners?.get(0)?.let {
+                it.data?.fullName?.let { it1 ->
+                    Text(
+                        text = it1,
+                        color = White,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .padding(bottom = 6.dp)
+                            .constrainAs(teacher) {
+                                start.linkTo(parent.start)
+                                bottom.linkTo(parent.bottom)
+                            }
+                    )
+                }
             }
 
 
@@ -656,19 +660,21 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
                 }
         )
 
-        groupData.teachers?.get(0)?.let {
-            Text(
-                text = it.fullName,
-                color = White,
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(6.dp)
-                    .padding(bottom = 6.dp)
-                    .constrainAs(teacher) {
-                        start.linkTo(parent.start)
-                        bottom.linkTo(parent.bottom)
-                    }
-            )
+        groupData.owners?.get(0)?.let {
+            it.data?.fullName?.let { it1 ->
+                Text(
+                    text = it1,
+                    color = White,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .padding(bottom = 6.dp)
+                        .constrainAs(teacher) {
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
+                        }
+                )
+            }
         }
 
 

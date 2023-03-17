@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.ui.groups
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.TextFieldFunction
@@ -33,6 +34,9 @@ fun EditGroupScreen(
     onDeleteClick: (String) -> Unit,
     deleteUiState: DeleteGroupUiState,
     onBackPressed: () -> Unit,
+    onDeleteSuccess: () -> Unit,
+    editGroupUiState: DeleteGroupUiState,
+    onEditSuccess: () -> Unit
 ) {
     when (groupUiStateFlow) {
         GetGroupUiState.Empty -> {}
@@ -61,7 +65,26 @@ fun EditGroupScreen(
         is DeleteGroupUiState.Error -> {}
         DeleteGroupUiState.Loading -> {}
         DeleteGroupUiState.Success -> {
-            onBackPressed()
+            onDeleteSuccess()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.group_deleted),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    when(editGroupUiState) {
+        DeleteGroupUiState.Empty -> {}
+        is DeleteGroupUiState.Error -> {}
+        DeleteGroupUiState.Loading -> {}
+        DeleteGroupUiState.Success -> {
+            onEditSuccess()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(id = R.string.group_edited),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -150,15 +173,15 @@ fun EditGroupUi(
     @Composable
     @Preview
     fun EditGroupItemPreview() {
-        EditGroupScreen(GetGroupUiState.Empty,
-            "",
-            {},
-            "",
-            {},
-            "",
-            {},
-            {},
-            {},
-            DeleteGroupUiState.Empty,
-            {})
+//        EditGroupScreen(GetGroupUiState.Empty,
+//            "",
+//            {},
+//            "",
+//            {},
+//            "",
+//            {},
+//            {},
+//            {},
+//            DeleteGroupUiState.Empty,
+//            {}, Ед)
     }

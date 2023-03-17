@@ -7,7 +7,7 @@ const val SIGN_IN = "v1/auth/sign-in"
 const val GENERATE_TOKEN_PAIR = "v1/auth/generate-token-pair"
 const val CREATE_GROUP = "v1/groups/"
 const val PROFILE_ME = "v1/profiles/me"
-const val ALL_PROFILES = "v1/profiles"
+const val ALL_PROFILES = "v1/profiles?limit=100"
 const val PROFILE = "v1/profiles/{profileId}"
 const val PROFILE_ASSETS = "v1/profiles/{profileId}/assets"
 const val MY_PROFILE_ASSETS = "v1/profiles/me/assets"
@@ -40,7 +40,7 @@ const val DATE_PATTERN = "EEE"
 
 const val WEB_VIEW_LINK = "https://tues.bg"
 
-const val HEADER_PREFIX_TOKEN = "token"
+const val HEADER_PREFIX_TOKEN = "NoToken"
 
 const val UPLOAD_CODE = 1
 const val DOCUMENTS_DIR = "documents"

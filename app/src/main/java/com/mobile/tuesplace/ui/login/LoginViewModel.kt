@@ -65,6 +65,7 @@ class LoginViewModel(
             if (token.isNotEmpty()) {
                 sessionManager.setTokens()
                 _uiStateFlow.emit(SignInUiState.Success)
+                getProfile()
             }
         }
     }

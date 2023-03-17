@@ -50,31 +50,34 @@ class AuthServiceImpl(private val retrofit: ApiServices): AuthService {
         )
     }
 
-    override fun generateTokenPair(
-        refreshToken: String,
-        authCallback: AuthService.AuthCallback
-    ) {
-        retrofit.generateTokenPair(refreshToken).enqueue(
-            object : Callback<BaseResponse<SignInData>> {
-                override fun onFailure(call: Call<BaseResponse<SignInData>>, t: Throwable) {
-                    t.localizedMessage?.let {
-                        authCallback.onError(it)
-                    }
-                }
-
-                override fun onResponse(
-                    call: Call<BaseResponse<SignInData>>,
-                    response: Response<BaseResponse<SignInData>>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
-                        }
-                    } else{
-                        authCallback.onError(response.message())
-                    }
-                }
-            }
-        )
+    override suspend fun generateTokenPair(refreshToken: String): BaseResponse<SignInData> {
+        return retrofit.generateTokenPair("adsa", refreshToken)
     }
+
+//    override suspend fun generateTokenPair(
+//        refreshToken: String) {
+//        return retrofit.generateTokenPair(refreshToken).response
+////        execute(
+////            object : Callback<BaseResponse<SignInData>> {
+////                override fun onFailure(call: Call<BaseResponse<SignInData>>, t: Throwable) {
+////                    t.localizedMessage?.let {
+////                        authCallback.onError(it)
+////                    }
+////                }
+////
+////                override fun onResponse(
+////                    call: Call<BaseResponse<SignInData>>,
+////                    response: Response<BaseResponse<SignInData>>
+////                ) {
+////                    if (response.isSuccessful) {
+////                        response.body()?.let {
+////                            it.response?.let { it1 -> authCallback.onSuccess(it1) }
+////                        }
+////                    } else{
+////                        authCallback.onError(response.message())
+////                    }
+////                }
+////            }
+////        )
+//    }
 }

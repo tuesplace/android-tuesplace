@@ -41,6 +41,8 @@
     <string name="create_new">Създай нова</string>
     <string name="create">Създай</string>
     <string name="account_created">Акаунтът е създаден успешно</string>
+    <string name="group_deleted">Групата е изтрита успешно</string>
+    <string name="group_edited">Групата е редактирана успешно</string>
     <string name="create_new_profile">Създай нов</string>
     <string name="classes">Класове</string>
     <string name="chats">Чатове</string>

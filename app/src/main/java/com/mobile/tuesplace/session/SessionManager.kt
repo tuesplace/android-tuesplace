@@ -47,9 +47,15 @@ object SessionManager {
     }
 
     suspend fun setTokens() {
-        Log.d("testToken", "set tokens session")
+        Log.d("savedToken", "fetch " + fetchAuthToken())
         currentToken = fetchAuthToken()
         currentRefreshToken = fetchAuthRefreshToken()
+    }
+
+    fun setEmptyTokens() {
+        Log.d("savedToken", "empty ")
+        currentToken = ""
+        currentRefreshToken = ""
     }
 
     fun getToken(): String {

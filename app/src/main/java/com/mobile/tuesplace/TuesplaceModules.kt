@@ -39,7 +39,7 @@ val TuesplaceModules = module {
     viewModel { WelcomeViewModel(get()) }
     viewModel { CreateGroupViewModel(get(), get()) }
     viewModel { WelcomeAdminViewModel() }
-    viewModel { EditGroupViewModel(get(), get()) }
+    viewModel { EditGroupViewModel(get(), get(), get()) }
     viewModel { AllGroupsViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { EditProfileViewModel(get(), get(), get(), get(), get(), get(), get()) }
@@ -95,6 +95,7 @@ val TuesplaceModules = module {
     factory { EditMyProfileUseCase(get()) }
     factory { PutMyProfileAssetsUseCase(get()) }
     factory { DeleteProfileUseCase(get()) }
+    factory { EditGroupUseCase(get()) }
 
     factory<GroupService> { GroupServiceImpl(retrofit = get()) }
     factory<AuthService> { AuthServiceImpl(get()) }
@@ -106,14 +107,14 @@ val TuesplaceModules = module {
     factory<SpecificationService> { SpecificationImpl(get()) }
     factory<SubmissionsService> { SubmissionsServiceImpl(get()) }
 
-    factory { TuesAuthenticator() }
+//    factory { TuesAuthenticator() }
     factory { TuesInterceptor(androidContext()) }
     single {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
         OkHttpClient().newBuilder()
-           // .authenticator(get<TuesAuthenticator>())
+            .authenticator(TuesAuthenticator())
             .addInterceptor(get<TuesInterceptor>())
             .addInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)

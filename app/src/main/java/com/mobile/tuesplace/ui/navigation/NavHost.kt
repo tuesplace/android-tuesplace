@@ -187,6 +187,7 @@ fun NavHost(navController: NavHostController) {
             val classListVisibility by viewModel.classListVisibility.collectAsState()
             val teachersListVisibility by viewModel.teacherListVisibility.collectAsState()
             val createGroupUiState by viewModel.uiState.collectAsState()
+            val getAllProfilesUiState by viewModel.getAllProfilesStateFlow.collectAsState()
             LaunchedEffect(null) {
                 viewModel.getAllProfiles()
             }
@@ -217,7 +218,8 @@ fun NavHost(navController: NavHostController) {
                 onCreateGroupSuccess = {
                     navController.navigate(ALL_GROUPS_SCREEN)
                     viewModel.resetState()
-                }
+                },
+                getAllProfilesUiState = getAllProfilesUiState
             )
         }
         composable(ALL_GROUPS_SCREEN) {
@@ -245,7 +247,7 @@ fun NavHost(navController: NavHostController) {
             val classes by viewModel.classes.collectAsState()
             val groupUiStateFlow by viewModel.groupStateFlow.collectAsState()
             val deleteGroupUiStateFlow by viewModel.deleteGroupUiStateFlow.collectAsState()
-
+            val editGroupUiState by viewModel.editGroupUiStateFlow.collectAsState()
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString(GROUP_ID)?.let { groupId ->
                     viewModel.getGroup(groupId)
@@ -259,10 +261,32 @@ fun NavHost(navController: NavHostController) {
                 setGroupType = { viewModel.groupType(it) },
                 classes = classes,
                 setClasses = { viewModel.classes(it) },
-                onEditClick = { },
+                onEditClick = {
+                    backStackEntry.arguments?.getString(GROUP_ID)?.let { groupId ->
+                        viewModel.editGroup(groupId = groupId,
+                            editGroupData = EditGroupData(
+                                groupName.ifEmpty { null },
+                                groupType.ifEmpty { null },
+                                if (classes.isEmpty()) {
+                                    null
+                                } else {
+                                    arrayListOf(classes)
+                                }))
+                    }
+                },
                 onDeleteClick = { viewModel.deleteGroup(it) },
                 deleteUiState = deleteGroupUiStateFlow,
-                onBackPressed = { navController.navigateUp() })
+                onBackPressed = { navController.navigateUp() },
+                onDeleteSuccess = {
+                    navController.navigateUp()
+                    viewModel.resetDeleteState()
+                },
+                onEditSuccess = {
+                    navController.navigateUp()
+                    viewModel.resetEditState()
+                },
+                editGroupUiState = editGroupUiState
+            )
         }
         composable(PROFILE_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<EditProfileViewModel>()
@@ -270,7 +294,8 @@ fun NavHost(navController: NavHostController) {
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
                 viewModel.getMyProfile()
-                backStackEntry.arguments?.getString(ID_STRING)?.let { viewModel.getProfile(it) }
+                backStackEntry.arguments?.getString(ID_STRING)
+                    ?.let { viewModel.getProfile(it) }
             }
             ProfileScreen(
                 profileUiState = profileUiState,
@@ -300,7 +325,8 @@ fun NavHost(navController: NavHostController) {
                 if (backStackEntry.arguments?.getBoolean(IS_ADMIN) == true) {
                     viewModel.getMyProfile()
                 } else {
-                    backStackEntry.arguments?.getString(ID_STRING)?.let { viewModel.getProfile(it) }
+                    backStackEntry.arguments?.getString(ID_STRING)
+                        ?.let { viewModel.getProfile(it) }
                 }
             }
             EditProfileScreen(
@@ -355,7 +381,7 @@ fun NavHost(navController: NavHostController) {
                 onDeleteSuccess = {
                     viewModel.resetDeleteState()
                     navController.navigateUp()
-                }
+                },
             )
         }
         composable(SETTINGS_SCREEN) {
@@ -380,12 +406,14 @@ fun NavHost(navController: NavHostController) {
             val getPostsUiState by viewModel.getPostsStateFlow.collectAsState()
             val getGroupUiState by viewModel.getGroupStateFlow.collectAsState()
             LaunchedEffect(null) {
-                backStackEntry.arguments?.getString(GROUP_ID)?.let { viewModel.getGroup(it) }
+                backStackEntry.arguments?.getString(GROUP_ID)
+                    ?.let { viewModel.getGroup(it) }
             }
             ClassroomUserScreen(
                 getGroupUiState = getGroupUiState,
                 onGroupSuccess = {
-                    backStackEntry.arguments?.getString(GROUP_ID)?.let { viewModel.getPosts(it) }
+                    backStackEntry.arguments?.getString(GROUP_ID)
+                        ?.let { viewModel.getPosts(it) }
                     viewModel.setGroupStateAsLoaded()
                 },
                 getPostsUiState = getPostsUiState,
@@ -398,11 +426,13 @@ fun NavHost(navController: NavHostController) {
                 onPostClick = {
                     if (backStackEntry.arguments?.getString(ROLE) == TEACHER_ROLE) {
                         navController.navigate(SUBMISSIONS_SCREEN,
-                            bundleOf(GROUP_ID to backStackEntry.arguments?.getString(GROUP_ID),
+                            bundleOf(GROUP_ID to backStackEntry.arguments?.getString(
+                                GROUP_ID),
                                 POST_ID to it.first))
                     } else {
                         navController.navigate(POST_SCREEN,
-                            bundleOf(GROUP_ID to backStackEntry.arguments?.getString(GROUP_ID),
+                            bundleOf(GROUP_ID to backStackEntry.arguments?.getString(
+                                GROUP_ID),
                                 POST_ID to it.first))
                     }
                 },
@@ -667,7 +697,9 @@ fun NavHost(navController: NavHostController) {
                     backStackEntry.arguments?.getString(GROUP_ID)
                         ?.let { groupId ->
                             backStackEntry.arguments?.getString(POST_ID)?.let { postId ->
-                                viewModel.createSubmission(it, groupId = groupId, postId = postId)
+                                viewModel.createSubmission(it,
+                                    groupId = groupId,
+                                    postId = postId)
                             }
                         }
                 },
@@ -693,7 +725,8 @@ fun NavHost(navController: NavHostController) {
             val editPostUiState by viewModel.editPostUiState.collectAsState()
             val deletePostUiState by viewModel.deletePostUiState.collectAsState()
             LaunchedEffect(null) {
-                backStackEntry.arguments?.getString("titleString")?.let { viewModel.postTitle(it) }
+                backStackEntry.arguments?.getString("titleString")
+                    ?.let { viewModel.postTitle(it) }
                 backStackEntry.arguments?.getString("bodyString")
                     ?.let { viewModel.postDescription(it) }
             }

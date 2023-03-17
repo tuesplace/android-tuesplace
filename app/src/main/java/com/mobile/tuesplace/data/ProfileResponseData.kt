@@ -10,5 +10,5 @@ data class ProfileResponseData(
     @SerializedName("class")
     var className: String?,
     var assets: ProfileAssets?,
-    var blocked: Boolean
+    var blocked: Boolean?
 )

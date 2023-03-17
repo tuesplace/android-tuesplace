@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.services
 
+import android.provider.SyncStateContract
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
@@ -14,7 +15,7 @@ interface ApiServices {
     fun signIn(@Body authData: AuthData): Call<BaseResponse<SignInData>>
 
     @POST(GENERATE_TOKEN_PAIR)
-    fun generateTokenPair(@Body refreshToken: String): Call<BaseResponse<SignInData>>
+    suspend fun generateTokenPair(@Header(HEADER_PREFIX_TOKEN) noToken: String, @Header("Authorization") refreshToken: String): BaseResponse<SignInData>
 
     @POST(CREATE_GROUP)
     fun createGroup(@Body createGroupData: GroupData): Call<BaseResponse<GroupData>>
@@ -29,7 +30,7 @@ interface ApiServices {
     fun getMyGroups(): Call<BaseResponse<List<GroupResponseData>>>
 
     @PUT(GET_GROUP)
-    fun editGroup(@Path("groupId") groupId: String, groupData: EditGroupData): Call<BaseResponse<Unit>>
+    fun editGroup(@Path("groupId") groupId: String, @Body groupData: EditGroupData): Call<BaseResponse<Unit>>
 
     @DELETE(GET_GROUP)
     fun deleteGroup(@Path("groupId") groupId: String): Call<BaseResponse<Unit>>
