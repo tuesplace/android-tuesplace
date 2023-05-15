@@ -107,8 +107,7 @@ fun EditPostUi(
                 .fillMaxWidth()
                 .constrainAs(titleItem) {
                     top.linkTo(parent.top)
-                },
-            setClassVisibility = null
+                }
         )
 
         TextFieldWithTitle(
@@ -123,8 +122,7 @@ fun EditPostUi(
                 .fillMaxWidth()
                 .constrainAs(descriptionItem) {
                     top.linkTo(titleItem.bottom)
-                },
-            setClassVisibility = null
+                }
         )
 
         GradientBorderButtonRound(

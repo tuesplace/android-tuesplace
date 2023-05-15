@@ -103,10 +103,12 @@ fun GradientBorderButtonRound(
         modifier = currentModifier
             .padding(buttonPadding ?: PaddingValues(start = 12.dp, end = 12.dp))
             .background(
-                brush = Brush.horizontalGradient(colors = colors ?: listOf(
-                    colorResource(id = R.color.logo_blue),
-                    colorResource(id = R.color.blue)
-                )),
+                brush = Brush.horizontalGradient(
+                    colors = colors ?: listOf(
+                        colorResource(id = R.color.logo_blue),
+                        colorResource(id = R.color.blue)
+                    )
+                ),
                 shape = RoundedCornerShape(percent = 10)
             )
             .clip(shape = RoundedCornerShape(percent = 10))
@@ -149,9 +151,11 @@ fun PostItem(
                 .padding(6.dp)
                 .size(45.dp)
                 .clip(CircleShape)
-                .border(1.dp,
+                .border(
+                    1.dp,
                     colorResource(id = R.color.darker_sea_blue),
-                    CircleShape)
+                    CircleShape
+                )
                 .constrainAs(profilePic) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
@@ -262,15 +266,20 @@ fun CreateCommentItem(
                 unfocusedBorderColor = Transparent,
                 textColor = Black,
                 placeholderColor = colorResource(id = R.color.darker_sea_blue),
-            ))
+            )
+        )
         Image(
             painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24_darker_sea_blue),
             contentDescription = stringResource(id = R.string.empty),
             modifier = Modifier
                 .size(25.dp)
                 .clickable {
-                    onSendClick(CreateCommentData(postId = postId,
-                        CommentRequestData(commentInput, true)))
+                    onSendClick(
+                        CreateCommentData(
+                            postId = postId,
+                            CommentRequestData(commentInput, true)
+                        )
+                    )
                     onCommentChange(EMPTY_STRING)
                 })
     }
@@ -326,8 +335,10 @@ fun CommentItem(
 
             Column(modifier = Modifier.padding(start = 2.dp)) {
                 commentData.owner.data?.fullName?.let {
-                    Text(text = it,
-                        color = colorResource(id = R.color.darker_sea_blue))
+                    Text(
+                        text = it,
+                        color = colorResource(id = R.color.darker_sea_blue)
+                    )
                 }
                 TextField(
                     value = commentData.body,
@@ -415,9 +426,11 @@ fun EmptyScreen() {
             .background(colorResource(id = R.color.dark_blue)),
         contentAlignment = Center
     ) {
-        Text(text = stringResource(id = R.string.screen_not_found),
+        Text(
+            text = stringResource(id = R.string.screen_not_found),
             color = White,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -486,7 +499,8 @@ fun WebViewImage(onImageClick: () -> Unit, image: Painter, text: String, modifie
         .padding(top = 50.dp)
         .padding(6.dp)
         .background(White, RoundedCornerShape(8.dp))
-        .border(2.dp,
+        .border(
+            2.dp,
             colorResource(id = R.color.white),
             RoundedCornerShape(8.dp)
         )
@@ -526,7 +540,8 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
                     .data(data = it?.get(0)?.data?.src)
                     .apply(block = fun ImageRequest.Builder.() {
                         crossfade(true)
-                    }).build())
+                    }).build()
+                )
             },
             contentDescription = stringResource(id = R.string.empty),
             contentScale = Crop,
@@ -534,12 +549,13 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
         )
-        ConstraintLayout(modifier = Modifier
-            .width(344.dp)
-            .height(110.dp)
-            .background(colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
-            .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
-            .align(BottomCenter)
+        ConstraintLayout(
+            modifier = Modifier
+                .width(344.dp)
+                .height(110.dp)
+                .background(colorResource(id = R.color.darker_sea_blue), RoundedCornerShape(8.dp))
+                .border(2.dp, colorResource(id = R.color.white), RoundedCornerShape(8.dp))
+                .align(BottomCenter)
         ) {
             val (title, teacher, classString, className) = createRefs()
 
@@ -729,7 +745,6 @@ fun TextFieldWithTitle(
     enabled: Boolean?,
     isError: Boolean?,
     modifier: Modifier?,
-    setClassVisibility: ((Boolean) -> Unit)?,
 ) {
 
     val currentModifier = modifier ?: Modifier
@@ -752,26 +767,29 @@ fun TextFieldWithTitle(
             onValueChange = { onValueChange(it) },
             enabled = enabled ?: true,
             isError = isError ?: false,
+            singleLine = true,
             placeholder = {
-                Text(text = placeholder,
-                    color = colorResource(id = R.color.baby_blue))
+                Text(
+                    text = placeholder,
+                    color = colorResource(id = R.color.baby_blue)
+                )
             },
             modifier = Modifier
                 .background(colorResource(id = R.color.dark_blue))
                 .border(2.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
-                .clickable { setClassVisibility?.let { it -> it(true) } }
         )
     }
 }
 
 @Composable
-fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
+fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit, modifier: Modifier?) {
+    val currentModifier = modifier ?: Modifier
+        .padding(6.dp)
+        .size(150.dp)
+        .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
     ConstraintLayout(
-        modifier = Modifier
+        modifier = currentModifier
             .clickable { onClick(student._id) }
-            .padding(6.dp)
-            .size(150.dp)
-            .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
     ) {
         Image(
             painter = student.assets?.profilePic.let {
@@ -779,7 +797,8 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
                     .data(data = it?.get(0)?.data?.src)
                     .apply(block = fun ImageRequest.Builder.() {
                         crossfade(true)
-                    }).build())
+                    }).build()
+                )
             },
             contentDescription = stringResource(id = R.string.empty),
             contentScale = Crop,
@@ -903,11 +922,13 @@ fun AgendaItem(agendaData: AgendaResponseData) {
             Text(text = agendaData.associations.group.data.name)
             Text(
                 text = agendaData.associations.group.data.owners[0].data.fullName,
-                color = colorResource(id = R.color.baby_blue))
+                color = colorResource(id = R.color.baby_blue)
+            )
         }
 
         Image(painter = painterResource(
-            id = R.drawable.ic_baseline_keyboard_arrow_right_24),
+            id = R.drawable.ic_baseline_keyboard_arrow_right_24
+        ),
             contentDescription = "",
             modifier = Modifier
                 .padding(end = 6.dp)
@@ -923,9 +944,11 @@ fun AgendaItem(agendaData: AgendaResponseData) {
 @Composable
 fun InfoItem(title: String, text: String) {
     Column(horizontalAlignment = Start) {
-        Text(text = title.uppercase(),
+        Text(
+            text = title.uppercase(),
             color = colorResource(id = R.color.baby_blue),
-            fontSize = 25.sp)
+            fontSize = 25.sp
+        )
         Text(text = text, color = White, fontSize = 20.sp)
     }
 }
@@ -938,10 +961,12 @@ fun DailyAgendaItem(day: String, agendaList: List<AgendaResponseData>) {
             .border(1.dp, colorResource(id = R.color.baby_blue))
             .background(colorResource(id = R.color.darker_sea_blue))
     ) {
-        Text(text = day,
+        Text(
+            text = day,
             color = colorResource(id = R.color.white),
             fontSize = 20.sp,
-            modifier = Modifier.padding(start = 6.dp, top = 6.dp, bottom = 16.dp))
+            modifier = Modifier.padding(start = 6.dp, top = 6.dp, bottom = 16.dp)
+        )
         agendaList.forEach { activity ->
             AgendaItem(agendaData = activity)
         }
@@ -994,8 +1019,10 @@ fun ResultLauncher(
         contentDescription = EMPTY_STRING,
         modifier = currentModifier
             .clickable {
-                if (ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     getContentLauncher.launch(type)
                 } else {
@@ -1016,7 +1043,8 @@ fun ResultLauncher(
             val filePart = MultipartBody.Part.createFormData(
                 multipartName,
                 fileName?.name,
-                requestFile)
+                requestFile
+            )
             onUploadClick(filePart)
             selectedFileUri.value = null
         }
@@ -1054,14 +1082,17 @@ fun UserMessage(profile: ProfileData, createTime: String, message: String) {
                     .padding(2.dp)
                     .size(30.dp)
                     .clip(CircleShape)
-                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape))
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+            )
 
             Box(
                 modifier = Modifier
                     .widthIn(min = 25.dp)
                     .padding(start = 2.dp)
-                    .background(colorResource(id = R.color.darker_sea_blue),
-                        RoundedCornerShape(8.dp))
+                    .background(
+                        colorResource(id = R.color.darker_sea_blue),
+                        RoundedCornerShape(8.dp)
+                    )
                     .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
                     .padding(6.dp),
             ) {
@@ -1071,10 +1102,12 @@ fun UserMessage(profile: ProfileData, createTime: String, message: String) {
                     fontSize = 10.sp
                 )
             }
-            Text(text = createTime,
+            Text(
+                text = createTime,
                 color = colorResource(id = R.color.baby_blue),
                 fontSize = 10.sp,
-                modifier = Modifier.padding(start = 2.dp))
+                modifier = Modifier.padding(start = 2.dp)
+            )
         }
     }
 }
@@ -1108,15 +1141,19 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
                 modifier = Modifier
                     .widthIn(min = 25.dp)
                     .padding(start = 2.dp)
-                    .background(colorResource(id = R.color.darker_sea_blue),
-                        RoundedCornerShape(8.dp))
+                    .background(
+                        colorResource(id = R.color.darker_sea_blue),
+                        RoundedCornerShape(8.dp)
+                    )
                     .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
                     .padding(6.dp),
             ) {
-                Text(text = createTime,
+                Text(
+                    text = createTime,
                     color = colorResource(id = R.color.baby_blue),
                     fontSize = 10.sp,
-                    modifier = Modifier.padding(start = 2.dp))
+                    modifier = Modifier.padding(start = 2.dp)
+                )
                 Text(
                     text = message,
                     color = colorResource(id = R.color.white),
@@ -1131,7 +1168,8 @@ fun MyMessage(profile: ProfileData, createTime: String, message: String) {
                     .padding(2.dp)
                     .size(30.dp)
                     .clip(CircleShape)
-                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape))
+                    .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+            )
         }
     }
 }
@@ -1279,7 +1317,7 @@ fun BlockedProfile() {
 @Composable
 fun TeacherSearchItem(
     profileResponseData: ProfileResponseData,
-    onTeacherClick: (String) -> Unit,
+    onTeacherClick: (ProfileResponseData) -> Unit,
     setTeacherListVisibility: (Boolean) -> Unit,
     context: Context,
 ) {
@@ -1288,10 +1326,11 @@ fun TeacherSearchItem(
         verticalAlignment = CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
             .background(colorResource(id = R.color.dark_blue), RoundedCornerShape(8.dp))
             .border(1.dp, colorResource(id = R.color.baby_blue), RoundedCornerShape(8.dp))
             .clickable {
-                onTeacherClick(profileResponseData._id)
+                onTeacherClick(profileResponseData)
                 setTeacherListVisibility(false)
                 Toast
                     .makeText(
@@ -1310,7 +1349,8 @@ fun TeacherSearchItem(
                     .data(data = profileResponseData.assets?.profilePic?.get(0)?.data?.src)
                     .apply(block = fun ImageRequest.Builder.() {
                         crossfade(true)
-                    }).build())
+                    }).build()
+                )
             },
             contentDescription = stringResource(id = R.string.email),
             contentScale = Crop,
@@ -1369,7 +1409,7 @@ fun ClassSearchItem(
 
 
 @Composable
-fun Loading(){
+fun Loading() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxHeight()
@@ -1420,6 +1460,7 @@ fun Loading(){
 //        )
     }
 }
+
 @Composable
 @Preview
 fun Preview() {

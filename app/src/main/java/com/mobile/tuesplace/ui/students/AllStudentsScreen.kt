@@ -122,7 +122,7 @@ fun AllStudentsUi(profiles: List<ProfileResponseData>, onStudentClick: (String) 
             columns = GridCells.Adaptive(minSize = 150.dp)
         ) {
             itemsIndexed(profiles.filter { profile -> profile.className?.contains(textState.value.text) == true }) { _, data ->
-                com.mobile.tuesplace.ui.StudentItem(student = data, onClick = onStudentClick)
+                com.mobile.tuesplace.ui.StudentItem(student = data, onClick = onStudentClick, modifier = null)
             }
         }
     }

@@ -132,7 +132,7 @@ fun AllTeachersUi(
             columns = GridCells.Adaptive(minSize = 150.dp)
         ) {
             itemsIndexed(profiles.filter { profile -> profile.fullName.contains(textState.value.text) }) { _, data ->
-                StudentItem(student = data, onClick = onStudentClick)
+                StudentItem(student = data, onClick = onStudentClick, modifier = null)
             }
         }
     }

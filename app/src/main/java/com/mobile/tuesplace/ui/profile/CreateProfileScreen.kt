@@ -148,8 +148,7 @@ fun CreateProfileUi(
                 placeholder = stringResource(id = R.string.enter),
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
 
             TextFieldWithTitle(
@@ -159,8 +158,7 @@ fun CreateProfileUi(
                 placeholder = stringResource(id = R.string.enter),
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
 
             TextFieldWithTitle(
@@ -170,8 +168,7 @@ fun CreateProfileUi(
                 placeholder = stringResource(id = R.string.enter),
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
 
             TextFieldWithTitle(
@@ -181,8 +178,7 @@ fun CreateProfileUi(
                 placeholder = stringResource(id = R.string.enter),
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
         }
 

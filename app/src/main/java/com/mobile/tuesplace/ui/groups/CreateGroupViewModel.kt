@@ -21,14 +21,14 @@ class CreateGroupViewModel(
 ) : ViewModel() {
 
     var classesList: ArrayList<String> = ArrayList()
-    var teachersList: ArrayList<String> = ArrayList()
+    var teachersList: ArrayList<ProfileResponseData> = ArrayList()
 
     fun addClass(className: String) {
         classesList.add(className)
     }
 
-    fun addTeacher(teacherId: String) {
-        teachersList.add(teacherId)
+    fun addTeacher(teacher: ProfileResponseData) {
+        teachersList.add(teacher)
     }
 
     private val _groupName =

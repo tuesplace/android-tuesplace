@@ -214,7 +214,10 @@ fun NavHost(navController: NavHostController) {
                 setTeacher = { viewModel.teachers(it) },
                 groupsType = groupType,
                 setGroupsType = { viewModel.groupsType(it) },
-                onTeacherClick = { viewModel.addTeacher(it) },
+                onTeacherClick = {
+                    viewModel.addTeacher(it)
+                    viewModel.teachers(EMPTY_STRING)
+                                 },
                 classListVisibility = classListVisibility,
                 teacherListVisibility = teachersListVisibility,
                 setClassVisibility = { viewModel.classListVisibility(it) },
@@ -226,7 +229,8 @@ fun NavHost(navController: NavHostController) {
                     navController.navigate(ALL_GROUPS_SCREEN)
                     viewModel.resetState()
                 },
-                getAllProfilesUiState = getAllProfilesUiState
+                getAllProfilesUiState = getAllProfilesUiState,
+                selectedTeachers = viewModel.teachersList
             )
         }
         composable(ALL_GROUPS_SCREEN) {
@@ -300,8 +304,10 @@ fun NavHost(navController: NavHostController) {
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
                 if (SessionManager.getUser()?.role == ADMIN_ROLE) {
-                    backStackEntry.arguments?.getString(ID_STRING)
-                        ?.let { viewModel.getProfile(it) }
+                    if (SessionManager.getUser()?._id != backStackEntry.arguments?.getString(ID_STRING)) {
+                        backStackEntry.arguments?.getString(ID_STRING)
+                            ?.let { viewModel.getProfile(it) }
+                    }
                 }
             }
             ProfileScreen(
@@ -311,7 +317,7 @@ fun NavHost(navController: NavHostController) {
                         bundleOf(ID_STRING to it,
                             IS_ADMIN to (backStackEntry.arguments?.getString(ID_STRING) == EMPTY_STRING)))
                 },
-                isAdmin = SessionManager.getUser()?.role == ADMIN_ROLE
+                isAdmin = SessionManager.getUser()?.role == ADMIN_ROLE && SessionManager.getUser()?._id != backStackEntry.arguments?.getString(ID_STRING)
             )
         }
         composable(EDIT_PROFILE_SCREEN) { backStackEntry ->

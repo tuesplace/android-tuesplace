@@ -266,8 +266,7 @@ fun EditProfileUi(
                 placeholder = profileData.fullName,
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
 
             TextFieldWithTitle(
@@ -277,8 +276,7 @@ fun EditProfileUi(
                 placeholder = profileData.email?: EMPTY_STRING,
                 enabled = true,
                 isError = null,
-                modifier = Modifier.clickable { },
-                setClassVisibility = null
+                modifier = Modifier.clickable { }
             )
 
             if (profileData.role == stringResource(id = R.string.student_role)) {
@@ -290,8 +288,7 @@ fun EditProfileUi(
                         placeholder = it,
                         enabled = true,
                         isError = null,
-                        modifier = Modifier.clickable { },
-                        setClassVisibility = null
+                        modifier = Modifier.clickable { }
                     )
                 }
             }

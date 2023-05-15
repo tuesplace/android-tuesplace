@@ -2,9 +2,12 @@ package com.mobile.tuesplace.ui.groups
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +38,7 @@ fun CreateGroupScreen(
     groupsType: Boolean,
     setGroupsType: (Boolean) -> Unit,
     onClassClick: (String) -> Unit,
-    onTeacherClick: (String) -> Unit,
+    onTeacherClick: (ProfileResponseData) -> Unit,
     classListVisibility: Boolean,
     setClassVisibility: (Boolean) -> Unit,
     teacherListVisibility: Boolean,
@@ -44,6 +47,7 @@ fun CreateGroupScreen(
     createGroupUiState: CreateGroupUiState,
     onCreateGroupSuccess: () -> Unit,
     getAllProfilesUiState: GetAllProfilesUiState,
+    selectedTeachers: ArrayList<ProfileResponseData>,
 ) {
     when (getAllProfilesUiState) {
         GetAllProfilesUiState.Empty -> {}
@@ -51,6 +55,7 @@ fun CreateGroupScreen(
         GetAllProfilesUiState.Loading -> {
             Loading()
         }
+
         is GetAllProfilesUiState.Success -> {
             teachers?.let {
                 CreateGroupUi(
@@ -69,7 +74,8 @@ fun CreateGroupScreen(
                     setClassVisibility = setClassVisibility,
                     teacherListVisibility = teacherListVisibility,
                     setTeacherListVisibility = setTeacherListVisibility,
-                    teachers = it
+                    teachers = it,
+                    selectedTeachers = selectedTeachers
                 )
             }
         }
@@ -89,6 +95,7 @@ fun CreateGroupScreen(
         CreateGroupUiState.Loading -> {
             Loading()
         }
+
         CreateGroupUiState.Success -> {
             onCreateGroupSuccess()
             Toast.makeText(
@@ -112,19 +119,20 @@ fun CreateGroupUi(
     groupsType: Boolean,
     setGroupsType: (Boolean) -> Unit,
     onClassClick: (String) -> Unit,
-    onTeacherClick: (String) -> Unit,
+    onTeacherClick: (ProfileResponseData) -> Unit,
     classListVisibility: Boolean,
     setClassVisibility: (Boolean) -> Unit,
     teacherListVisibility: Boolean,
     setTeacherListVisibility: (Boolean) -> Unit,
     teachers: List<ProfileResponseData>,
+    selectedTeachers: ArrayList<ProfileResponseData>
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_blue))
     ) {
-        val (btn, groupNameField, groupClassesField, groupTeachersField, groupTypeField, classesList, teachersList) = createRefs()
+        val (btn, groupNameField, groupClassesField, groupTeachersField, selectedTeachersList, groupTypeField, classesList, teachersList) = createRefs()
 
         TextFieldWithTitle(
             title = stringResource(id = R.string.name),
@@ -139,8 +147,7 @@ fun CreateGroupUi(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                },
-            setClassVisibility = null
+                }
         )
 
         TextFieldWithTitle(
@@ -156,25 +163,58 @@ fun CreateGroupUi(
                     top.linkTo(groupNameField.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                },
-            setClassVisibility = setClassVisibility
+                }
         )
+
+        Box(modifier = Modifier
+            .padding(start = 16.dp, top = 8.dp)
+            .fillMaxWidth()
+            .constrainAs(selectedTeachersList) {
+                top.linkTo(groupClassesField.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }){
+            if (selectedTeachers.isNotEmpty()) {
+                LazyRow{
+                    itemsIndexed(selectedTeachers) { _, data ->
+                        StudentItem(
+                            student = data,
+                            onClick = {},
+                            modifier = Modifier
+                                .padding(6.dp)
+                                .size(100.dp)
+                                .border(
+                                    1.dp,
+                                    colorResource(id = R.color.baby_blue),
+                                    RoundedCornerShape(8.dp)
+                                )
+                        )
+                    }
+                }
+            }
+        }
 
         TextFieldWithTitle(
             title = stringResource(id = R.string.teachers),
             value = teacher,
-            onValueChange = setTeacher,
+            onValueChange = {
+                setTeacher(it)
+                if ((teacher.isNotEmpty() && (teacher.length==1))) {
+                    setTeacherListVisibility(false)
+                } else {
+                    setTeacherListVisibility(true)
+                }
+                            },
             placeholder = stringResource(id = R.string.choose_teacher),
             enabled = true,
             isError = null,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 .constrainAs(groupTeachersField) {
-                    top.linkTo(groupClassesField.bottom)
+                    top.linkTo(selectedTeachersList.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                },
-            setClassVisibility = setTeacherListVisibility
+                }
         )
 
         Column(
@@ -226,6 +266,7 @@ fun CreateGroupUi(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    top.linkTo(groupTypeField.bottom)
                 }
         )
         if (classListVisibility) {
@@ -245,9 +286,9 @@ fun CreateGroupUi(
         }
 
         if (teacherListVisibility) {
-            LazyColumn(
+            Column(
                 modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp)
+                    .padding(start = 16.dp, end = 16.dp)
                     .fillMaxWidth()
                     .constrainAs(teachersList) {
                         top.linkTo(groupTeachersField.bottom)
@@ -255,13 +296,15 @@ fun CreateGroupUi(
                         end.linkTo(parent.end)
                     }
             ) {
-                itemsIndexed(teachers.filter { profile -> profile.fullName.contains(teacher) }) { _, data ->
-                    TeacherSearchItem(
-                        data,
-                        onTeacherClick,
-                        setTeacherListVisibility,
-                        LocalContext.current
-                    )
+                teachers.forEach {
+                    if (it.fullName.contains(teacher)) {
+                        TeacherSearchItem(
+                            it,
+                            onTeacherClick,
+                            setTeacherListVisibility,
+                            LocalContext.current
+                        )
+                    }
                 }
             }
         }
