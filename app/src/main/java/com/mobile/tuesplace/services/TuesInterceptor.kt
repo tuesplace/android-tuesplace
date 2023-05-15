@@ -23,28 +23,17 @@ class TuesInterceptor(private val context: Context) : Interceptor {
 
 
         if (TextUtils.isEmpty(noTokenHeader)) {
-            //set token
-//            val token = getToken()
             if (token.isEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     token = SessionManager.getInstance(dataStore = context.dataStore)
                         .fetchAuthToken()
                 }
-                Log.d("testToken", token)
             }
             if (!TextUtils.isEmpty(token)) {
                 newRequest.addHeader("Authorization", "Bearer $token")
             }
         } else {
-            //We should remove unnecessary header
             newRequest.removeHeader(HEADER_PREFIX_TOKEN)
-            //If the token is refresh token we use it for refreshing the token
-//            if (noTokenHeader.equals(HEADER_VALUE_REFRESH_TOKEN)) {
-//                val refreshToken = Api.getInstance().refreshToken
-//                if (!TextUtils.isEmpty(refreshToken)) {
-//                    newRequest.addHeader("Authorization", "Bearer $refreshToken")
-//                }
-//            }
         }
 
         return chain.proceed(newRequest.build())

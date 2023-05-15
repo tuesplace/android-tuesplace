@@ -11,9 +11,11 @@ import com.mobile.tuesplace.services.MarkService
 import com.mobile.tuesplace.services.PostService
 import com.mobile.tuesplace.services.SubmissionsService
 import com.mobile.tuesplace.ui.states.CreateSubmissionMarkUiState
+import com.mobile.tuesplace.ui.states.EditMarkUiState
 import com.mobile.tuesplace.ui.states.GetPostSubmissionsUiState
 import com.mobile.tuesplace.ui.states.GetPostUiState
 import com.mobile.tuesplace.usecase.CreateSubmissionMarkUseCase
+import com.mobile.tuesplace.usecase.EditMarkUseCase
 import com.mobile.tuesplace.usecase.GetPostSubmissionsUseCase
 import com.mobile.tuesplace.usecase.GetPostUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,8 @@ import kotlinx.coroutines.launch
 class SubmissionsViewModel(
     private val getPostSubmissionsUseCase: GetPostSubmissionsUseCase,
     private val getPostUseCase: GetPostUseCase,
-    private val createSubmissionMarkUseCase: CreateSubmissionMarkUseCase
+    private val createSubmissionMarkUseCase: CreateSubmissionMarkUseCase,
+    private val editMarkUseCase: EditMarkUseCase
 ): ViewModel() {
 
     private val _getPostSubmissionsUiState =
@@ -133,6 +136,31 @@ class SubmissionsViewModel(
                     }
 
                 }, groupId, postId, submissionId, mark
+            )
+        }
+    }
+
+    private val _editMarkUiState =
+        MutableStateFlow<EditMarkUiState>(EditMarkUiState.Empty)
+    val editMarkUiState: StateFlow<EditMarkUiState> = _editMarkUiState
+
+    fun editMark(groupId: String, studentId: String, markId: String, mark: Double) {
+        viewModelScope.launch {
+            editMarkUseCase.invoke(
+                object: MarkService.MarkCallback<Unit> {
+                    override fun onSuccess(generic: Unit) {
+                        viewModelScope.launch {
+                            _editMarkUiState.emit(EditMarkUiState.Success)
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        viewModelScope.launch {
+                            _editMarkUiState.emit(EditMarkUiState.Error(error))
+                        }
+                    }
+                },
+                groupId, studentId, markId, mark
             )
         }
     }

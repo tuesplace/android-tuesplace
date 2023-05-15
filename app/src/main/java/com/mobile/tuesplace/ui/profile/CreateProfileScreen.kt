@@ -21,6 +21,7 @@ import com.mobile.tuesplace.IMAGE_FILE_TYPE
 import com.mobile.tuesplace.MULTIPART_NAME_IMAGE
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.states.CreateProfileUiState
@@ -40,7 +41,7 @@ fun CreateProfileScreen(
     onImageUpload: (MultipartBody.Part) -> Unit,
     onAddPhotoClick: () -> Unit,
     createProfileUiState: CreateProfileUiState,
-    onCreateSuccess: () -> Unit
+    onCreateSuccess: () -> Unit,
 ) {
     CreateProfileUi(
         name = name,
@@ -55,11 +56,20 @@ fun CreateProfileScreen(
         onImageUpload = onImageUpload,
         onAddPhotoClick = onAddPhotoClick
     )
-    
+
     when (createProfileUiState) {
         CreateProfileUiState.Empty -> {}
-        is CreateProfileUiState.Error -> {}
-        CreateProfileUiState.Loading -> {}
+        is CreateProfileUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                createProfileUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        CreateProfileUiState.Loading -> {
+            Loading()
+        }
         CreateProfileUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,
@@ -83,7 +93,7 @@ fun CreateProfileUi(
     setGrade: (String) -> Unit,
     onCreateClick: () -> Unit,
     onImageUpload: (MultipartBody.Part) -> Unit,
-    onAddPhotoClick: () -> Unit
+    onAddPhotoClick: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -177,8 +187,10 @@ fun CreateProfileUi(
         }
 
         GradientBorderButtonRound(
-            colors = listOf(colorResource(id = R.color.baby_blue),
-                colorResource(id = R.color.lighter_dark_blue)),
+            colors = listOf(
+                colorResource(id = R.color.baby_blue),
+                colorResource(id = R.color.lighter_dark_blue)
+            ),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.create),
             onClick = { onCreateClick() },

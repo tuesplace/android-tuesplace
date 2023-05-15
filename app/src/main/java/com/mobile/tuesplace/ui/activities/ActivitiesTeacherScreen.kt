@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.ui.activities
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,7 @@ import com.mobile.tuesplace.TWO
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
 import com.mobile.tuesplace.ui.EmptyScreen
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.numToDay
 import com.mobile.tuesplace.ui.states.GetActivitiesUiState
 
@@ -33,9 +36,15 @@ fun ActivitiesTeacherScreen(
             EmptyScreen()
         }
         is GetActivitiesUiState.Error -> {
-            val exception = getActivitiesUiState.exception
+            Toast.makeText(
+                LocalContext.current,
+                getActivitiesUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
         }
-        GetActivitiesUiState.Loading -> {}
+        GetActivitiesUiState.Loading -> {
+            Loading()
+        }
         is GetActivitiesUiState.Success -> {
             ActivitiesTeacherUi(profileId = profileId,
                 list = getActivitiesUiState.activities)

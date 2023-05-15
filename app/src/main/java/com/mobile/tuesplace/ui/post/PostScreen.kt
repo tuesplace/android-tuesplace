@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -37,6 +38,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.*
 import com.mobile.tuesplace.ui.CommentItem
 import com.mobile.tuesplace.ui.CreateCommentItem
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.states.*
 import okhttp3.MultipartBody
@@ -76,7 +78,9 @@ fun PostScreen(
 ) {
     when (getPostUiState) {
         GetPostUiState.Empty -> {}
-        GetPostUiState.Loading -> {}
+        GetPostUiState.Loading -> {
+            Loading()
+        }
         is GetPostUiState.Error -> {}
         is GetPostUiState.Success -> {
             onPostSuccess()
@@ -87,7 +91,9 @@ fun PostScreen(
     when (getProfileUiState) {
         GetProfileUiState.Empty -> {}
         is GetProfileUiState.Error -> {}
-        GetProfileUiState.Loading -> {}
+        GetProfileUiState.Loading -> {
+            Loading()
+        }
         is GetProfileUiState.Success -> {
             onGetProfileSuccess()
         }
@@ -96,7 +102,9 @@ fun PostScreen(
     when (getPostCommentsUiState) {
         GetPostCommentsUiState.Empty -> {}
         is GetPostCommentsUiState.Error -> {}
-        GetPostCommentsUiState.Loading -> {}
+        GetPostCommentsUiState.Loading -> {
+            Loading()
+        }
         is GetPostCommentsUiState.Success -> {
             if (post != null && myProfile != null) {
                 if (post.assignmentInfo.isAssignment) {
@@ -144,7 +152,9 @@ fun PostScreen(
     when (editCommentUiState) {
         EditCommentsUiState.Empty -> {}
         is EditCommentsUiState.Error -> {}
-        EditCommentsUiState.Loading -> {}
+        EditCommentsUiState.Loading -> {
+            Loading()
+        }
         EditCommentsUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,
@@ -158,7 +168,9 @@ fun PostScreen(
     when (deleteCommentUiState) {
         DeleteCommentUiState.Empty -> {}
         is DeleteCommentUiState.Error -> {}
-        DeleteCommentUiState.Loading -> {}
+        DeleteCommentUiState.Loading -> {
+            Loading()
+        }
         DeleteCommentUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,
@@ -172,7 +184,9 @@ fun PostScreen(
     when (createCommentUiState) {
         CreateCommentUiState.Empty -> {}
         is CreateCommentUiState.Error -> {}
-        CreateCommentUiState.Loading -> {}
+        CreateCommentUiState.Loading -> {
+            Loading()
+        }
         CreateCommentUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,
@@ -191,7 +205,7 @@ fun PostScreen(
 
         }
         CreateSubmissionUiState.Loading -> {
-
+            Loading()
         }
         CreateSubmissionUiState.Success -> {
             Toast.makeText(
@@ -247,7 +261,8 @@ fun PostUi(
                         .padding(4.dp)
                         .size(40.dp)
                         .clip(CircleShape)
-                        .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+                        .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape),
+                    contentScale = ContentScale.Crop
                 )
                 postResponseData.owner.data?.fullName?.let {
                     Text(
@@ -265,9 +280,13 @@ fun PostUi(
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .clickable {
-                        onEditClick(PostRequestData(postResponseData.title,
-                            postResponseData.body,
-                            assignmentInfo = null))
+                        onEditClick(
+                            PostRequestData(
+                                postResponseData.title,
+                                postResponseData.body,
+                                assignmentInfo = null
+                            )
+                        )
                     },
                 fontSize = 12.sp
             )
@@ -452,7 +471,8 @@ fun AssignmentUserScreenUi(
                         .padding(4.dp)
                         .size(40.dp)
                         .clip(CircleShape)
-                        .border(1.dp, colorResource(id = R.color.white), CircleShape)
+                        .border(1.dp, colorResource(id = R.color.white), CircleShape),
+                    contentScale = ContentScale.Crop
                 )
                 postResponseData.owner.data?.fullName?.let {
                     Text(

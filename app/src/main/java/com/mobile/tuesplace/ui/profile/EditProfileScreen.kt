@@ -27,11 +27,13 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.IMAGE_FILE_TYPE
 import com.mobile.tuesplace.MULTIPART_NAME_IMAGE
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.states.*
@@ -61,8 +63,16 @@ fun EditProfileScreen(
 ) {
     when (profileUiState) {
         GetProfileByIdUiState.Empty -> {}
-        is GetProfileByIdUiState.Error -> {}
-        GetProfileByIdUiState.Loading -> {}
+        is GetProfileByIdUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                profileUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetProfileByIdUiState.Loading -> {
+            Loading()
+        }
         is GetProfileByIdUiState.Success -> {
             EditProfileUi(
                 profileData = profileUiState.profile,
@@ -83,8 +93,16 @@ fun EditProfileScreen(
     }
     when (getProfileUiState) {
         GetProfileUiState.Empty -> {}
-        is GetProfileUiState.Error -> {}
-        GetProfileUiState.Loading -> {}
+        is GetProfileUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getProfileUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetProfileUiState.Loading -> {
+            Loading()
+        }
         is GetProfileUiState.Success -> {
             EditProfileUi(
                 profileData = getProfileUiState.profile,
@@ -106,7 +124,11 @@ fun EditProfileScreen(
     when (editProfileStateFlow) {
         EditProfileUiState.Empty -> {}
         is EditProfileUiState.Error -> {
-
+            Toast.makeText(
+                LocalContext.current,
+                editProfileStateFlow.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
         }
         EditProfileUiState.Success -> {
             onEditProfileSuccess()
@@ -116,13 +138,23 @@ fun EditProfileScreen(
                 Toast.LENGTH_LONG
             ).show()
         }
-        EditProfileUiState.Loading -> {}
+        EditProfileUiState.Loading -> {
+            Loading()
+        }
     }
 
     when(profileAssetsUiState) {
         PutMyProfileAssetsUiState.Empty -> {}
-        is PutMyProfileAssetsUiState.Error -> {}
-        PutMyProfileAssetsUiState.Loading -> {}
+        is PutMyProfileAssetsUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                profileAssetsUiState.error,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        PutMyProfileAssetsUiState.Loading -> {
+            Loading()
+        }
         PutMyProfileAssetsUiState.Success -> {
             onEditProfileSuccess()
             Toast.makeText(
@@ -135,8 +167,16 @@ fun EditProfileScreen(
 
     when (deleteProfileUiState) {
         DeleteProfileUiState.Empty -> {}
-        is DeleteProfileUiState.Error -> {}
-        DeleteProfileUiState.Loading -> {}
+        is DeleteProfileUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                deleteProfileUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        DeleteProfileUiState.Loading -> {
+            Loading()
+        }
         DeleteProfileUiState.Success -> {
             onEditProfileSuccess()
             Toast.makeText(
@@ -234,7 +274,7 @@ fun EditProfileUi(
                 title = stringResource(id = R.string.email),
                 value = changeEmail,
                 onValueChange = setChangedEmail,
-                placeholder = profileData.email,
+                placeholder = profileData.email?: EMPTY_STRING,
                 enabled = true,
                 isError = null,
                 modifier = Modifier.clickable { },

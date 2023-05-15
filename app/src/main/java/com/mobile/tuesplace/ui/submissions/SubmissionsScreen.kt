@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.ui.submissions
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +30,7 @@ import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ZERO_STRING
 import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.data.SubmissionData
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.SubmissionItem
 import com.mobile.tuesplace.ui.states.CreateSubmissionMarkUiState
 import com.mobile.tuesplace.ui.states.GetPostSubmissionsUiState
@@ -48,13 +51,22 @@ fun SubmissionsScreen(
     markValue: String,
     onMarkChange: (String) -> Unit,
     submissions: SnapshotStateList<SubmissionData>,
-    createSubmissionMarkUiState: CreateSubmissionMarkUiState
+    createSubmissionMarkUiState: CreateSubmissionMarkUiState,
+    onSaveEditClick: (String, String, Double) -> Unit,
 ) {
     when(getPostUiState) {
         GetPostUiState.Empty -> {}
-        is GetPostUiState.Error -> {}
+        is GetPostUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getPostUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
         is GetPostUiState.Loaded -> {}
-        GetPostUiState.Loading -> {}
+        GetPostUiState.Loading -> {
+            Loading()
+        }
         is GetPostUiState.Success -> {
             onPostSuccess()
         }
@@ -62,8 +74,16 @@ fun SubmissionsScreen(
 
     when (getPostSubmissionsUiState) {
         GetPostSubmissionsUiState.Empty -> {}
-        is GetPostSubmissionsUiState.Error -> {}
-        GetPostSubmissionsUiState.Loading -> {}
+        is GetPostSubmissionsUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getPostSubmissionsUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetPostSubmissionsUiState.Loading -> {
+            Loading()
+        }
         is GetPostSubmissionsUiState.Success -> {
             if (postResponseData != null) {
                 SubmissionsUi(
@@ -76,7 +96,8 @@ fun SubmissionsScreen(
                     submissionIndex = submissionIndex,
                     onSaveClick = onSaveClick,
                     markValue = markValue,
-                    onMarkChange = onMarkChange
+                    onMarkChange = onMarkChange,
+                    onSaveEditClick = onSaveEditClick
                 )
             }
         }
@@ -93,6 +114,7 @@ fun SubmissionsUi(
     onDeleteClick: (String) -> Unit,
     submissionIndex: Int,
     onSaveClick: (Pair<String, String>) -> Unit,
+    onSaveEditClick: (String, String, Double) -> Unit,
     markValue: String,
     onMarkChange: (String) -> Unit
 ) {
@@ -230,7 +252,11 @@ fun SubmissionsUi(
                             modifier = Modifier
                                 .clickable {
                                     if (submissionIndex != -1) {
-                                        onSaveClick(Pair(submissions[submissionIndex]._id, markValue))
+                                        if (submissions[submissionIndex].marks.isEmpty()){
+                                            onSaveClick(Pair(submissions[submissionIndex]._id, markValue))
+                                        } else {
+                                            onSaveEditClick(submissions[submissionIndex].owner._id, submissions[submissionIndex]._id, markValue.toDouble())
+                                        }
                                     }
                                     setDialogVisibility(false)
                                     setSubmissionIndex(-1)

@@ -2,7 +2,6 @@ package com.mobile.tuesplace.ui.groups
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -44,12 +43,14 @@ fun CreateGroupScreen(
     teachers: List<ProfileResponseData>?,
     createGroupUiState: CreateGroupUiState,
     onCreateGroupSuccess: () -> Unit,
-    getAllProfilesUiState: GetAllProfilesUiState
+    getAllProfilesUiState: GetAllProfilesUiState,
 ) {
     when (getAllProfilesUiState) {
         GetAllProfilesUiState.Empty -> {}
         is GetAllProfilesUiState.Error -> {}
-        GetAllProfilesUiState.Loading -> {}
+        GetAllProfilesUiState.Loading -> {
+            Loading()
+        }
         is GetAllProfilesUiState.Success -> {
             teachers?.let {
                 CreateGroupUi(
@@ -77,8 +78,17 @@ fun CreateGroupScreen(
 
     when (createGroupUiState) {
         CreateGroupUiState.Empty -> {}
-        is CreateGroupUiState.Error -> {}
-        CreateGroupUiState.Loading -> {}
+        is CreateGroupUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                createGroupUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        CreateGroupUiState.Loading -> {
+            Loading()
+        }
         CreateGroupUiState.Success -> {
             onCreateGroupSuccess()
             Toast.makeText(
@@ -109,9 +119,10 @@ fun CreateGroupUi(
     setTeacherListVisibility: (Boolean) -> Unit,
     teachers: List<ProfileResponseData>,
 ) {
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(id = R.color.dark_blue))
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_blue))
     ) {
         val (btn, groupNameField, groupClassesField, groupTeachersField, groupTypeField, classesList, teachersList) = createRefs()
 
@@ -187,13 +198,13 @@ fun CreateGroupUi(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                buttonChangeColorOnClick(
+                ButtonChangeColorOnClick(
                     text = stringResource(id = R.string.classes),
                     colorState = groupsType,
                     setColor = setGroupsType
                 )
 
-                buttonChangeColorOnClick(
+                ButtonChangeColorOnClick(
                     text = stringResource(id = R.string.chats),
                     colorState = !groupsType,
                     setColor = { setGroupsType(groupsType) }
@@ -202,8 +213,10 @@ fun CreateGroupUi(
         }
 
         GradientBorderButtonRound(
-            colors = listOf(colorResource(id = R.color.baby_blue),
-                colorResource(id = R.color.lighter_dark_blue)),
+            colors = listOf(
+                colorResource(id = R.color.baby_blue),
+                colorResource(id = R.color.lighter_dark_blue)
+            ),
             paddingValues = PaddingValues(16.dp),
             buttonText = stringResource(id = R.string.create_group),
             onClick = { onCreateGroupClick() },
@@ -243,10 +256,12 @@ fun CreateGroupUi(
                     }
             ) {
                 itemsIndexed(teachers.filter { profile -> profile.fullName.contains(teacher) }) { _, data ->
-                    TeacherSearchItem(data,
+                    TeacherSearchItem(
+                        data,
                         onTeacherClick,
                         setTeacherListVisibility,
-                        LocalContext.current)
+                        LocalContext.current
+                    )
                 }
             }
         }

@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class AppSettings(
     val token: String = EMPTY_STRING,
     val refreshToken: String = EMPTY_STRING,
-    val user: String = EMPTY_STRING
+    val user: ProfileResponseData? = null
 )

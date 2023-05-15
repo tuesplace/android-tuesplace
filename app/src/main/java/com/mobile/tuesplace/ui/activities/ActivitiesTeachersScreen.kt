@@ -27,6 +27,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.EmptyScreen
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.SearchView
 import com.mobile.tuesplace.ui.StudentItem
 import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
@@ -41,7 +42,9 @@ fun ActivitiesTeachersScreen(
             EmptyScreen()
         }
         is GetAllProfilesUiState.Error -> {}
-        GetAllProfilesUiState.Loading -> {}
+        GetAllProfilesUiState.Loading -> {
+            Loading()
+        }
         is GetAllProfilesUiState.Success -> {
             ActivitiesTeachersUi(
                 list = getAllProfileUiState.profiles.filter { profile ->
@@ -82,9 +85,11 @@ fun ActivitiesTeachersUi(
             state = textState,
             modifier = Modifier
                 .padding(16.dp)
-                .border(1.dp,
+                .border(
+                    1.dp,
                     colorResource(id = R.color.darker_sea_blue),
-                    RoundedCornerShape(8.dp))
+                    RoundedCornerShape(8.dp)
+                )
                 .constrainAs(search) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)

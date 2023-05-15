@@ -2,7 +2,6 @@ package com.mobile.tuesplace.services
 
 import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.data.BaseResponse
-import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.data.PostResponseData
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,7 +38,7 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
     }
 
     override suspend fun createPost(
-        postCallback: PostService.PostCallback<PostRequestData>,
+        postCallback: PostService.PostCallback<Unit>,
         groupId: String,
         post: PostRequestData,
     ) {
@@ -50,7 +49,7 @@ class PostServiceImpl(private val retrofit: ApiServices) : PostService {
                     response: Response<BaseResponse<PostRequestData>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { postCallback.onSuccess(it) }
+                        postCallback.onSuccess(Unit)
                     } else {
                         postCallback.onError(response.message())
                     }

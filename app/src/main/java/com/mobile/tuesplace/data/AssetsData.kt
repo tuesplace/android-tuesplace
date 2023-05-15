@@ -1,5 +1,8 @@
 package com.mobile.tuesplace.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AssetData(
     var _id: String,
     var owner: ResolvedAssociation<ProfileData>,
@@ -8,6 +11,7 @@ data class AssetData(
     var src: String,
 )
 
+@Serializable
 data class ProfileAssets(
     var profilePic: ArrayList<ResolvedAssociation<AssetData>>,
 )

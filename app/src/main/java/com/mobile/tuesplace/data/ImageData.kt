@@ -9,22 +9,15 @@ data class Image<Data>(
 
 data class ImageData(
     var _id: String,
-    var owner: OwnerData,
+    var owner: ShouldResolveData,
     var key: String,
     var mimetype: String,
     var meta: MetaData,
     var createdAt: String,
     var updatedAt: String,
     var src: String
-    // v
 )
 
 data class MetaData(
     var originalName: String
-)
-
-data class OwnerData(
-    var _id: String,
-    var collectionName: String,
-    var shouldResolve: Boolean
 )

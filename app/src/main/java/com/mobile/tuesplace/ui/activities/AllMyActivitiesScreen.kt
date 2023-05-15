@@ -17,6 +17,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.numToDay
 import com.mobile.tuesplace.ui.states.GetMyActivitiesUiState
 
@@ -25,7 +26,9 @@ fun AllMyActivitiesScreen(getMyActivitiesUiState: GetMyActivitiesUiState) {
     when (getMyActivitiesUiState) {
         GetMyActivitiesUiState.Empty -> {}
         is GetMyActivitiesUiState.Error -> {}
-        GetMyActivitiesUiState.Loading -> {}
+        GetMyActivitiesUiState.Loading -> {
+            Loading()
+        }
         is GetMyActivitiesUiState.Success -> {
             AllMyActivitiesUi(list = getMyActivitiesUiState.activities)
         }

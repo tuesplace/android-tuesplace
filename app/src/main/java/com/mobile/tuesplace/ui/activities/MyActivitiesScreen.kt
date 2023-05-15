@@ -1,5 +1,8 @@
 package com.mobile.tuesplace.ui.activities
 
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -20,11 +24,13 @@ import com.mobile.tuesplace.DATE_PATTERN
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.AgendaItem
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.dayToNum
 import com.mobile.tuesplace.ui.states.GetMyActivitiesUiState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyActivitiesScreen(
     getMyActivitiesUiState: GetMyActivitiesUiState,
@@ -32,8 +38,16 @@ fun MyActivitiesScreen(
 ) {
     when (getMyActivitiesUiState) {
         GetMyActivitiesUiState.Empty -> {}
-        is GetMyActivitiesUiState.Error -> {}
-        GetMyActivitiesUiState.Loading -> {}
+        is GetMyActivitiesUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getMyActivitiesUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetMyActivitiesUiState.Loading -> {
+            Loading()
+        }
         is GetMyActivitiesUiState.Success -> {
             MyActivitiesUi(
                 list = getMyActivitiesUiState.activities.filter { activity ->
@@ -46,6 +60,7 @@ fun MyActivitiesScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyActivitiesUi(list: List<AgendaResponseData>, onFullAgendaClick: () -> Unit) {
     ConstraintLayout(

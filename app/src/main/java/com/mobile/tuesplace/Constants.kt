@@ -26,7 +26,7 @@ const val SPECIFICATION = "v1/specification"
 const val SPECIFICATION_ASSETS = "v1/specification/{specificationId}/assets"
 const val SUBMISSIONS = "v1/groups/{groupId}/posts/{postId}/submissions"
 const val SUBMISSIONS_MARKS = "v1/groups/{groupId}/posts/{postId}/submissions/{submissionId}/marks"
-const val EDIT_MARK = "v1/groups/{groupsId}/posts/{postId}/marks/{markId}"
+const val EDIT_MARK = "v1/groups/{groupsId}/marks/students/{studentId}/{markId}"
 
 var ACCESS_TOKEN = ""
 var USER_ID = ""
@@ -35,6 +35,7 @@ var ROLE = "role"
 const val BLOCKED = "blocked"
 const val GROUP_ID = "groupId"
 const val POST_ID = "postId"
+const val STUDENT_ID = "studentId"
 
 const val DATE_PATTERN = "EEE"
 

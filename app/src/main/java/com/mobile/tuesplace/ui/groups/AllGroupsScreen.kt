@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,7 +22,7 @@ import com.mobile.tuesplace.SUBJECT_TYPE
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.ui.GroupChatItem
 import com.mobile.tuesplace.ui.GroupClassItem
-import com.mobile.tuesplace.ui.buttonChangeColorOnClick
+import com.mobile.tuesplace.ui.ButtonChangeColorOnClick
 import com.mobile.tuesplace.ui.states.GetGroupsUiState
 
 @Composable
@@ -97,13 +95,13 @@ fun AllGroupsUi(
                 },
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.classes),
                 colorState = groupsType,
                 setColor = setGroupsType
             )
 
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.chats),
                 colorState = !groupsType,
                 setColor = { setGroupsType(groupsType) }

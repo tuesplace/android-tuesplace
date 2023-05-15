@@ -15,6 +15,14 @@ class ChatroomViewModel(private val getGroupUseCase: GetGroupUseCase): ViewModel
     private val _getGroupStateFlow = MutableStateFlow<GetGroupUiState>(GetGroupUiState.Empty)
     val groupStateFlow: StateFlow<GetGroupUiState> = _getGroupStateFlow
 
+    private val _comment =
+        MutableStateFlow("")
+    val comment: StateFlow<String> = _comment
+
+    fun comment(commentInput: String) {
+        _comment.value = commentInput
+    }
+
     fun getGroup(groupId: String){
         viewModelScope.launch {
             getGroupUseCase.invoke(object : GroupService.GroupCallback<GroupResponseData>{

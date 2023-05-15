@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.services
 
-import com.mobile.tuesplace.ID_STRING
 import com.mobile.tuesplace.data.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -76,7 +75,7 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
                         if (response.isSuccessful) {
                             response.body()?.response?.let { markCallback.onSuccess(it) }
                         } else {
-                            markCallback.onError(response.message())
+                            markCallback.onError(response.body()?.error?.message?: response.message())
                         }
                     }
 
@@ -88,8 +87,8 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
             )
     }
 
-    override fun editStudentMark(
-        markCallback: MarkService.MarkCallback<SubmissionMarkData>,
+    override suspend fun editStudentMark(
+        markCallback: MarkService.MarkCallback<Unit>,
         groupId: String,
         studentId: String,
         markId: String,
@@ -99,20 +98,20 @@ class MarkServiceImpl(private val retrofit: ApiServices) : MarkService {
             groupId = groupId,
             studentId = studentId,
             markId = markId,
-            mark = mark).enqueue(
-            object : Callback<BaseResponse<SubmissionMarkData>> {
+            mark = MarkRequestData(mark)).enqueue(
+            object : Callback<BaseResponse<Unit>> {
                 override fun onResponse(
-                    call: Call<BaseResponse<SubmissionMarkData>>,
-                    response: Response<BaseResponse<SubmissionMarkData>>,
+                    call: Call<BaseResponse<Unit>>,
+                    response: Response<BaseResponse<Unit>>,
                 ) {
                     if (response.isSuccessful) {
-                        response.body()?.response?.let { markCallback.onSuccess(it) }
+                     markCallback.onSuccess(Unit)
                     } else {
                         markCallback.onError(response.message())
                     }
                 }
 
-                override fun onFailure(call: Call<BaseResponse<SubmissionMarkData>>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Unit>>, t: Throwable) {
                     t.localizedMessage?.let { markCallback.onError(it) }
                 }
             })

@@ -17,25 +17,34 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val context: Context,
+    context: Context,
     private val profileUseCase: GetProfileUseCase,
     ) : ViewModel() {
 
     private val sessionManager = SessionManager.getInstance(dataStore = context.dataStore)
+
+    private val _emptyTokensStateFlow = MutableStateFlow(false)
+    val emptyTokensStateFlow: StateFlow<Boolean> = _emptyTokensStateFlow
+
     fun deleteTokensData() {
         viewModelScope.launch {
-            Log.d("savedToken", "delete tokens data")
             deleteSavedTokens()
-//            sessionManager.setTokens()
             sessionManager.setEmptyTokens()
+            _emptyTokensStateFlow.emit(true)
+        }
+    }
+
+    fun setEmptyTokenFalse(){
+        viewModelScope.launch {
+            _emptyTokensStateFlow.emit(false)
         }
     }
 
     private fun deleteSavedTokens() {
         viewModelScope
             .launch {
-                Log.d("savedToken", "delete saved tokens")
                 sessionManager.setAuthEntities(EMPTY_STRING, EMPTY_STRING)
+
             }
     }
 

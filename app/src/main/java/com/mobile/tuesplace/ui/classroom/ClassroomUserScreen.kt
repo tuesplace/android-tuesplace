@@ -1,5 +1,6 @@
 package com.mobile.tuesplace.ui.classroom
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -19,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.GroupData
 import com.mobile.tuesplace.data.GroupResponseData
 import com.mobile.tuesplace.data.PostResponseData
 import com.mobile.tuesplace.ui.AssignmentItem
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.PostItem
 import com.mobile.tuesplace.ui.states.GetGroupUiState
 import com.mobile.tuesplace.ui.states.GetPostsUiState
@@ -39,8 +41,16 @@ fun ClassroomUserScreen(
 ) {
     when (getGroupUiState) {
         GetGroupUiState.Empty -> {}
-        is GetGroupUiState.Error -> {}
-        GetGroupUiState.Loading -> {}
+        is GetGroupUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getGroupUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetGroupUiState.Loading -> {
+            Loading()
+        }
         is GetGroupUiState.Success -> {
             onGroupSuccess()
         }
@@ -50,7 +60,9 @@ fun ClassroomUserScreen(
     when (getPostsUiState) {
         GetPostsUiState.Empty -> {}
         is GetPostsUiState.Error -> {}
-        GetPostsUiState.Loading -> {}
+        GetPostsUiState.Loading -> {
+            Loading()
+        }
         is GetPostsUiState.Success -> {
             if (group != null) {
                 ClassroomUserUi(

@@ -1,9 +1,9 @@
 package com.mobile.tuesplace.ui.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,58 +19,85 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
-import com.mobile.tuesplace.data.ProfileData
 import com.mobile.tuesplace.data.ProfileResponseData
+import com.mobile.tuesplace.session.SessionManager
+import com.mobile.tuesplace.ui.EmptyScreen
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
 import com.mobile.tuesplace.ui.InfoItem
-import com.mobile.tuesplace.ui.states.EditProfileUiState
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.states.GetProfileByIdUiState
-import com.mobile.tuesplace.ui.states.GetProfileUiState
 
 @Composable
 fun ProfileScreen(
     profileUiState: GetProfileByIdUiState,
-    myProfileUiState: GetProfileUiState,
     onEditClick: (String) -> Unit,
-    myProfile: ProfileResponseData?,
     isAdmin: Boolean,
 ) {
-    when (profileUiState) {
-        GetProfileByIdUiState.Empty -> {}
-        is GetProfileByIdUiState.Error -> {}
-        GetProfileByIdUiState.Loading -> {}
-        is GetProfileByIdUiState.Success -> {
-            myProfile?.let {
-                ProfileUi(profileData = profileUiState.profile,
-                    onEditClick,
-                    myProfile = it)
+    val myProfileData = SessionManager.getUser()
+
+    if (isAdmin) {
+        when (profileUiState) {
+            GetProfileByIdUiState.Empty -> {
+                EmptyScreen()
+            }
+            is GetProfileByIdUiState.Error -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    profileUiState.exception ?: stringResource(R.string.create_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            GetProfileByIdUiState.Loading -> {
+                Loading()
+            }
+
+            is GetProfileByIdUiState.Success -> {
+                if (myProfileData != null) {
+                    ProfileUi(
+                        profileData = profileUiState.profile,
+                        onEditClick,
+                        myProfile = myProfileData
+                    )
+                } else {
+                    EmptyScreen()
+                    Toast.makeText(
+                        LocalContext.current,
+                        stringResource(R.string.create_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
-    }
-
-    when (myProfileUiState) {
-        GetProfileUiState.Empty -> {}
-        is GetProfileUiState.Error -> {}
-        GetProfileUiState.Loading -> {}
-        is GetProfileUiState.Success -> {
-            if (isAdmin) {
-                ProfileUi(profileData = myProfileUiState.profile, onEditClick, myProfile = myProfileUiState.profile)
-            }
+    } else {
+        if (myProfileData != null) {
+            ProfileUi(
+                profileData = null,
+                onEditClick = onEditClick,
+                myProfile = myProfileData
+            )
+        } else {
+            EmptyScreen()
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
-
 }
 
 @Composable
 fun ProfileUi(
-    profileData: ProfileResponseData,
+    profileData: ProfileResponseData?,
     onEditClick: (String) -> Unit,
     myProfile: ProfileResponseData,
 ) {
+    val setProfile = profileData?: myProfile
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -102,14 +129,15 @@ fun ProfileUi(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = if (profileData.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
+                painter = if (setProfile.assets?.profilePic?.get(0)?.data?.src?.isEmpty() == true) {
                     painterResource(id = R.drawable.ic_launcher_background)
                 } else {
                     rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
-                        .data(data = profileData.assets?.profilePic?.get(0)?.data?.src)
+                        .data(data = setProfile.assets?.profilePic?.get(0)?.data?.src)
                         .apply(block = fun ImageRequest.Builder.() {
                             crossfade(true)
-                        }).build())
+                        }).build()
+                    )
                 },
                 contentDescription = stringResource(id = R.string.email),
                 contentScale = ContentScale.Crop,
@@ -131,17 +159,22 @@ fun ProfileUi(
                 }
                 .padding(16.dp)
         ) {
-            InfoItem(title = stringResource(id = R.string.name), text = profileData.fullName)
+            InfoItem(title = stringResource(id = R.string.name), text = setProfile.fullName)
             Spacer(modifier = Modifier.padding(6.dp))
-            InfoItem(title = stringResource(id = R.string.role), text = profileData.role)
+            InfoItem(title = stringResource(id = R.string.role), text = setProfile.role)
             Spacer(modifier = Modifier.padding(6.dp))
-            InfoItem(title = stringResource(id = R.string.email), text = profileData.email)
+            InfoItem(
+                title = stringResource(id = R.string.email),
+                text = setProfile.email ?: EMPTY_STRING
+            )
             Spacer(modifier = Modifier.padding(6.dp))
 //            InfoItem(title = stringResource(id = R.string.phone), text = profileData.)
-            if (profileData.role == stringResource(id = R.string.student_role)) {
-                profileData.className?.let {
-                    InfoItem(title = stringResource(id = R.string.class_string),
-                        text = it)
+            if (setProfile.role == stringResource(id = R.string.student_role)) {
+                setProfile.className?.let {
+                    InfoItem(
+                        title = stringResource(id = R.string.class_string),
+                        text = it
+                    )
                 }
             }
         }
@@ -149,11 +182,13 @@ fun ProfileUi(
 
         if (myProfile.role == stringResource(id = R.string.admin_role)) {
             GradientBorderButtonRound(
-                colors = listOf(colorResource(id = R.color.baby_blue),
-                    colorResource(id = R.color.lighter_dark_blue)),
+                colors = listOf(
+                    colorResource(id = R.color.baby_blue),
+                    colorResource(id = R.color.lighter_dark_blue)
+                ),
                 paddingValues = PaddingValues(16.dp),
                 buttonText = stringResource(id = R.string.edit),
-                onClick = { onEditClick(profileData._id) },
+                onClick = { onEditClick(setProfile._id) },
                 buttonPadding = PaddingValues(16.dp),
                 modifier = Modifier
                     .constrainAs(editButton) {
@@ -165,6 +200,7 @@ fun ProfileUi(
         }
     }
 }
+
 
 @Composable
 @Preview

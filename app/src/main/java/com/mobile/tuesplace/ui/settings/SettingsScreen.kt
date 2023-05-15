@@ -20,6 +20,7 @@ import coil.request.ImageRequest
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.SettingsMenuItem
 import com.mobile.tuesplace.ui.states.GetProfileUiState
 
@@ -29,11 +30,15 @@ fun SettingsScreen(
     onSignOutClick: () -> Unit,
     onForgottenPasswordClick: () -> Unit,
     getProfileUiState: GetProfileUiState,
+    onEmptyTokens: () -> Unit,
+    emptyTokensState: Boolean
 ) {
     when (getProfileUiState) {
         GetProfileUiState.Empty -> {}
         is GetProfileUiState.Error -> {}
-        GetProfileUiState.Loading -> {}
+        GetProfileUiState.Loading -> {
+            Loading()
+        }
         is GetProfileUiState.Success -> {
             SettingsUi(
                 onEditClick = onEditClick,
@@ -42,6 +47,12 @@ fun SettingsScreen(
                 profile = getProfileUiState.profile
             )
         }
+    }
+    when (emptyTokensState) {
+        true -> {
+            onEmptyTokens()
+        }
+        false -> {}
     }
 }
 
@@ -93,14 +104,14 @@ fun SettingsUi(
                 }
         )
 
-        SettingsMenuItem(
-            text = stringResource(id = R.string.forgotten_password),
-            onClick = { onForgottenPasswordClick() },
-            modifier = Modifier
-                .constrainAs(forgotPassword) {
-                    top.linkTo(editProfile.bottom)
-                }
-        )
+//        SettingsMenuItem(
+//            text = stringResource(id = R.string.forgotten_password),
+//            onClick = { onForgottenPasswordClick() },
+//            modifier = Modifier
+//                .constrainAs(forgotPassword) {
+//                    top.linkTo(editProfile.bottom)
+//                }
+//        )
 
         GradientBorderButtonRound(
             colors = listOf(colorResource(id = R.color.darker_sea_blue),
@@ -110,6 +121,7 @@ fun SettingsUi(
             onClick = { onSignOutClick() },
             buttonPadding = null,
             modifier = Modifier
+                .padding(top = 30.dp)
                 .padding(6.dp)
                 .constrainAs(signOut) {
                     bottom.linkTo(parent.bottom)

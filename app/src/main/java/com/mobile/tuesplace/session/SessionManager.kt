@@ -1,9 +1,9 @@
 package com.mobile.tuesplace.session
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.data.AppSettings
+import com.mobile.tuesplace.data.ProfileResponseData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -13,6 +13,7 @@ object SessionManager {
 
     private var currentToken: String = EMPTY_STRING
     private var currentRefreshToken: String = EMPTY_STRING
+    private var currentUser: ProfileResponseData? = null
 
     private var sessionManager: SessionManager? = null
 
@@ -25,6 +26,22 @@ object SessionManager {
         return sessionManager as SessionManager
     }
 
+    suspend fun setUser(user: ProfileResponseData?) {
+        currentDataStore?.updateData {
+            it.copy(
+                user = user
+            )
+        }
+        currentUser = user
+    }
+
+    private suspend fun fetchUser(): ProfileResponseData? {
+        return appSettings?.first()?.user
+    }
+
+    fun getUser(): ProfileResponseData? {
+        return currentUser
+    }
     suspend fun setAuthEntities(token: String, refreshToken: String) {
         currentDataStore?.updateData {
             it.copy(
@@ -32,8 +49,6 @@ object SessionManager {
                 refreshToken = refreshToken
             )
         }
-        Log.d("testToken", "set auth entities $token")
-
         currentToken = token
         currentRefreshToken = refreshToken
     }
@@ -47,15 +62,15 @@ object SessionManager {
     }
 
     suspend fun setTokens() {
-        Log.d("savedToken", "fetch " + fetchAuthToken())
         currentToken = fetchAuthToken()
         currentRefreshToken = fetchAuthRefreshToken()
+        currentUser = fetchUser()
     }
 
     fun setEmptyTokens() {
-        Log.d("savedToken", "empty ")
-        currentToken = ""
-        currentRefreshToken = ""
+        currentToken = EMPTY_STRING
+        currentRefreshToken = EMPTY_STRING
+        currentUser = null
     }
 
     fun getToken(): String {

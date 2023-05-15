@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -145,7 +144,7 @@ fun PostItem(
 
         Image(
             painter = painterResource(id = R.drawable.tues_webview),
-            contentDescription = "",
+            contentDescription = EMPTY_STRING,
             modifier = Modifier
                 .padding(6.dp)
                 .size(45.dp)
@@ -173,14 +172,15 @@ fun PostItem(
         }
 
         Text(
-            text = post.createdAt,
+            text = date(post.createdAt),
             color = colorResource(id = R.color.black),
             modifier = Modifier
                 .padding(start = 6.dp)
                 .constrainAs(createTime) {
                     start.linkTo(teacherName.start)
                     top.linkTo(teacherName.bottom)
-                }
+                },
+            fontSize = 12.sp
         )
 
         Text(
@@ -236,7 +236,8 @@ fun CreateCommentItem(
                 .padding(2.dp)
                 .size(40.dp)
                 .clip(CircleShape)
-                .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape)
+                .border(1.dp, colorResource(id = R.color.darker_sea_blue), CircleShape),
+            contentScale = Crop
         )
 
         TextField(
@@ -494,7 +495,7 @@ fun WebViewImage(onImageClick: () -> Unit, image: Painter, text: String, modifie
         Image(
             painter = image,
             contentDescription = stringResource(id = R.string.empty),
-            contentScale = ContentScale.Crop,
+            contentScale = Crop,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp)),
@@ -525,7 +526,8 @@ fun GroupClassItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit)
                     .data(data = it?.get(0)?.data?.src)
                     .apply(block = fun ImageRequest.Builder.() {
                         crossfade(true)
-                    }).build())},
+                    }).build())
+            },
             contentDescription = stringResource(id = R.string.empty),
             contentScale = Crop,
             modifier = Modifier
@@ -696,7 +698,7 @@ fun GroupChatItem(groupData: GroupResponseData, onGroupClick: (String) -> Unit) 
 }
 
 @Composable
-fun buttonChangeColorOnClick(
+fun ButtonChangeColorOnClick(
     text: String,
     colorState: Boolean,
     setColor: (Boolean) -> Unit,
@@ -729,12 +731,14 @@ fun TextFieldWithTitle(
     modifier: Modifier?,
     setClassVisibility: ((Boolean) -> Unit)?,
 ) {
+
     val currentModifier = modifier ?: Modifier
     Column(
         modifier = currentModifier
             .padding(start = 16.dp, end = 16.dp, top = 16.dp)
             .fillMaxWidth()
-            .background(colorResource(id = R.color.dark_blue)),
+            .background(colorResource(id = R.color.dark_blue))
+            .clickable { },
         horizontalAlignment = Start
     ) {
         Text(
@@ -748,7 +752,6 @@ fun TextFieldWithTitle(
             onValueChange = { onValueChange(it) },
             enabled = enabled ?: true,
             isError = isError ?: false,
-//            singleLine = true,
             placeholder = {
                 Text(text = placeholder,
                     color = colorResource(id = R.color.baby_blue))
@@ -779,7 +782,7 @@ fun StudentItem(student: ProfileResponseData, onClick: (String) -> Unit) {
                     }).build())
             },
             contentDescription = stringResource(id = R.string.empty),
-            contentScale = ContentScale.Crop,
+            contentScale = Crop,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
@@ -1171,7 +1174,7 @@ fun AssignmentItem(
                 }
 
                 Text(
-                    text = post.createdAt,
+                    text = date(post.createdAt),
                     color = colorResource(id = R.color.black),
                     fontSize = 10.sp,
                     modifier = Modifier
@@ -1310,7 +1313,7 @@ fun TeacherSearchItem(
                     }).build())
             },
             contentDescription = stringResource(id = R.string.email),
-            contentScale = ContentScale.Crop,
+            contentScale = Crop,
             modifier = Modifier
                 .size(50.dp)
                 .padding(6.dp)
@@ -1364,6 +1367,59 @@ fun ClassSearchItem(
     }
 }
 
+
+@Composable
+fun Loading(){
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.dark_blue))
+    ) {
+        val (headphones, loading) = createRefs()
+
+        Image(
+            painter = painterResource(id = R.drawable.splash_logo2),
+            contentDescription = EMPTY_STRING,
+            modifier = Modifier
+                .size(250.dp)
+                .constrainAs(headphones) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                })
+
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .constrainAs(loading) {
+                    top.linkTo(parent.top, 70.dp)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, contentAlignment = Center
+        ) {
+//            LottieAnimation(
+//                composition = composition,
+//                iterations = LottieConstants.IterateForever
+//            )
+        }
+
+//        Text(
+//            text = stringResource(id = R.string.loading), modifier = Modifier
+//                .size(250.dp)
+//                .constrainAs(title) {
+//                    top.linkTo(headphones.bottom, 50.dp)
+//                    start.linkTo(parent.start)
+//                    end.linkTo(parent.end)
+//                }, style = TextStyle(
+//                color = colorResource(id = R.color.orange),
+//                textAlign = TextAlign.Center, fontSize = 26.sp, fontWeight = FontWeight.Bold
+//            )
+//        )
+    }
+}
 @Composable
 @Preview
 fun Preview() {

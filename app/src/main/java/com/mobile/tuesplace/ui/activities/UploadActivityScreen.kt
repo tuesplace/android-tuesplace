@@ -15,6 +15,7 @@ import androidx.compose.ui.res.colorResource
 import com.mobile.tuesplace.MULTIPART_NAME_XLSX
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.XLSX_FILE_TYPE
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.ResultLauncher
 import com.mobile.tuesplace.ui.states.EditSpecificationUiState
 import com.mobile.tuesplace.ui.states.GetSpecificationUiState
@@ -31,9 +32,15 @@ fun UploadActivityScreen(
     when (specificationUiState) {
         GetSpecificationUiState.Empty -> {}
         is GetSpecificationUiState.Error -> {
-            val exception = specificationUiState.error
+            Toast.makeText(
+                LocalContext.current,
+                specificationUiState.error,
+                Toast.LENGTH_LONG
+            ).show()
         }
-        GetSpecificationUiState.Loading -> {}
+        GetSpecificationUiState.Loading -> {
+            Loading()
+        }
         is GetSpecificationUiState.Success -> {
             onGetSpecificationSuccess(specificationUiState.specification[0]._id)
             UploadActivityUi(onUploadClick)
@@ -43,9 +50,15 @@ fun UploadActivityScreen(
     when (editSpecificationUiState) {
         EditSpecificationUiState.Empty -> {}
         is EditSpecificationUiState.Error -> {
-            val error = editSpecificationUiState.error
+            Toast.makeText(
+                LocalContext.current,
+                editSpecificationUiState.error,
+                Toast.LENGTH_LONG
+            ).show()
         }
-        EditSpecificationUiState.Loading -> {}
+        EditSpecificationUiState.Loading -> {
+            Loading()
+        }
         EditSpecificationUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,

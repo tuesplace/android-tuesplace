@@ -21,3 +21,8 @@ data class AssignmentInfo(
     var isAssignment: Boolean,
     var deadline: Number
 )
+
+data class ReactionsData(
+    var authorId: String,
+    var emoji: String
+)

@@ -3,7 +3,6 @@ package com.mobile.tuesplace.ui.post
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.tuesplace.PostRequestData
-import com.mobile.tuesplace.data.PostData
 import com.mobile.tuesplace.services.PostService
 import com.mobile.tuesplace.ui.states.CreatePostUiState
 import com.mobile.tuesplace.usecase.CreatePostUseCase
@@ -50,8 +49,8 @@ class CreatePostViewModel(private val createPostUseCase: CreatePostUseCase) : Vi
 
     fun createPost(groupId: String, post: PostRequestData) {
         viewModelScope.launch {
-            createPostUseCase.invoke(object : PostService.PostCallback<PostRequestData> {
-                override fun onSuccess(generic: PostRequestData) {
+            createPostUseCase.invoke(object : PostService.PostCallback<Unit> {
+                override fun onSuccess(generic: Unit) {
                     viewModelScope.launch {
                         _createPostStateFlow.emit(CreatePostUiState.Success)
                     }
@@ -64,6 +63,12 @@ class CreatePostViewModel(private val createPostUseCase: CreatePostUseCase) : Vi
                 }
 
             }, groupId = groupId, post = post)
+        }
+    }
+
+    fun resetState(){
+        viewModelScope.launch {
+            _createPostStateFlow.emit(CreatePostUiState.Empty)
         }
     }
 }

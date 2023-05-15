@@ -13,6 +13,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.PostRequestData
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.TextFieldWithTitle
 import com.mobile.tuesplace.ui.states.DeletePostUiState
 import com.mobile.tuesplace.ui.states.EditPostUiState
@@ -41,8 +42,16 @@ fun EditPostScreen(
 
     when (deletePostUiState) {
         DeletePostUiState.Empty -> {}
-        is DeletePostUiState.Error -> {}
-        DeletePostUiState.Loading -> {}
+        is DeletePostUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                deletePostUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        DeletePostUiState.Loading -> {
+            Loading()
+        }
         DeletePostUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,
@@ -56,7 +65,9 @@ fun EditPostScreen(
     when (editPostUiState) {
         EditPostUiState.Empty -> {}
         is EditPostUiState.Error -> {}
-        EditPostUiState.Loading -> {}
+        EditPostUiState.Loading -> {
+            Loading()
+        }
         EditPostUiState.Success -> {
             Toast.makeText(
                 LocalContext.current,

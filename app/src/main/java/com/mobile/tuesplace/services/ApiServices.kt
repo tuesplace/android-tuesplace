@@ -1,6 +1,5 @@
 package com.mobile.tuesplace.services
 
-import android.provider.SyncStateContract
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
@@ -90,7 +89,7 @@ interface ApiServices {
     fun addStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Body mark: Double): Call<BaseResponse<SubmissionMarkData>>
 
     @PUT(STUDENT_MARK)
-    fun editStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String, @Body mark: Double): Call<BaseResponse<SubmissionMarkData>>
+    fun editStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String, @Body mark: MarkRequestData): Call<BaseResponse<Unit>>
 
     @DELETE(STUDENT_MARK)
     fun deleteStudentMark(@Path("groupId") groupId: String, @Path("studentId") studentId: String, @Path("markId") markId: String): Call<BaseResponse<Unit>>
@@ -133,4 +132,5 @@ interface ApiServices {
     @POST(SUBMISSIONS_MARKS)
     fun createSubmissionMark(@Path("groupId") groupId: String, @Path("postId") postId: String, @Path("submissionId") submissionId: String, @Body markRequestData: MarkRequestData): Call<BaseResponse<Unit>>
     //@Query("responseBehavior") responseBehavior: String
+
 }

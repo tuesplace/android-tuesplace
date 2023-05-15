@@ -28,6 +28,7 @@ import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.ui.states.GetAllProfilesUiState
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.EmptyScreen
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.SearchView
 
 @Composable
@@ -43,7 +44,9 @@ fun AllStudentsScreen(
         is GetAllProfilesUiState.Error -> {
             //val error = getAllProfilesUiState.exception
         }
-        GetAllProfilesUiState.Loading -> {}
+        GetAllProfilesUiState.Loading -> {
+            Loading()
+        }
         is GetAllProfilesUiState.Success -> {
             AllStudentsUi(
                 profiles = getAllProfilesUiState.profiles.filter { profile -> profile.role == "student" },

@@ -11,6 +11,8 @@
     <string name="enter_classroom">Към класната стая</string>
     <string name="link_to_website">Влез в сайта</string>
     <string name="create_group">Създай група</string>
+    <string name="create_error">Нещо се обърка. Опитайте отново</string>
+    <string name="create_post">Създай публикация</string>
     <string name="add_student">Добави ученик</string>
     <string name="all_students">Всички ученици</string>
     <string name="all_teachers">Всички учители</string>

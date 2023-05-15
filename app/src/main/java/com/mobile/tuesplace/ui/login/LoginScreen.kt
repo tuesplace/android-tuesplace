@@ -19,8 +19,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mobile.tuesplace.EMPTY_GRADE
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.ui.GradientBorderButtonRound
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.TextFieldFunction
 import com.mobile.tuesplace.ui.states.SignInUiState
 
@@ -37,15 +40,19 @@ fun LoginScreen(
     uiState: SignInUiState,
     onSuccess: () -> Unit,
     isCorrectPassword: Boolean,
-    isCorrectEmail: Boolean
+    isCorrectEmail: Boolean,
 ) {
     when (uiState) {
         SignInUiState.Empty -> {
         }
+
         is SignInUiState.Error -> {
         }
+
         SignInUiState.Loading -> {
+            Loading()
         }
+
         SignInUiState.Success -> {
             onSuccess()
         }
@@ -60,10 +67,13 @@ fun LoginScreen(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier.align(Alignment.Center)
         ) {
-            Image(painter = painterResource(id = R.drawable.logo_2),
+            Image(
+                painter = painterResource(id = R.drawable.logo_2),
                 contentDescription = "",
                 modifier = Modifier.padding(
-                    PaddingValues(start = 16.dp)))
+                    PaddingValues(start = 16.dp)
+                )
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,7 +88,14 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    TextFieldFunction(email, setEmail, stringResource(id = R.string.email), null, true, isError = isCorrectEmail)
+                    TextFieldFunction(
+                        email,
+                        setEmail,
+                        stringResource(id = R.string.email),
+                        null,
+                        true,
+                        isError = isCorrectEmail
+                    )
                     TextField(
                         value = password,
                         isError = isCorrectPassword,
@@ -88,9 +105,11 @@ fun LoginScreen(
                             IconButton(onClick = {
                                 setPasswordVisibility(passwordVisibility)
                             }) {
-                                Icon(painter = painterResource(id = R.drawable.ic_view),
-                                    contentDescription = "",
-                                    tint = Color.Black)
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_view),
+                                    contentDescription = EMPTY_STRING,
+                                    tint = Color.Black
+                                )
                             }
                         },
                         maxLines = 1,
@@ -110,16 +129,16 @@ fun LoginScreen(
                             disabledLeadingIconColor = Color.Black,
                             placeholderColor = Color.Black
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     )
-                    Text(
-                        text = stringResource(id = R.string.forgotten_password),
-                        color = colorResource(id = R.color.white),
-                        style = TextStyle(textDecoration = TextDecoration.Underline),
-                        modifier = Modifier
-                            .padding(PaddingValues(16.dp))
-                            .clickable { onForgottenPasswordClick() }
-                    )
+//                    Text(
+//                        text = stringResource(id = R.string.forgotten_password),
+//                        color = colorResource(id = R.color.white),
+//                        style = TextStyle(textDecoration = TextDecoration.Underline),
+//                        modifier = Modifier
+//                            .padding(PaddingValues(16.dp))
+//                            .clickable { onForgottenPasswordClick() }
+//                    )
                     GradientBorderButtonRound(
                         paddingValues = PaddingValues(1.dp),
                         buttonText = stringResource(id = R.string.login),
@@ -144,5 +163,6 @@ fun LoginScreen(
 fun ComposablePreview() {
     LoginScreen({}, {}, "", {}, "", {}, true, {}, SignInUiState.Empty, {},
         isCorrectPassword = false,
-        isCorrectEmail = false)
+        isCorrectEmail = false
+    )
 }

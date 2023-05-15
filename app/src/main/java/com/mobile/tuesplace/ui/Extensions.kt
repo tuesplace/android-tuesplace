@@ -13,6 +13,9 @@ import androidx.navigation.*
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.R
 import java.io.*
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 fun convertMinutesToHoursAndMinutes(minutes: Int): String {
@@ -133,6 +136,13 @@ fun listAllGrades(): List<String> {
         TWELFTH_D_GRADE,
         EMPTY_GRADE
     )
+}
+
+fun date(dateString: String): String{
+    val dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+    val instant = Instant.parse(dateString)
+    val zoneId = ZoneId.systemDefault()
+    return instant.atZone(zoneId).toLocalDate().format(dateFormatter)
 }
 
 

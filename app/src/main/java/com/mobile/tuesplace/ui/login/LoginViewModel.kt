@@ -1,10 +1,9 @@
 package com.mobile.tuesplace.ui.login
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobile.tuesplace.data.ProfileData
+import com.mobile.tuesplace.EMPTY_STRING
 import com.mobile.tuesplace.data.ProfileResponseData
 import com.mobile.tuesplace.data.SignInData
 import com.mobile.tuesplace.dataStore
@@ -23,13 +22,13 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
     private val signInUseCase: SignInUseCase,
     private val profileUseCase: GetProfileUseCase,
-    private val context: Context
+    context: Context
 ) : ViewModel() {
 
     private val sessionManager = SessionManager.getInstance(dataStore = context.dataStore)
 
     private val _email =
-        MutableStateFlow("")
+        MutableStateFlow(EMPTY_STRING)
     val email: StateFlow<String> = _email
 
     fun email(emailInput: String) {
@@ -37,7 +36,7 @@ class LoginViewModel(
     }
 
     private val _password =
-        MutableStateFlow("")
+        MutableStateFlow(EMPTY_STRING)
     val password: StateFlow<String> = _password
 
     fun password(passwordInput: String) {
@@ -61,7 +60,6 @@ class LoginViewModel(
     private fun checkIfUserIsLoggedIn() {
         viewModelScope.launch {
             val token = sessionManager.fetchAuthToken()
-            Log.d("savedToken", token)
             if (token.isNotEmpty()) {
                 sessionManager.setTokens()
                 _uiStateFlow.emit(SignInUiState.Success)
@@ -112,6 +110,12 @@ class LoginViewModel(
         }
     }
 
+    private fun setUser(user: ProfileResponseData?) {
+        viewModelScope.launch {
+            sessionManager.setUser(user)
+        }
+    }
+
     private val _getProfileStateFlow = MutableStateFlow<GetProfileUiState>(GetProfileUiState.Empty)
     val getProfileStateFlow: StateFlow<GetProfileUiState> = _getProfileStateFlow
 
@@ -119,9 +123,11 @@ class LoginViewModel(
         viewModelScope.launch {
             profileUseCase.invoke(object : ProfileService.GetProfileCallback<ProfileResponseData> {
                 override fun onSuccess(profileGeneric: ProfileResponseData) {
+                    setUser(profileGeneric)
                     viewModelScope.launch {
                         _getProfileStateFlow.emit(GetProfileUiState.Success(profileGeneric))
                     }
+
                 }
 
                 override fun onError(error: String) {
@@ -144,7 +150,6 @@ class LoginViewModel(
         viewModelScope
             .launch {
                 if (token != null && refreshToken != null) {
-                    Log.d("testToken", "continue after login $token")
                     sessionManager.setAuthEntities(token, refreshToken)
                     getProfile()
                 }

@@ -2,6 +2,8 @@ package com.mobile.tuesplace.ui.navigation
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mobile.tuesplace.*
 import com.mobile.tuesplace.data.*
+import com.mobile.tuesplace.session.SessionManager
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.activities.*
 import com.mobile.tuesplace.ui.chats.ChatroomScreen
 import com.mobile.tuesplace.ui.chats.ChatroomViewModel
@@ -46,6 +50,7 @@ import com.mobile.tuesplace.ui.welcome.WelcomeAdminScreen
 import com.mobile.tuesplace.ui.welcome.WelcomeScreen
 import org.koin.androidx.compose.getViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHost(navController: NavHostController) {
     androidx.navigation.compose.NavHost(navController = navController,
@@ -80,7 +85,9 @@ fun NavHost(navController: NavHostController) {
             when (profileUiState) {
                 GetProfileUiState.Empty -> {}
                 is GetProfileUiState.Error -> {}
-                GetProfileUiState.Loading -> {}
+                GetProfileUiState.Loading -> {
+                    Loading()
+                }
                 is GetProfileUiState.Success -> {
                     when (((profileUiState as GetProfileUiState.Success).profile.role)) {
                         ADMIN_ROLE -> navController.navigate(WELCOME_ADMIN_SCREEN,
@@ -290,12 +297,12 @@ fun NavHost(navController: NavHostController) {
         }
         composable(PROFILE_SCREEN) { backStackEntry ->
             val viewModel = getViewModel<EditProfileViewModel>()
-            val myProfileUiState by viewModel.getMyProfileStateFlow.collectAsState()
             val profileUiState by viewModel.getProfileStateFlow.collectAsState()
             LaunchedEffect(null) {
-                viewModel.getMyProfile()
-                backStackEntry.arguments?.getString(ID_STRING)
-                    ?.let { viewModel.getProfile(it) }
+                if (SessionManager.getUser()?.role == ADMIN_ROLE) {
+                    backStackEntry.arguments?.getString(ID_STRING)
+                        ?.let { viewModel.getProfile(it) }
+                }
             }
             ProfileScreen(
                 profileUiState = profileUiState,
@@ -304,9 +311,7 @@ fun NavHost(navController: NavHostController) {
                         bundleOf(ID_STRING to it,
                             IS_ADMIN to (backStackEntry.arguments?.getString(ID_STRING) == EMPTY_STRING)))
                 },
-                myProfile = viewModel.myProfile,
-                isAdmin = backStackEntry.arguments?.getString(ID_STRING) == EMPTY_STRING,
-                myProfileUiState = myProfileUiState
+                isAdmin = SessionManager.getUser()?.role == ADMIN_ROLE
             )
         }
         composable(EDIT_PROFILE_SCREEN) { backStackEntry ->
@@ -388,6 +393,7 @@ fun NavHost(navController: NavHostController) {
             val viewModel = getViewModel<SettingsViewModel>()
             val getProfileUiState by viewModel.getProfileStateFlow.collectAsState()
             viewModel.getProfile()
+            val emptyTokensState by viewModel.emptyTokensStateFlow.collectAsState()
             SettingsScreen(
                 onEditClick = {
                     navController.navigate(PROFILE_SCREEN,
@@ -395,10 +401,16 @@ fun NavHost(navController: NavHostController) {
                 },
                 onSignOutClick = {
                     viewModel.deleteTokensData()
-                    navController.navigate(LOGIN_SCREEN)
                 },
                 onForgottenPasswordClick = {},
-                getProfileUiState = getProfileUiState
+                getProfileUiState = getProfileUiState,
+                onEmptyTokens = {
+                    navController.navigate(LOGIN_SCREEN, navOptions = NavOptions.Builder()
+                        .setPopUpTo(LOGIN_SCREEN,
+                            true).build())
+                    viewModel.setEmptyTokenFalse()
+                },
+                emptyTokensState = emptyTokensState
             )
         }
         composable(CLASSROOM_USER_SCREEN) { backStackEntry ->
@@ -463,7 +475,11 @@ fun NavHost(navController: NavHostController) {
                         backStackEntry.arguments?.getString(GROUP_ID)
                             ?.let { it1 -> viewModel.createPost(it1, it) }
                     },
-                    createPostUiState = createPostUiState
+                    createPostUiState = createPostUiState,
+                    onCreatePostSuccess = {
+                        navController.navigateUp()
+                        viewModel.resetState()
+                    }
                 )
             }
         }
@@ -473,12 +489,18 @@ fun NavHost(navController: NavHostController) {
             })) { backStackEntry ->
             val viewModel = getViewModel<ChatroomViewModel>()
             val getGroupUiState by viewModel.groupStateFlow.collectAsState()
+            val comment by viewModel.comment.collectAsState()
             LaunchedEffect(null) {
                 backStackEntry.arguments?.getString(GROUP_ID)?.let { groupId ->
                     viewModel.getGroup(groupId)
                 }
             }
-            ChatroomScreen(getGroupUiState = getGroupUiState)
+            ChatroomScreen(
+                getGroupUiState = getGroupUiState,
+                onCommentChange = { viewModel.comment(it) },
+                commentInput = comment,
+                onSendClick = {}
+            )
         }
         composable(ALL_STUDENTS_SCREEN) {
             val viewModel = getViewModel<AllStudentsViewModel>()
@@ -814,7 +836,12 @@ fun NavHost(navController: NavHostController) {
                 submissions = submissions,
                 submissionIndex = submissionIndex,
                 setSubmissionIndex = { viewModel.setSubmissionIndex(it) },
-                createSubmissionMarkUiState = createSubmissionMarkUiState
+                createSubmissionMarkUiState = createSubmissionMarkUiState,
+                onSaveEditClick = { studentId, markId, mark ->
+                    backStackEntry.arguments?.getString(GROUP_ID)?.let {
+                        viewModel.editMark(it, studentId, markId, mark)
+                    }
+                }
             )
         }
         composable(CREATE_PROFILE) {

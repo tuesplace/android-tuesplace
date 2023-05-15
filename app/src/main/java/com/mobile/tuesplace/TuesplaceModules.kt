@@ -58,12 +58,13 @@ val TuesplaceModules = module {
     viewModel { CreatePostViewModel(get()) }
     viewModel { PostViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { EditPostViewModel(get(), get()) }
-    viewModel { SubmissionsViewModel(get(), get(), get()) }
+    viewModel { SubmissionsViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(androidContext(), get()) }
     viewModel { CreateProfileViewModel(get()) }
 
     single<ApiServices> { get<Retrofit>().create(ApiServices::class.java) }
 
+    factory { EditMarkUseCase(get()) }
     factory { SignInUseCase(get()) }
     factory { CreateGroupUseCase(get()) }
     factory { GetGroupsUseCase(get()) }
@@ -107,7 +108,6 @@ val TuesplaceModules = module {
     factory<SpecificationService> { SpecificationImpl(get()) }
     factory<SubmissionsService> { SubmissionsServiceImpl(get()) }
 
-//    factory { TuesAuthenticator() }
     factory { TuesInterceptor(androidContext()) }
     single {
         val interceptor = HttpLoggingInterceptor()

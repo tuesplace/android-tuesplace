@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.GroupResponseData
+import com.mobile.tuesplace.ui.Loading
 import com.mobile.tuesplace.ui.states.GetMyGroupsUiState
 
 @Composable
@@ -26,7 +27,9 @@ fun VideoroomScreen(
     when (groupsUiState) {
         GetMyGroupsUiState.Empty -> {}
         is GetMyGroupsUiState.Error -> {}
-        GetMyGroupsUiState.Loading -> {}
+        GetMyGroupsUiState.Loading -> {
+            Loading()
+        }
         is GetMyGroupsUiState.Success -> {
             VideoroomUi(groups = groupsUiState.groups, onBackPressed)
         }

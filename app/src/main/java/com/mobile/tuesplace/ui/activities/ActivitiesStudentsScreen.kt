@@ -1,10 +1,12 @@
 package com.mobile.tuesplace.ui.activities
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -15,7 +17,8 @@ import com.mobile.tuesplace.*
 import com.mobile.tuesplace.R
 import com.mobile.tuesplace.data.AgendaResponseData
 import com.mobile.tuesplace.ui.DailyAgendaItem
-import com.mobile.tuesplace.ui.buttonChangeColorOnClick
+import com.mobile.tuesplace.ui.Loading
+import com.mobile.tuesplace.ui.ButtonChangeColorOnClick
 import com.mobile.tuesplace.ui.indexToLetter
 import com.mobile.tuesplace.ui.numToDay
 import com.mobile.tuesplace.ui.states.GetActivitiesUiState
@@ -29,8 +32,16 @@ fun ActivitiesStudentsScreen(
 ) {
     when (getActivitiesUiState) {
         GetActivitiesUiState.Empty -> {}
-        is GetActivitiesUiState.Error -> {}
-        GetActivitiesUiState.Loading -> {}
+        is GetActivitiesUiState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                getActivitiesUiState.exception ?: stringResource(R.string.create_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        GetActivitiesUiState.Loading -> {
+            Loading()
+        }
         is GetActivitiesUiState.Success -> {
             when (setVisibilityStateFlow) {
                 is ActivitiesStudentsViewModel.SetVisibility.Loaded -> {
@@ -86,25 +97,25 @@ fun ActivitiesStudentsUi(
                 },
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.a_class),
                 colorState = classVisibility[0] == 1,
                 setColor = { setVisibility(0) }
             )
 
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.b_class),
                 colorState = classVisibility[1] == 1,
                 setColor = { setVisibility(1) }
             )
 
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.v_class),
                 colorState = classVisibility[2] == 1,
                 setColor = { setVisibility(2) }
             )
 
-            buttonChangeColorOnClick(
+            ButtonChangeColorOnClick(
                 text = stringResource(id = R.string.g_class),
                 colorState = classVisibility[3] == 1,
                 setColor = { setVisibility(3) }
